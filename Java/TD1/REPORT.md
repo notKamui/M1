@@ -1,7 +1,11 @@
 # TD1 Jimmy Teillard - Group 2
 
-***To run the set of tests, run `sh gradlew test` 
-(or `gradle test` if Gradle is installed)***
+***To run the set of tests, run `sh gradlew clean test` 
+(or `gradle clean test` if Gradle is installed)***
+
+***If "BUILD SUCCESSFUL" shows up, that means they all passed.\
+If "BUILD FAILED" shows up, that means that one of them didn't pass
+(or that there's a problem with the JVM)***
 
 ## Q5
 
