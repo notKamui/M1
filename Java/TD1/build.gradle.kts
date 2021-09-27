@@ -18,6 +18,7 @@ dependencies {
 tasks.withType<JavaCompile> {
     sourceCompatibility = jvmVersion
     targetCompatibility = jvmVersion
+    options.compilerArgs.add("--enable-preview")
 }
 
 tasks.getByName<Test>("test") {
