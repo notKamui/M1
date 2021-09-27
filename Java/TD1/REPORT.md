@@ -1,6 +1,7 @@
 # TD1 Jimmy Teillard - Group 2
 
-***To run the set of tests, run `./gradlew test`***
+***To run the set of tests, run `sh gradlew test` 
+(or `gradle test` if Gradle is installed)***
 
 ## Q5
 
