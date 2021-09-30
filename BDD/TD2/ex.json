@@ -1,0 +1,1 @@
+{indexes:[{ "v" : 1, "key" : { "_id" : 1 }, "ns" : "esipe2.ex", "name" : "_id_" }, { "v" : 1, "key" : { "score" : 1 }, "ns" : "esipe2.ex", "name" : "score_1" }, { "v" : 1, "key" : { "items.qte" : 1 }, "ns" : "esipe2.ex", "name" : "items.qte_1" }]}
