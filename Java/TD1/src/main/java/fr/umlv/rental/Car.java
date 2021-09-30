@@ -9,6 +9,8 @@ public record Car(String model, int year) implements Vehicle {
 
     @Override
     public long insuranceCostAt(int year) {
+        if (year < year())
+            throw new IllegalArgumentException("Year should be higher than date of creation");
         return year - this.year < 10 ? 200 : 500;
     }
 

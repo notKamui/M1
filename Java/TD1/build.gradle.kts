@@ -19,8 +19,10 @@ tasks.withType<JavaCompile> {
     sourceCompatibility = jvmVersion
     targetCompatibility = jvmVersion
     options.compilerArgs.add("--enable-preview")
+    options.compilerArgs.add("-Xlint:preview")
 }
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+    jvmArgs("--enable-preview")
 }
