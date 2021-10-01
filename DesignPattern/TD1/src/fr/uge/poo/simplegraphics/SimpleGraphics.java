@@ -43,7 +43,6 @@ public class SimpleGraphics {
         // to create a canvas area using new.
 
         BufferedImage buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        @SuppressWarnings("serial")
         JComponent area = new JComponent() {
             @Override
             protected void paintComponent(Graphics g) {
