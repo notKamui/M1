@@ -12,8 +12,10 @@ public final class Paint {
     public static void main(String[] args) {
         SimpleGraphics area = new SimpleGraphics("area", CANVAS_WIDTH, CANVAS_HEIGHT);
         area.clear(Color.WHITE);
-
         var shapeManager = ShapeManager.from(CONFIG_FILE);
         area.render(shapeManager::drawAll);
+        area.waitForMouseEvents((x, y) ->
+                System.out.println(shapeManager.getNearestFrom(new Point(x, y)))
+        );
     }
 }

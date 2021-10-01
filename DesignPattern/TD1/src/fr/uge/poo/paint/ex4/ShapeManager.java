@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 public final class ShapeManager {
@@ -14,12 +14,21 @@ public final class ShapeManager {
 
     private ShapeManager() {}
 
+    public Optional<Shape> getNearestFrom(Point p) {
+        Objects.requireNonNull(p);
+        return shapes.stream().sorted(Comparator.comparingInt(shape ->
+                p.squaredDistance(shape.center())
+        )).findAny();
+    }
+
     public void drawAll(Graphics2D g) {
+        Objects.requireNonNull(g);
         g.setColor(Color.BLACK);
         shapes.forEach(shape -> shape.draw(g));
     }
 
     public static ShapeManager from(String filename) {
+        Objects.requireNonNull(filename);
         var config = new ShapeManager();
         Path path = Paths.get(filename);
         try(Stream<String> lines = Files.lines(path)) {

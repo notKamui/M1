@@ -4,11 +4,17 @@ import java.awt.*;
 
 public sealed interface Shape {
     void draw(Graphics2D g);
+    Point center();
 
     record Line(int x1, int y1, int x2, int y2) implements Shape {
         @Override
         public void draw(Graphics2D g) {
             g.drawLine(x1, y1, x2, y2);
+        }
+
+        @Override
+        public Point center() {
+            return new Point((x1 + x2) / 2, (y1 + y2) / 2);
         }
     }
 
@@ -17,12 +23,22 @@ public sealed interface Shape {
         public void draw(Graphics2D g) {
             g.drawRect(x, y, width, height);
         }
+
+        @Override
+        public Point center() {
+            return new Point(x + (width / 2), y + (height / 2));
+        }
     }
 
     record Ellipse(int x, int y, int width, int height) implements Shape {
         @Override
         public void draw(Graphics2D g) {
             g.drawOval(x, y, width, height);
+        }
+
+        @Override
+        public Point center() {
+            return new Point(x + (width / 2), y + (height / 2));
         }
     }
 
