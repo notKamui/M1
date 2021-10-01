@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public final class Config {
-    private final List<Shape> shapes = new ArrayList<>();
+    private final List<ShapeRender> shapes = new ArrayList<>();
 
     private Config() {}
 
@@ -25,17 +25,7 @@ public final class Config {
         try(Stream<String> lines = Files.lines(path)) {
             lines.forEach(line -> {
                 var parts = line.split(" ");
-                var a = Integer.parseInt(parts[1]);
-                var b = Integer.parseInt(parts[2]);
-                var c = Integer.parseInt(parts[3]);
-                var d = Integer.parseInt(parts[4]);
-                Shape shape = switch (parts[0]) {
-                    case "line" -> g -> g.drawLine(a, b, c, d);
-                    case "rectangle" -> g -> g.drawRect(a, b, c, d);
-                    case "ellipse" -> g -> g.drawOval(a, b, c, d);
-                    default -> throw new IllegalArgumentException("Unknown shape type : %s".formatted(parts[0]));
-                };
-                config.shapes.add(shape);
+                config.shapes.add(ShapeRender.of(parts));
             });
         } catch (IOException e) {
             System.err.printf("Cannot find file : %s%nAborting config creation%n", filename);
