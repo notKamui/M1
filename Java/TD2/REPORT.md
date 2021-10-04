@@ -1,4 +1,15 @@
-# TD2 - Java - Jimmy Teillard
+# TD2 - Java - Jimmy Teillard - Group 2
+
+***To run the main function/class, run `sh gradlew run`
+(or `gradle run` if Gradle is installed)***
+
+***To run the set of tests, run `sh gradlew clean test`
+(or `gradle clean test` if Gradle is installed)***
+
+***If "BUILD SUCCESSFUL" shows up, that means they all passed.\
+If "BUILD FAILED" shows up, that means that one of them didn't pass
+(or that there's a problem with the JVM)***
+
 
 ## Exercise 1
 
@@ -50,6 +61,6 @@ each actor (`actor -> actor` eq. `Function.identity()`) to the number of occurre
 
 ### Q10
 
-The method should return an `Optional<ActorMovieCount`. Indeed, if the given map is empty, then the returned
+The method should return an `Optional<ActorMovieCount>`. Indeed, if the given map is empty, then the returned
 value should be an empty optional. I replaced the `collect(maxBy...` by `max(Collector)` which accomplishes 
 the exact same goal by using collectors too.
