@@ -3,7 +3,14 @@ package fr.uge.poo.paint.ex7;
 import java.awt.*;
 
 public sealed interface Shape extends Drawable {
+    /**
+     * @return (x, y)
+     */
     Pair<Integer, Integer> center();
+
+    /**
+     * @return ((x, y), (width, height))
+     */
     Rectangle superRect();
 
     static Shape of(String[] parts) {

@@ -27,8 +27,17 @@ public final class ShapeManager {
 
     public void drawAll(Graphics2D g) {
         Objects.requireNonNull(g);
-        g.setColor(Color.BLACK);
-        shapes.forEach(shape -> shape.draw(g));
+        var size = getSize();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, size.first(), size.second());
+        shapes.forEach(shape -> {
+            if (selected != null && shape == selected) {
+                g.setColor(Color.ORANGE);
+            } else {
+                g.setColor(Color.BLACK);
+            }
+            shape.draw(g);
+        });
     }
 
     public void select(Shape shape, Graphics2D g) {
@@ -36,8 +45,6 @@ public final class ShapeManager {
         Objects.requireNonNull(g);
         selected = shape;
         drawAll(g);
-        g.setColor(Color.ORANGE);
-        shape.draw(g);
     }
 
     public Optional<Shape> getSelected() {
