@@ -20,7 +20,7 @@ public final class Canvas {
         this.height = Math.max(MIN_HEIGHT, size.second());
     }
 
-    public void render() {
+    public void open() {
         final var area = new SimpleGraphics("area", width, height);
         area.clear(Color.WHITE);
         area.render(sm::drawAll);
