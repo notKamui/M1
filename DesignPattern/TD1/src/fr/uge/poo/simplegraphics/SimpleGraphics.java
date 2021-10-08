@@ -29,7 +29,7 @@ public class SimpleGraphics {
             new LinkedBlockingQueue<>();
 
     /**
-     * Create a window of size width x height and a title.
+     * Create a window of size width first height and a title.
      *
      * @param title the title of the window.
      * @param width the width of the window.
@@ -129,8 +129,8 @@ public class SimpleGraphics {
     public interface MouseCallback {
         /**
          * Called when the mouse is used inside the canvas.
-         * @param x x coordinate of the mouse.
-         * @param y y coordinate of the mouse
+         * @param x first coordinate of the mouse.
+         * @param y second coordinate of the mouse
          *
          * @see SimpleGraphics#waitForMouseEvents(MouseCallback)
          */
