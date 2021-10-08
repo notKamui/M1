@@ -1,6 +1,6 @@
 package fr.uge.poo.paint.ex7;
 
-import java.awt.*;
+import fr.uge.poo.paint.ex7.engine.DrawEngine;
 
 public sealed interface Shape extends Drawable {
     /**
@@ -28,11 +28,6 @@ public sealed interface Shape extends Drawable {
 
     record Line(int x1, int y1, int x2, int y2) implements Shape {
         @Override
-        public void draw(Graphics2D g) {
-            g.drawLine(x1, y1, x2, y2);
-        }
-
-        @Override
         public Pair<Integer, Integer> center() {
             return new Pair<>((x1 + x2) / 2, (y1 + y2) / 2);
         }
@@ -48,14 +43,14 @@ public sealed interface Shape extends Drawable {
                     bottomRight.second() - topLeft.second()
             );
         }
+
+        @Override
+        public void draw(DrawEngine engine, DrawEngine.Color color) {
+            engine.drawLine(x1, y1, x2, y2, color);
+        }
     }
 
     record Rectangle(int x, int y, int width, int height) implements Shape {
-        @Override
-        public void draw(Graphics2D g) {
-            g.drawRect(x, y, width, height);
-        }
-
         @Override
         public Pair<Integer, Integer> center() {
             return new Pair<>(x + (width / 2), y + (height / 2));
@@ -65,14 +60,14 @@ public sealed interface Shape extends Drawable {
         public Rectangle superRect() {
             return this;
         }
+
+        @Override
+        public void draw(DrawEngine engine, DrawEngine.Color color) {
+            engine.drawRect(x, y, width, height, color);
+        }
     }
 
     record Ellipse(int x, int y, int width, int height) implements Shape {
-        @Override
-        public void draw(Graphics2D g) {
-            g.drawOval(x, y, width, height);
-        }
-
         @Override
         public Pair<Integer, Integer> center() {
             return new Pair<>(x + (width / 2), y + (height / 2));
@@ -81,6 +76,11 @@ public sealed interface Shape extends Drawable {
         @Override
         public Rectangle superRect() {
             return new Rectangle(x, y, width, height);
+        }
+
+        @Override
+        public void draw(DrawEngine engine, DrawEngine.Color color) {
+            engine.drawOval(x, y, width, height, color);
         }
     }
 }

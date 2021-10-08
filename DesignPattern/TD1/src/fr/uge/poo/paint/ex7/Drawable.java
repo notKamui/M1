@@ -1,7 +1,7 @@
 package fr.uge.poo.paint.ex7;
 
-import java.awt.*;
+import fr.uge.poo.paint.ex7.engine.DrawEngine;
 
 public interface Drawable {
-    void draw(Graphics2D g);
+    void draw(DrawEngine engine, DrawEngine.Color color);
 }

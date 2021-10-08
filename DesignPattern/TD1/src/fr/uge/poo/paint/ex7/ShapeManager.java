@@ -1,11 +1,11 @@
 package fr.uge.poo.paint.ex7;
 
-import java.awt.*;
+import fr.uge.poo.paint.ex7.engine.DrawEngine;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -25,26 +25,24 @@ public final class ShapeManager {
         }));
     }
 
-    public void drawAll(Graphics2D g) {
-        Objects.requireNonNull(g);
+    public void drawAll(DrawEngine engine) {
+        Objects.requireNonNull(engine);
         var size = getSize();
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, size.first(), size.second());
+        engine.clear(DrawEngine.Color.WHITE);
         shapes.forEach(shape -> {
             if (selected != null && shape == selected) {
-                g.setColor(Color.ORANGE);
+                shape.draw(engine, DrawEngine.Color.ORANGE);
             } else {
-                g.setColor(Color.BLACK);
+                shape.draw(engine, DrawEngine.Color.BLACK);
             }
-            shape.draw(g);
         });
     }
 
-    public void select(Shape shape, Graphics2D g) {
+    public void select(Shape shape, DrawEngine engine) {
         Objects.requireNonNull(shape);
-        Objects.requireNonNull(g);
+        Objects.requireNonNull(engine);
         selected = shape;
-        drawAll(g);
+        drawAll(engine);
     }
 
     public Optional<Shape> getSelected() {

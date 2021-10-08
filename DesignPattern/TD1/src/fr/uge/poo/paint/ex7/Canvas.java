@@ -1,8 +1,11 @@
 package fr.uge.poo.paint.ex7;
 
+import com.evilcorp.coolgraphics.CoolGraphics;
+import fr.uge.poo.paint.ex7.engine.DrawEngine;
+import fr.uge.poo.paint.ex7.engine.DrawEngineCoolAdapter;
+import fr.uge.poo.paint.ex7.engine.DrawEngineSimpleAdapter;
 import fr.uge.poo.simplegraphics.SimpleGraphics;
 
-import java.awt.*;
 import java.util.Objects;
 
 public final class Canvas {
@@ -10,23 +13,23 @@ public final class Canvas {
     private static final int MIN_HEIGHT = 500;
 
     private final ShapeManager sm;
-    private final int width;
-    private final int height;
+    private final DrawEngine engine;
 
-    public Canvas(ShapeManager sm) {
+    public Canvas(boolean legacy, ShapeManager sm) {
         this.sm = Objects.requireNonNull(sm);
         var size = sm.getSize();
-        this.width = Math.max(MIN_WIDTH, size.first());
-        this.height = Math.max(MIN_HEIGHT, size.second());
+        var width = Math.max(MIN_WIDTH, size.first());
+        var height = Math.max(MIN_HEIGHT, size.second());
+        if (legacy) {
+            engine = new DrawEngineSimpleAdapter(new SimpleGraphics("area", width, height));
+        } else {
+            engine = new DrawEngineCoolAdapter(new CoolGraphics("area", width, height));
+        }
     }
 
     public void open() {
-        final var area = new SimpleGraphics("area", width, height);
-        area.clear(Color.WHITE);
-        area.render(sm::drawAll);
-        area.waitForMouseEvents((x, y) -> area.render(g -> {
-            var selected = sm.getNearestFrom(new Pair<>(x, y));
-            selected.ifPresent(it -> sm.select(it, g));
-        }));
+        engine.clear(DrawEngine.Color.WHITE);
+        sm.drawAll(engine);
+        engine.registerOnClick(sm);
     }
 }
