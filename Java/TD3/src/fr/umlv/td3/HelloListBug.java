@@ -2,15 +2,17 @@ package fr.umlv.td3;
 
 import java.util.ArrayList;
 
-public final class HelloThreadJoin {
+public final class HelloListBug {
 
     public static void main(String[] args) throws InterruptedException {
-        var threads = new ArrayList<Thread>();
+        final var threads = new ArrayList<Thread>();
+        final var nums = new ArrayList<Integer>();
         for (int t = 0; t < 4; t++) {
-            final var threadN = t;
             var thread = new Thread(() -> {
-                for (int i = 0; i <= 5000; i++) {
-                    System.out.println("thread " + threadN + " " + i);
+                for (int i = 0; i < 5000; i++) {
+                    synchronized (nums) {
+                        nums.add(i);
+                    }
                 }
             });
             thread.start();
@@ -19,6 +21,6 @@ public final class HelloThreadJoin {
         for (var thread : threads) {
             thread.join();
         }
-        System.out.println("Le programme est fini");
+        System.out.println("Le programme est fini\nTaille de la list : " + nums.size());
     }
 }
