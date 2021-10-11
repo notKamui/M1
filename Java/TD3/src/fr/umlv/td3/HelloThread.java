@@ -3,13 +3,13 @@ package fr.umlv.td3;
 public final class HelloThread {
 
     public static void main(String[] args) {
-        Runnable runner = () -> {
-            for (int i = 0; i <= 5000; i++) {
-                System.out.println(i);
-            }
-        };
-        for (int i = 0; i < 4; i++) {
-            new Thread(runner).start();
+        for (int t = 0; t < 4; t++) {
+            final var threadN = t;
+            new Thread(() -> {
+                for (int i = 0; i <= 5000; i++) {
+                    System.out.println("thread " + threadN + " " + i);
+                }
+            }).start();
         }
     }
 }
