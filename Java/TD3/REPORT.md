@@ -19,6 +19,8 @@ However, the scheduler is unpredictable so the order changes everytime ; this is
 
 The size of the list is smaller than the amount of calls to `ArrayList::add`.
 This happens because `ArrayList` is not made for asynchronous manipulation (cf. Javadoc), unlike `Vector`.
+When we add an element to it, the size is to be updated, and then it inserts the element based on said size.
+But if several `add`s happen simultaneously, then that size becomes incoherent with what's really happening.
 
 ### Q3
 
