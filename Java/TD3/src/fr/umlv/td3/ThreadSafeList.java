@@ -6,11 +6,12 @@ import java.util.function.Consumer;
 public final class ThreadSafeList<E> implements List<E> {
 
     private final ArrayList<E> internal = new ArrayList<>();
+    private final Object lock = new Object();
 
     @Override
     public boolean add(E e) {
         Objects.requireNonNull(e);
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.add(e);
         }
     }
@@ -18,7 +19,7 @@ public final class ThreadSafeList<E> implements List<E> {
     @Override
     public boolean remove(Object o) {
         Objects.requireNonNull(o);
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.remove(o);
         }
     }
@@ -26,7 +27,7 @@ public final class ThreadSafeList<E> implements List<E> {
     @Override
     public boolean containsAll(Collection<?> c) {
         Objects.requireNonNull(c);
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.containsAll(c);
         }
     }
@@ -34,7 +35,7 @@ public final class ThreadSafeList<E> implements List<E> {
     @Override
     public boolean addAll(Collection<? extends E> c) {
         Objects.requireNonNull(c);
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.addAll(c);
         }
     }
@@ -42,14 +43,14 @@ public final class ThreadSafeList<E> implements List<E> {
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
         Objects.requireNonNull(c);
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.addAll(index, c);
         }
     }
 
     @Override
     public E remove(int index) throws IndexOutOfBoundsException, UnsupportedOperationException {
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.remove(index);
         }
     }
@@ -57,7 +58,7 @@ public final class ThreadSafeList<E> implements List<E> {
     @Override
     public boolean removeAll(Collection<?> c) {
         Objects.requireNonNull(c);
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.removeAll(c);
         }
     }
@@ -65,14 +66,14 @@ public final class ThreadSafeList<E> implements List<E> {
     @Override
     public boolean retainAll(Collection<?> c) {
         Objects.requireNonNull(c);
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.retainAll(c);
         }
     }
 
     @Override
     public void clear() {
-        synchronized (internal) {
+        synchronized (lock) {
             internal.clear();
         }
     }
@@ -80,7 +81,7 @@ public final class ThreadSafeList<E> implements List<E> {
     @Override
     public int indexOf(Object o) {
         Objects.requireNonNull(o);
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.indexOf(o);
         }
     }
@@ -88,35 +89,35 @@ public final class ThreadSafeList<E> implements List<E> {
     @Override
     public int lastIndexOf(Object o) {
         Objects.requireNonNull(o);
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.lastIndexOf(o);
         }
     }
 
     @Override
     public ListIterator<E> listIterator() {
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.listIterator();
         }
     }
 
     @Override
     public ListIterator<E> listIterator(int index) {
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.listIterator(index);
         }
     }
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.subList(fromIndex, toIndex);
         }
     }
 
     @Override
     public E get(int index) {
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.get(index);
         }
     }
@@ -124,7 +125,7 @@ public final class ThreadSafeList<E> implements List<E> {
     @Override
     public E set(int index, E e) {
         Objects.requireNonNull(e);
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.set(index, e);
         }
     }
@@ -132,21 +133,21 @@ public final class ThreadSafeList<E> implements List<E> {
     @Override
     public void add(int index, E e) {
         Objects.requireNonNull(e);
-        synchronized (internal) {
+        synchronized (lock) {
             internal.add(index, e);
         }
     }
 
     @Override
     public int size() {
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.size();
         }
     }
 
     @Override
     public boolean isEmpty() {
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.isEmpty();
         }
     }
@@ -154,21 +155,21 @@ public final class ThreadSafeList<E> implements List<E> {
     @Override
     public boolean contains(Object o) {
         Objects.requireNonNull(o);
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.contains(o);
         }
     }
 
     @Override
     public Iterator<E> iterator() {
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.iterator();
         }
     }
 
     @Override
     public Object[] toArray() {
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.toArray();
         }
     }
@@ -176,14 +177,14 @@ public final class ThreadSafeList<E> implements List<E> {
     @Override
     public <T> T[] toArray(T[] a) {
         Objects.requireNonNull(a);
-        synchronized (internal) {
+        synchronized (lock) {
             return internal.toArray(a);
         }
     }
 
     @Override
     public void forEach(Consumer<? super E> action) {
-        synchronized (internal) {
+        synchronized (lock) {
             internal.forEach(action);
         }
     }
