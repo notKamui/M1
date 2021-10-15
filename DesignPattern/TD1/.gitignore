@@ -105,3 +105,4 @@ fabric.properties
 hs_err_pid*
 
 out/
+!plugins/*/*
