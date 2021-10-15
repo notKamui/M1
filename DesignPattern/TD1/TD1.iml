@@ -7,5 +7,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="RegularDuck" level="project" />
+    <orderEntry type="library" name="RubberDuck" level="project" />
+    <orderEntry type="library" name="RegularDuckFactory" level="project" />
+    <orderEntry type="library" name="RubberDuckFactory" level="project" />
+    <orderEntry type="library" name="Surprise" level="project" />
   </component>
 </module>
