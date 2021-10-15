@@ -27,7 +27,6 @@ public final class ShapeManager {
 
     public void drawAll(DrawEngine engine) {
         Objects.requireNonNull(engine);
-        var size = getSize();
         engine.clear(DrawEngine.Color.WHITE);
         shapes.forEach(shape -> {
             if (selected != null && shape == selected) {
@@ -36,6 +35,7 @@ public final class ShapeManager {
                 shape.draw(engine, DrawEngine.Color.BLACK);
             }
         });
+        engine.refresh(DrawEngine.Color.WHITE);
     }
 
     public void select(Shape shape, DrawEngine engine) {

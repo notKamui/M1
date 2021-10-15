@@ -4,10 +4,12 @@ import com.evilcorp.coolgraphics.CoolGraphics;
 import fr.uge.poo.paint.ex9.Pair;
 import fr.uge.poo.paint.ex9.ShapeManager;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public final class DrawEngineCoolAdapter implements DrawEngine {
     private final CoolGraphics graphics;
+    private final ArrayList<Runnable> drawCalls = new ArrayList<>();
 
     public DrawEngineCoolAdapter(CoolGraphics graphics) {
         this.graphics = Objects.requireNonNull(graphics);
@@ -22,18 +24,24 @@ public final class DrawEngineCoolAdapter implements DrawEngine {
     }
 
     @Override
+    public void refresh(Color background) {
+        clear(background);
+        drawCalls.forEach(Runnable::run);
+    }
+
+    @Override
     public void clear(Color c) {
         graphics.repaint(toCoolColor(c));
     }
 
     @Override
     public void drawLine(int x1, int y1, int x2, int y2, Color c) {
-        graphics.drawLine(x1, y1, x2, y2, toCoolColor(c));
+        drawCalls.add(() -> graphics.drawLine(x1, y1, x2, y2, toCoolColor(c)));
     }
 
     @Override
     public void drawOval(int x, int y, int width, int height, Color c) {
-        graphics.drawEllipse(x, y, width, height, toCoolColor(c));
+        drawCalls.add(() -> graphics.drawEllipse(x, y, width, height, toCoolColor(c)));
     }
 
     @Override

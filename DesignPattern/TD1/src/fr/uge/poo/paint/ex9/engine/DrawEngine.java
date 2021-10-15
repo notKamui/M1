@@ -7,6 +7,8 @@ public sealed interface DrawEngine permits DrawEngineCoolAdapter, DrawEngineSimp
         BLACK, WHITE, ORANGE
     }
 
+    void refresh(Color background);
+
     void clear(Color c);
     void drawLine(int x1, int y1, int x2, int y2, Color c);
     default void drawRect(int x, int y, int width, int height, Color c) {
