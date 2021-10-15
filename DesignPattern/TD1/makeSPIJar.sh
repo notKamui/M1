@@ -1,11 +1,11 @@
 #!/bin/bash
 build_dir="./tmp_build"
+output_dir='./plugins/paint'
 src_dir="./src"
-jarname="RegularDuckFactory.jar"
-interface_provided="fr.uge.poo.ducks.DuckFactory"
-class_providing_the_interface="fr.uge.poo.ducks.RegularDuckFactory"
-included_classes=("fr.uge.poo.ducks.Duck" "fr.uge.poo.ducks.RegularDuck" "$interface_provided" "$class_providing_the_interface")
-
+jarname="DrawEngineCoolAdapterFactory.jar"
+interface_provided="fr.uge.poo.paint.ex8.engine.DrawEngineFactory"
+class_providing_the_interface="fr.uge.poo.paint.ex8.engine.DrawEngineCoolAdapterFactory"
+included_classes=("fr.uge.poo.paint.ex8.engine.DrawEngineCoolAdapter" "com.evilcorp.coolgraphics.CoolGraphics" "$interface_provided" "$class_providing_the_interface")
 
 #Option to create a jar compatible with older versions of java
 #compile_options="--release 11"
@@ -37,7 +37,7 @@ done
 # creation of the services directory and file
 mkdir -p "$build_dir/META-INF/services"
 echo "$class_providing_the_interface" > "$build_dir/META-INF/services/$interface_provided"
-jar cvf "$jarname" -C "$build_dir/" .
+jar cvf "$output_dir/$jarname" -C "$build_dir/" .
 
 # safe delete build directory
 find "$build_dir/" -name "*.class" -type f -delete

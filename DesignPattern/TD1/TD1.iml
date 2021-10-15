@@ -12,5 +12,6 @@
     <orderEntry type="library" name="RegularDuckFactory" level="project" />
     <orderEntry type="library" name="RubberDuckFactory" level="project" />
     <orderEntry type="library" name="Surprise" level="project" />
+    <orderEntry type="library" name="DrawEngineCoolAdapterFactory" level="project" />
   </component>
 </module>
