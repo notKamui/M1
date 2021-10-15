@@ -5,14 +5,15 @@ import fr.uge.poo.paint.ex9.Pair;
 import fr.uge.poo.paint.ex9.ShapeManager;
 
 import java.util.ArrayList;
-import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 public final class DrawEngineCoolAdapter implements DrawEngine {
     private final CoolGraphics graphics;
     private final ArrayList<Runnable> drawCalls = new ArrayList<>();
 
     public DrawEngineCoolAdapter(CoolGraphics graphics) {
-        this.graphics = Objects.requireNonNull(graphics);
+        this.graphics = requireNonNull(graphics);
     }
 
     private static CoolGraphics.ColorPlus toCoolColor(Color c) {
@@ -46,6 +47,7 @@ public final class DrawEngineCoolAdapter implements DrawEngine {
 
     @Override
     public void registerOnClick(ShapeManager sm) {
+        requireNonNull(sm);
         clear(Color.WHITE);
         sm.drawAll(this);
         graphics.waitForMouseEvents((x, y) -> {

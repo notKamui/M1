@@ -6,19 +6,20 @@ import fr.uge.poo.simplegraphics.SimpleGraphics;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.function.Consumer;
+
+import static java.util.Objects.requireNonNull;
 
 public final class DrawEngineSimpleAdapter implements DrawEngine {
     private final SimpleGraphics graphics;
     private final ArrayList<Consumer<Graphics2D>> drawCalls = new ArrayList<>();
 
     public DrawEngineSimpleAdapter(SimpleGraphics graphics) {
-        this.graphics = Objects.requireNonNull(graphics);
+        this.graphics = requireNonNull(graphics);
     }
 
     private static java.awt.Color toRawColor(Color c) {
-        Objects.requireNonNull(c);
+        requireNonNull(c);
         return switch (c) {
             case BLACK -> java.awt.Color.BLACK;
             case WHITE -> java.awt.Color.WHITE;
@@ -63,6 +64,7 @@ public final class DrawEngineSimpleAdapter implements DrawEngine {
 
     @Override
     public void registerOnClick(ShapeManager sm) {
+        requireNonNull(sm);
         graphics.clear(java.awt.Color.WHITE);
         sm.drawAll(this);
         graphics.waitForMouseEvents((x, y) -> graphics.render(g -> {
