@@ -159,3 +159,11 @@ new Thread(() -> {
 
 If we just propagate an `InterruptedException` as if `slow` is like
 a blocking operation, then we can just catch that same exception.
+
+### Q7
+
+The difference between `Thread.interruped()` and `thread.isInterrupted()`
+is that the first one resets the interrupt flag back to 0, while
+the other does not.
+`Thread.interruped()` is poorly named because it doesn't state explicitly
+that it has side effects in its name.
