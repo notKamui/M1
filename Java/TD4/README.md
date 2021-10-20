@@ -55,7 +55,7 @@ new Thread(() -> {
         forNothing += slow();
         if (Thread.currentThread().isInterrupted()) {
             System.out.println(forNothing);
-            break;
+            return;
         }
     }
 });
@@ -84,7 +84,7 @@ new Thread(() -> {
         forNothing += slow();
         if (Thread.currentThread().isInterrupted()) {
             System.out.println(forNothing);
-            break;
+            return;
         }
     }
 });
@@ -114,12 +114,12 @@ new Thread(() -> {
             Thread.sleep(1_000);
         } catch (InterruptedException e) {
             System.out.println(forNothing);
-            break;
+            return;
         }
         forNothing += slow();
         if (Thread.currentThread().isInterrupted()) {
             System.out.println(forNothing);
-            break;
+            return;
         }
     }
 });
@@ -151,7 +151,7 @@ new Thread(() -> {
             forNothing += slow();
         } catch (InterruptedException e) {
             System.out.println(forNothing);
-            break;
+            return;
         }
     }
 });
