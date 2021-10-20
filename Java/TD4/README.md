@@ -16,3 +16,16 @@ that's not the name of either of the two "hackers".
 
 Note that there is also the fact that the `toString` method may
 try to access both members of the class asynchronously.
+
+### Q4
+
+We absolutely **CANNOT** substitute the `toString` call with two getter calls because
+there would be no way to make sure they are both accessed at the same time from
+within the class (There would be the need to use `synchronized` in the main function, which is bad)
+
+## Exercise 2
+
+### Q5
+
+A re-entrant lock means that it's a lock that holds an internal counter.
+It gets incremented everytime we lock it, and decremented everytime we unlock it.

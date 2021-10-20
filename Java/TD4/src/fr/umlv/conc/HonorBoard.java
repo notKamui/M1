@@ -1,23 +1,33 @@
 package fr.umlv.conc;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class HonorBoard {
-  private final Object lock = new Object();
+  private final ReentrantLock lock = new ReentrantLock();
 
   private String firstName;
   private String lastName;
   
   public void set(String firstName, String lastName) {
-    synchronized (lock) {
+    lock.lock();
+    try {
       this.firstName = firstName;
       this.lastName = lastName;
+    } finally {
+      lock.unlock();
     }
   }
   
   @Override
   public String toString() {
-    synchronized (lock) {
-      return firstName + ' ' + lastName;
+    lock.lock();
+    var s = "";
+    try {
+      s = firstName + ' ' + lastName;
+    } finally {
+      lock.unlock();
     }
+    return s;
   }
   
   public static void main(String[] args) {
