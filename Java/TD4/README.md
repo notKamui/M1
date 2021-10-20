@@ -29,3 +29,11 @@ within the class (There would be the need to use `synchronized` in the main func
 
 A re-entrant lock means that it's a lock that holds an internal counter.
 It gets incremented everytime we lock it, and decremented everytime we unlock it.
+
+## Exercise 3
+
+### Q7
+
+A thread has to be interrupted in a cooperative manner. Indeed, sometimes the thread will be doing operations
+that need to be *done* before accepting to be interrupted (e.g. IO operations ; you can't stop that).
+
