@@ -25,15 +25,137 @@ within the class (There would be the need to use `synchronized` in the main func
 
 ## Exercise 2
 
-### Q5
+### Q1
 
 A re-entrant lock means that it's a lock that holds an internal counter.
 It gets incremented everytime we lock it, and decremented everytime we unlock it.
 
 ## Exercise 3
 
-### Q7
+### Q1
 
 A thread has to be interrupted in a cooperative manner. Indeed, sometimes the thread will be doing operations
 that need to be *done* before accepting to be interrupted (e.g. IO operations ; you can't stop that).
 
+### Q2
+
+A blocking operation is an operation that literally stops the current thread until done.
+For example, `sleep` will pause the thread for a given amount of time.
+`join` will pause the thread until the given thread is effectively terminated, etc.
+
+When a thread is interrupted, it will throw an `InterruptedException` from within the thread,
+if busy doing a blocking operation, which is catchable. It's like a signal.
+
+### Q3
+
+```
+new Thread(() -> {
+    var forNothing = 0;
+    while (true) {
+        forNothing += slow();
+        if (Thread.currentThread().isInterrupted()) {
+            System.out.println(forNothing);
+            break;
+        }
+    }
+});
+```
+
+When we call `interrupt` on the thread, a flag is set so that, within the thread,
+we check its status. This is perfect for threads that hold no blocking operations.
+
+### Q4
+
+```
+private static int slow() {
+    var result = 1;
+    for (var i = 0; i < 1_000_000; i++) {
+        if (Thread.currentThread().isInterrupted()) return result;
+        result += (result * 7) % 513;
+    }
+    return result;
+}
+
+...
+
+new Thread(() -> {
+    var forNothing = 0;
+    while (true) {
+        forNothing += slow();
+        if (Thread.currentThread().isInterrupted()) {
+            System.out.println(forNothing);
+            break;
+        }
+    }
+});
+```
+
+We can stop the `slow` function when the thread is interrupted.
+
+### Q5
+
+```
+private static int slow() {
+    var result = 1;
+    for (var i = 0; i < 1_000_000; i++) {
+        if (Thread.interrupted()) return result;
+        result += (result * 7) % 513;
+    }
+    return result;
+}
+
+...
+
+new Thread(() -> {
+    var forNothing = 0;
+    while(true) {
+        forNothing += slow();
+        try {
+            Thread.sleep(1_000);
+        } catch (InterruptedException e) {
+            System.out.println(forNothing);
+            break;
+        }
+        forNothing += slow();
+        if (Thread.currentThread().isInterrupted()) {
+            System.out.println(forNothing);
+            break;
+        }
+    }
+});
+```
+
+The function `Thread.interruped()` resets the interrupt flag ; that way,
+we can still catch blocking operations.
+
+### Q6
+
+```
+private static int slow() throws InterruptedException {
+    var result = 1;
+    for (var i = 0; i < 1_000_000; i++) {
+        if (Thread.currentThread().isInterrupted()) throw new InterruptedException();
+        result += (result * 7) % 513;
+    }
+    return result;
+}
+
+...
+
+new Thread(() -> {
+    var forNothing = 0;
+    while(true) {
+        try {
+            forNothing += slow();
+            Thread.sleep(1_000);
+            forNothing += slow();
+        } catch (InterruptedException e) {
+            System.out.println(forNothing);
+            break;
+        }
+    }
+});
+```
+
+If we just propagate an `InterruptedException` as if `slow` is like
+a blocking operation, then we can just catch that same exception.
