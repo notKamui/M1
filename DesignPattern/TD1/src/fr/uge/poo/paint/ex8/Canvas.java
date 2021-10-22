@@ -22,7 +22,7 @@ public final class Canvas {
         var height = Math.max(MIN_HEIGHT, size.second());
 
         var deLoader = ServiceLoader.load(DrawEngineFactory.class);
-        var factory = deLoader.findFirst().orElse(new DrawEngineSimpleAdapterFactory());
+        var factory = deLoader.findFirst().orElseGet(DrawEngineSimpleAdapterFactory::new);
         engine = factory.withData(name, width, height);
     }
 
