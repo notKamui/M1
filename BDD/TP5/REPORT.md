@@ -135,3 +135,110 @@ jimmy.teillard_db=> explain select * from client_hash where tel is null;
 
 ```
 -> quasi toute la table est lue donc, puisque un hash ne peux pas être "trié", elle est lue séquentiellement
+
+Quand un grand nombre de données individuelles doivent être analysées, les bitmap sont préférées.
+
+### 9
+
+```
+jimmy.teillard_db=> explain select * from client_btree where age between 20 and 50;
+                             QUERY PLAN                              
+---------------------------------------------------------------------
+ Seq Scan on client_btree  (cost=0.00..6143.31 rows=241308 width=54)
+   Filter: ((age >= 20) AND (age <= 50))
+(2 lignes)
+```
+```
+jimmy.teillard_db=> explain select * from client_btree where age between 20 and 22;
+                                       QUERY PLAN                                        
+-----------------------------------------------------------------------------------------
+ Bitmap Heap Scan on client_btree  (cost=339.18..2957.10 rows=13928 width=54)
+   Recheck Cond: ((age >= 20) AND (age <= 22))
+   ->  Bitmap Index Scan on client_btree_age_idx  (cost=0.00..335.70 rows=13928 width=0)
+         Index Cond: ((age >= 20) AND (age <= 22))
+(4 lignes)
+```
+```
+jimmy.teillard_db=> explain select * from client_hash where age between 20 and 22;
+                            QUERY PLAN                             
+-------------------------------------------------------------------
+ Seq Scan on client_hash  (cost=0.00..6143.31 rows=14117 width=54)
+   Filter: ((age >= 20) AND (age <= 22))
+(2 lignes)
+```
+
+btree sur range courte -> bitmap ; puisque les blocs sont alignés dans la mémoire (grace au tri)
+
+### 10
+
+```
+jimmy.teillard_db=> explain select * from client_hash where age is null;
+                            QUERY PLAN                            
+------------------------------------------------------------------
+ Seq Scan on client_hash  (cost=0.00..4898.54 rows=2415 width=54)
+   Filter: (age IS NULL)
+(2 lignes)
+```
+```
+jimmy.teillard_db=> explain select * from client_btree where age is null;
+                                      QUERY PLAN                                       
+---------------------------------------------------------------------------------------
+ Bitmap Heap Scan on client_btree  (cost=55.39..2575.67 rows=2448 width=54)
+   Recheck Cond: (age IS NULL)
+   ->  Bitmap Index Scan on client_btree_age_idx  (cost=0.00..54.78 rows=2448 width=0)
+         Index Cond: (age IS NULL)
+(4 lignes)
+```
+hash ne gère pas les null
+
+### 11
+
+```
+jimmy.teillard_db=> explain select * from client_btree where age is not null;
+                             QUERY PLAN                              
+---------------------------------------------------------------------
+ Seq Scan on client_btree  (cost=0.00..4898.54 rows=246506 width=54)
+   Filter: (age IS NOT NULL)
+(2 lignes)
+```
+trop de not null pour qu'il soit intéressant de faire autre chose que récupérer les lignes séquentiellements.
+
+### 12
+
+```
+jimmy.teillard_db=> explain select * from client_btree where age between 20 and 22 and tel = '0004955053';
+                                        QUERY PLAN                                        
+------------------------------------------------------------------------------------------
+ Index Scan using client_btree_tel_idx on client_btree  (cost=0.42..8.44 rows=1 width=54)
+   Index Cond: ((tel)::text = '0004955053'::text)
+   Filter: ((age >= 20) AND (age <= 22))
+(3 lignes)
+```
+```
+jimmy.teillard_db=> explain select * from client_hash where age between 20 and 22 and tel = '0004955053';
+                                       QUERY PLAN                                       
+----------------------------------------------------------------------------------------
+ Index Scan using client_hash_tel_idx on client_hash  (cost=0.00..8.02 rows=1 width=54)
+   Index Cond: ((tel)::text = '0004955053'::text)
+   Filter: ((age >= 20) AND (age <= 22))
+(3 lignes)
+```
+Cette fois ci, le hash est capable de comprendre qu'il doit indexer un petit nombre de données.
+
+### 13
+
+```
+jimmy.teillard_db=> explain select * from client_btree where age <  12 and tel > '0900000000';
+                                          QUERY PLAN                                           
+-----------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on client_btree  (cost=639.94..736.22 rows=26 width=54)
+   Recheck Cond: ((age < 12) AND ((tel)::text > '0900000000'::text))
+   ->  BitmapAnd  (cost=639.94..639.94 rows=26 width=0)
+         ->  Bitmap Index Scan on client_btree_age_idx  (cost=0.00..6.52 rows=280 width=0)
+               Index Cond: (age < 12)
+         ->  Bitmap Index Scan on client_btree_tel_idx  (cost=0.00..633.15 rows=23031 width=0)
+               Index Cond: ((tel)::text > '0900000000'::text)
+(7 lignes)
+```
+
+Pas beaucoup de gens en dessous de 12 ans, ni de numéro en 09; les deux index sont visités séparéments puis un bitwise AND est appliqué sur les pointeurs pour tout récupérer en bloc.
