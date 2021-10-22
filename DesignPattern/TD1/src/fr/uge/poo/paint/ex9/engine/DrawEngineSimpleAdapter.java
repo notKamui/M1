@@ -3,11 +3,10 @@ package fr.uge.poo.paint.ex9.engine;
 import fr.uge.poo.paint.ex9.Pair;
 import fr.uge.poo.paint.ex9.ShapeManager;
 import fr.uge.poo.simplegraphics.SimpleGraphics;
-
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
-
 import static java.util.Objects.requireNonNull;
 
 public final class DrawEngineSimpleAdapter implements DrawEngine {
@@ -30,7 +29,8 @@ public final class DrawEngineSimpleAdapter implements DrawEngine {
     @Override
     public void refresh(Color background) {
         clear(background);
-        graphics.render(g -> drawCalls.forEach(it -> it.accept(g)));
+        graphics.render(g -> List.copyOf(drawCalls).forEach(it -> it.accept(g)));
+        drawCalls.clear();
     }
 
     @Override

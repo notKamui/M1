@@ -3,9 +3,8 @@ package fr.uge.poo.paint.ex9.engine;
 import com.evilcorp.coolgraphics.CoolGraphics;
 import fr.uge.poo.paint.ex9.Pair;
 import fr.uge.poo.paint.ex9.ShapeManager;
-
 import java.util.ArrayList;
-
+import java.util.List;
 import static java.util.Objects.requireNonNull;
 
 public final class DrawEngineCoolAdapter implements DrawEngine {
@@ -27,7 +26,8 @@ public final class DrawEngineCoolAdapter implements DrawEngine {
     @Override
     public void refresh(Color background) {
         clear(background);
-        drawCalls.forEach(Runnable::run);
+        List.copyOf(drawCalls).forEach(Runnable::run);
+        drawCalls.clear();
     }
 
     @Override
