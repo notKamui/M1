@@ -29,7 +29,8 @@ public final class DrawEngineSimpleAdapter implements DrawEngine {
     @Override
     public void refresh(Color background) {
         clear(background);
-        graphics.render(g -> List.copyOf(drawCalls).forEach(it -> it.accept(g)));
+        var copy = List.copyOf(drawCalls);
+        graphics.render(g -> copy.forEach(it -> it.accept(g)));
         drawCalls.clear();
     }
 
