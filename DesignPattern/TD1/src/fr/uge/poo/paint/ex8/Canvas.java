@@ -12,7 +12,7 @@ public final class Canvas {
     private static final int MIN_HEIGHT = 500;
 
     private final ShapeManager sm;
-    private DrawEngine engine;
+    private final DrawEngine engine;
 
     public Canvas(String name, ShapeManager sm) {
         Objects.requireNonNull(name);
@@ -21,11 +21,9 @@ public final class Canvas {
         var width = Math.max(MIN_WIDTH, size.first());
         var height = Math.max(MIN_HEIGHT, size.second());
 
-        var deLoader = ServiceLoader.load(DrawEngineFactory.class).stream();
-        deLoader.findAny().ifPresentOrElse(
-                de -> engine = de.get().withData(name, width, height),
-                () -> engine = new DrawEngineSimpleAdapterFactory().withData(name, width, height)
-        );
+        var deLoader = ServiceLoader.load(DrawEngineFactory.class);
+        var factory = deLoader.findFirst().orElse(new DrawEngineSimpleAdapterFactory());
+        engine = factory.withData(name, width, height);
     }
 
     public void open() {
