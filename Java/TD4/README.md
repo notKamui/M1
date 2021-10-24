@@ -167,3 +167,47 @@ is that the first one resets the interrupt flag back to 0, while
 the other does not.
 `Thread.interruped()` is poorly named because it doesn't state explicitly
 that it has side effects in its name.
+
+### Q8
+
+```
+var threads = new ArrayList<Thread>();
+for (int i = 0; i < 4; i++) {
+    var tID = i;
+    var thread = new Thread(() -> {
+        var count = 0;
+        while (true) {
+            System.out.println("Thread " + tID + " : " + (count++));
+            try {
+                Thread.sleep(1_000);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + tID + " has been stopped");
+                return;
+            }
+        }
+    });
+    threads.add(thread);
+    thread.start();
+}
+
+System.out.println("Enter a thread id:");
+try (var scanner = new Scanner(System.in)) {
+    while (scanner.hasNextInt()) {
+        var tID = scanner.nextInt();
+        threads.get(tID).interrupt();
+    }
+}
+```
+
+### Q9
+
+We just need to add this at the very end of the program.
+
+```
+System.out.println("Forced stop");
+for (var thread : threads) thread.interrupt();
+```
+
+If the loop receives anything other than an integer (e.g. null if we CTRL-D),
+it will break out of it and close the scanner. Then we just need to make sure
+we interrupt every running thread.
