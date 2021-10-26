@@ -1,66 +1,41 @@
-# TD2 - Java - Jimmy Teillard - Group 2
-
-***To run the main function/class, run `sh gradlew run`
-(or `gradle run` if Gradle is installed)***
-
-***To run the set of tests, run `sh gradlew clean test`
-(or `gradle clean test` if Gradle is installed)***
-
-***If "BUILD SUCCESSFUL" shows up, that means they all passed.\
-If "BUILD FAILED" shows up, that means that one of them didn't pass
-(or that there's a problem with the JVM)***
-
+# TD3 - Jimmy Teillard - Group 2
 
 ## Exercise 1
 
 ### Q1
 
-The `Path` API is part of the more robust and modern `java.nio` packages
-(as opposed to `java.io.File`). It allows for better control over paths
-and clearly separates the declaration of a file path and the actual opening
-of the file.
+`Runnable` is a functional interface that represents functions that take no arguments and return nothing.
+Essentially, these functions only do side effects.
+A `Thread` needs a `Runnable` to execute operations.
 
-### Q7
+### Q3
 
-`try/catch`, like the name suggests, catches an exception immediately and stops its propagation.
-On the contrary, `throws` sends the exception up in the function call hierarchy, 
-to let a more appropriate function handle it.
-In this case, throwing is adapted to the situation because we can't do anything meaningful when catching the `IOException`.
+The different threads do execute concurrently : the numbers are mixed up.
+However, the scheduler is unpredictable so the order changes everytime ; this is *usual*.
 
-### Q9
+## Exercise 3
 
-The "try with resources" pattern is always better than the "simple try/catch" pattern in the case of handling resources
-that need to be closed when we're done with it. Not only they're way simpler to read, they also manage closing
-said resources no matter what happens in terms of exceptions and control flow.
+### Q2
 
-## Exercise 2
+The size of the list is smaller than the amount of calls to `ArrayList::add`.
+This happens because `ArrayList` is not made for asynchronous manipulation (cf. Javadoc), unlike `Vector`.
+When we add an element to it, the size is to be updated, and then it inserts the element based on said size.
+But if several `add`s happen simultaneously, then that size becomes incoherent with what's really happening.
 
-## Q3
+### Q3
 
-`Collectors.toUnmodifiableMap` associates a given key to a value from the reduction of the given stream.
-(resulting in an immutable map)
+That happens sometimes :
+```
+Exception in thread "Thread-0" java.lang.ArrayIndexOutOfBoundsException: Index 2793 out of bounds for length 1851
+at java.base/java.util.ArrayList.add(ArrayList.java:455)
+at java.base/java.util.ArrayList.add(ArrayList.java:467)
+at fr.umlv.td3.HelloListBug.lambda$main$0(HelloListBug.java:13)
+at java.base/java.lang.Thread.run(Thread.java:833)
+```
+I think this happens when we add an element to the list in a thread while it's being resized by another thread.
 
-## Q4 + 6
+### Q6
 
-`Stream.flatMap` flattens a stream of streams into a single stream by removing one dimension
-(in other words, it "concatenates" the streams into one).
-We can flatten the list of actors into one single big stream that we convert to a Set to remove all duplicates.
-Then we just retrieve the size of said set.
-
-## Q7
-
-`Stream.distinct` removes all duplicates in a stream. This replaces the step where we converted the stream to a set.
-
-## Q8 + 9
-
-The method should return a map associating each actor to his number of occurrences (`Map<String, Long>`).
-`Stream.collect`'s purpose is to aggregate the elements of a stream following rules given by its parameters,
-which are `Collectors`. Here, when we have our stream of all actors (with duplicates), we want to associate
-each actor (`actor -> actor` eq. `Function.identity()`) to the number of occurrences (`Collectors.counting()`).
-`collect` itself will return the wanted map.
-
-### Q10
-
-The method should return an `Optional<ActorMovieCount>`. Indeed, if the given map is empty, then the returned
-value should be an empty optional. I replaced the `collect(maxBy...` by `max(Collector)` which accomplishes 
-the exact same goal by using collectors too.
+A thread-safe class is a guaranty that, no matter what happens to the class, even if modified in multiple threads,
+its integrity is kept. For example, for a list, that every element added really is in the list, and every removed
+element really is removed.
