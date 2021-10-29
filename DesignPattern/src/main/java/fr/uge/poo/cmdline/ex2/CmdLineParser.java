@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import static java.util.Objects.requireNonNull;
 
 /**
  * A simple command line parser/processor.
  */
 public final class CmdLineParser {
+    private static record Process(int arity, Consumer<List<String>> it) {}
 
-    private final Map<String, Runnable> optionToProcess = new HashMap<>();
+    private final Map<String, Process> optionToProcess = new HashMap<>();
 
     /**
      * Registers an option along with its linked process.
@@ -24,7 +26,7 @@ public final class CmdLineParser {
         requireNonNull(option);
         requireNonNull(process);
         if (optionToProcess.containsKey(option)) throw new IllegalStateException("Option " + option + " is already defined");
-        optionToProcess.put(option, process);
+        optionToProcess.put(option, new Process(0, (ignored) -> process.run()));
     }
 
     /**
@@ -35,9 +37,16 @@ public final class CmdLineParser {
      */
     public List<String> process(String[] arguments) {
         var unregistered = new ArrayList<String>();
-        for (var argument : arguments) {
+        for (int i = 0; i < arguments.length; i++) {
+            var argument = arguments[i];
             if (optionToProcess.containsKey(argument)) {
-                optionToProcess.get(argument).run();
+                var process = optionToProcess.get(argument);
+                if (process.arity() > 0) {
+                    var subArgs = List.of(arguments).subList(i + 1, i + 1 + process.arity());
+                    process.it().accept(subArgs);
+                } else {
+                    process.it().accept(null);
+                }
             } else {
                 unregistered.add(argument);
             }
