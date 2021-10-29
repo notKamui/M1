@@ -13,8 +13,8 @@ class CmdLineParserTest {
     @Test
     public void invalidOptionRegistration() {
         var parser = new CmdLineParser();
-        assertThrows(NullPointerException.class, () -> parser.registerOption(null, () -> {}));
-        assertThrows(NullPointerException.class, () -> parser.registerOption("", null));
+        assertThrows(NullPointerException.class, () -> parser.registerFlag(null, () -> {}));
+        assertThrows(NullPointerException.class, () -> parser.registerFlag("", null));
     }
 
     @Test
@@ -38,9 +38,9 @@ class CmdLineParserTest {
                 "b", false,
                 "c", false
         ));
-        parser.registerOption("-a", () -> flags.put("a", true));
-        parser.registerOption("-b", () -> flags.put("b", true));
-        parser.registerOption("-c", () -> flags.put("c", true));
+        parser.registerFlag("-a", () -> flags.put("a", true));
+        parser.registerFlag("-b", () -> flags.put("b", true));
+        parser.registerFlag("-c", () -> flags.put("c", true));
 
         String[] args0 = { "-b", "-c" };
         parser.process(args0);
@@ -58,9 +58,9 @@ class CmdLineParserTest {
                 "c", false
         ));
 
-        parser.registerOption("-a", () -> flags.put("a", true));
-        parser.registerOption("-b", () -> flags.put("b", true));
-        parser.registerOption("-c", () -> flags.put("c", true));
+        parser.registerFlag("-a", () -> flags.put("a", true));
+        parser.registerFlag("-b", () -> flags.put("b", true));
+        parser.registerFlag("-c", () -> flags.put("c", true));
 
         String[] args0 = { "-b", "aaa", "-c", "bbb" };
         var unregistered = parser.process(args0);

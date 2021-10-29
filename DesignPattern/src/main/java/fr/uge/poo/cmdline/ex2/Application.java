@@ -38,9 +38,9 @@ public class Application {
 
         var cmdParser = new CmdLineParser();
         var settings = new PaintSettings();
-        cmdParser.registerOption("-legacy", () -> settings.setLegacy(true));
-        cmdParser.registerOption("-with-borders", () -> settings.setBordered(true));
-        cmdParser.registerOption("-no-borders", () -> settings.setBordered(false));
+        cmdParser.registerFlag("-legacy", () -> settings.setLegacy(true));
+        cmdParser.registerFlag("-with-borders", () -> settings.setBordered(true));
+        cmdParser.registerFlag("-no-borders", () -> settings.setBordered(false));
         var result = cmdParser.process(arguments);
         var files = result.stream().map(Path::of).toList();
 

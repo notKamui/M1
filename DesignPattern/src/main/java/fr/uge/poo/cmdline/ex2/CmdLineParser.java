@@ -19,7 +19,7 @@ public final class CmdLineParser {
      * @param option the name of the option
      * @param process the runnable process linked to the option
      */
-    public void registerOption(String option, Runnable process) {
+    public void registerFlag(String option, Runnable process) {
         requireNonNull(option);
         requireNonNull(process);
         optionToProcess.put(option, process);
