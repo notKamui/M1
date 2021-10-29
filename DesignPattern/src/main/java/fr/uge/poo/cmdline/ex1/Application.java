@@ -5,13 +5,8 @@ import java.nio.file.Path;
 public class Application {
 
     private static class PaintSettings {
-        private boolean isLegacy;
-        private boolean isBordered;
-
-        PaintSettings(boolean isLegacy, boolean isBordered) {
-            this.isLegacy = isLegacy;
-            this.isBordered = isBordered;
-        }
+        private boolean isLegacy = false;
+        private boolean isBordered = false;
 
         public boolean isLegacy() {
             return isLegacy;
@@ -42,7 +37,7 @@ public class Application {
         String[] arguments = { "-legacy", "-no-borders", "filename1", "filename2" };
 
         var cmdParser = new CmdLineParser();
-        var settings = new PaintSettings(false, false);
+        var settings = new PaintSettings();
         cmdParser.registerOption("-legacy", () -> settings.setLegacy(true));
         cmdParser.registerOption("-with-borders", () -> settings.setBordered(true));
         cmdParser.registerOption("-no-borders", () -> settings.setBordered(false));
