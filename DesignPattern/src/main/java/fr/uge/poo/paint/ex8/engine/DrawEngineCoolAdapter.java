@@ -1,11 +1,10 @@
 // IN JAR plugins/paint/DrawEngineCoolAdapterFactory
 
-/*package fr.uge.poo.paint.ex8.engine;
+package fr.uge.poo.paint.ex8.engine;
 
 import com.evilcorp.coolgraphics.CoolGraphics;
 import fr.uge.poo.paint.ex8.Pair;
 import fr.uge.poo.paint.ex8.ShapeManager;
-
 import java.util.Objects;
 
 public final class DrawEngineCoolAdapter implements DrawEngine {
@@ -48,4 +47,3 @@ public final class DrawEngineCoolAdapter implements DrawEngine {
         });
     }
 }
-*/
