@@ -18,10 +18,12 @@ public final class CmdLineParser {
      *
      * @param option the name of the option
      * @param process the runnable process linked to the option
+     * @throws IllegalStateException if the option is already registered
      */
-    public void registerFlag(String option, Runnable process) {
+    public void registerFlag(String option, Runnable process) throws IllegalStateException {
         requireNonNull(option);
         requireNonNull(process);
+        if (optionToProcess.containsKey(option)) throw new IllegalStateException("Option " + option + " is already defined");
         optionToProcess.put(option, process);
     }
 

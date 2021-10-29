@@ -25,6 +25,13 @@ class CmdLineParserTest {
     }
 
     @Test
+    public void shouldFailOnAddingTheSameOptionTwice() {
+        var parser = new CmdLineParser();
+        parser.registerFlag("-a", () -> {});
+        assertThrows(IllegalStateException.class, () -> parser.registerFlag("-a", () -> {}));
+    }
+
+    @Test
     public void processOnlyUnregistered() {
         var parser = new fr.uge.poo.cmdline.ex1.CmdLineParser();
         String[] args = { "aaa", "bbb", "ccc" };
