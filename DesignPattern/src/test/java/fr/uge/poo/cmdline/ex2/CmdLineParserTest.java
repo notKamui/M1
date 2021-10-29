@@ -1,6 +1,5 @@
 package fr.uge.poo.cmdline.ex2;
 
-import fr.uge.poo.cmdline.ex1.CmdLineParser;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
