@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="529c73ec-4672-450c-a2ee-a30a5e377fdd" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../TD1/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/.idea/codeStyles/Project.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/.idea/runConfigurations.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/TD1.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/makeSPIJar.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/plugins/ducks/RegularDuck.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/plugins/ducks/RegularDuckFactory.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/plugins/ducks/RubberDuck.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/plugins/ducks/RubberDuckFactory.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/plugins/ducks/Surprise.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/plugins/paint/DrawEngineCoolAdapterFactory.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/resources/config.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/resources/draw-big.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/resources/draw-small.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/resources/draw2.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/com/evilcorp/coolgraphics/CoolGraphics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/com/evilcorp/coolgraphics/CoolGraphicsExample.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/ducks/Duck.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/ducks/DuckFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/ducks/DuckFarm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/ducks/DuckFarmBetter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex2/Config.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex2/Paint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex2/Shape.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex3/Config.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex3/Paint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex3/ShapeRender.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex4/Paint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex4/Point.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex4/Shape.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex4/ShapeManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex5/Drawable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex5/Paint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex5/Point.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex5/Shape.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex5/ShapeManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex6/Canvas.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex6/Drawable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex6/Paint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex6/Pair.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex6/Shape.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex6/ShapeManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex7/Canvas.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex7/Drawable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex7/Paint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex7/Pair.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex7/Shape.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex7/ShapeManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex7/engine/DrawEngine.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex7/engine/DrawEngineCoolAdapter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex7/engine/DrawEngineSimpleAdapter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex8/Canvas.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex8/Drawable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex8/Paint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex8/Pair.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex8/Shape.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex8/ShapeManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex8/engine/DrawEngine.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex8/engine/DrawEngineCoolAdapter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex8/engine/DrawEngineCoolAdapterFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex8/engine/DrawEngineFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex8/engine/DrawEngineSimpleAdapter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex8/engine/DrawEngineSimpleAdapterFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex9/Canvas.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex9/Drawable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex9/Paint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex9/Pair.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex9/Shape.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex9/ShapeManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex9/engine/DrawEngine.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex9/engine/DrawEngineCoolAdapter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/paint/ex9/engine/DrawEngineSimpleAdapter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/simplegraphics/SimpleGraphics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TD1/src/fr/uge/poo/simplegraphics/SimpleGraphicsExample.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="2" />
+  </component>
+  <component name="ProjectId" id="20BCWkAe8IIl2mxvF4SSSBVbomU" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="529c73ec-4672-450c-a2ee-a30a5e377fdd" name="Changes" comment="" />
+      <created>1635508627575</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1635508627575</updated>
+    </task>
+    <servers />
+  </component>
+</project>
