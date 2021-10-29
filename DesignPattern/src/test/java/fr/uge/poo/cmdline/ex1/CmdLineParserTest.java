@@ -11,6 +11,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CmdLineParserTest {
 
     @Test
+    public void invalidOptionRegistration() {
+        var parser = new CmdLineParser();
+        assertThrows(NullPointerException.class, () -> parser.registerOption(null, () -> {}));
+        assertThrows(NullPointerException.class, () -> parser.registerOption("", null));
+    }
+
+    @Test
     public void processShouldFailFastOnNullArgument(){
         var parser = new CmdLineParser();
         assertThrows(NullPointerException.class, () -> parser.process(null));
