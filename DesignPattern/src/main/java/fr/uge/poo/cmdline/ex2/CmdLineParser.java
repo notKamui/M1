@@ -5,28 +5,46 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
 import static java.util.Objects.requireNonNull;
 
 /**
  * A simple command line parser/processor.
  */
 public final class CmdLineParser {
-    private static record Process(int arity, Consumer<List<String>> it) {}
+    private void checkOption(String option) throws IllegalStateException {
+        if (optionToProcess.containsKey(option))
+            throw new IllegalStateException("Option " + option + " is already defined");
+    }
 
     private final Map<String, Process> optionToProcess = new HashMap<>();
 
     /**
      * Registers an option along with its linked process.
      *
-     * @param option the name of the option
+     * @param option  the name of the option
      * @param process the runnable process linked to the option
      * @throws IllegalStateException if the option is already registered
      */
     public void registerFlag(String option, Runnable process) throws IllegalStateException {
         requireNonNull(option);
         requireNonNull(process);
-        if (optionToProcess.containsKey(option)) throw new IllegalStateException("Option " + option + " is already defined");
+        checkOption(option);
         optionToProcess.put(option, new Process(0, (ignored) -> process.run()));
+    }
+
+    /**
+     * Registers an option with its linked process that receives a single argument.
+     *
+     * @param option  the name of the option
+     * @param process the consumer process linked to the option
+     * @throws java.lang.IllegalStateException if the option is already registered
+     */
+    public void registerWithParameter(String option, Consumer<String> process) throws IllegalStateException {
+        requireNonNull(option);
+        requireNonNull(process);
+        checkOption(option);
+        optionToProcess.put(option, new Process(1, (args) -> process.accept(args.get(0))));
     }
 
     /**
@@ -44,6 +62,7 @@ public final class CmdLineParser {
                 if (process.arity() > 0) {
                     var subArgs = List.of(arguments).subList(i + 1, i + 1 + process.arity());
                     process.it().accept(subArgs);
+                    i += subArgs.size();
                 } else {
                     process.it().accept(null);
                 }
@@ -52,5 +71,8 @@ public final class CmdLineParser {
             }
         }
         return unregistered;
+    }
+
+    private static record Process(int arity, Consumer<List<String>> it) {
     }
 }
