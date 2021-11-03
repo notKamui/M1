@@ -45,3 +45,15 @@ We call this kind of implementation "lock free".
 "Reentrant" means that a thread can claim a lock several times.
 
 ### Q2
+
+We expect the program to output 2,000,000 ; although, it is not thread safe
+because several read/write access can occur at the same time on the counter.
+`volatile` only guarantees how the memory is accessed, not the fact that 
+several operations are synchronized atomically.
+
+### Q3
+
+If a thread cannot acquire a lock, it just has to wait and retry later. However,
+waiting with `wait` will block the allocated CPU, while `onSpinWait` doesn't :
+it will allow us to wait for the lock to become available while doing other
+things in the background.
