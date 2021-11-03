@@ -11,7 +11,7 @@ public class SpinLock {
         try {
             HANDLE = MethodHandles.lookup().findVarHandle(SpinLock.class, "token", boolean.class);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new AssertionError();
+            throw new AssertionError(e);
         }
     }
 
