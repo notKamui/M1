@@ -1,8 +1,7 @@
 package fr.umlv.conc;
 
-public class Bogus {
-    private final Object lock = new Object();
-    private boolean stop;
+public class BogusVolatile {
+    private volatile boolean stop;
 
     public static void main(String[] args) throws InterruptedException {
         var bogus = new Bogus();
@@ -15,12 +14,7 @@ public class Bogus {
 
     public void runCounter() {
         var localCounter = 0;
-        for (; ; ) {
-            synchronized (lock) {
-                if (stop) {
-                    break;
-                }
-            }
+        while (!stop) {
             localCounter++;
         }
         System.out.println(localCounter);
