@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -104,8 +105,10 @@ public final class CmdLineParser {
      *
      * @param arguments an array of arguments to process
      * @return the list of arguments that are not registered options
+     * @throws IllegalArgumentException if the list of arguments either contain an unregistered option or one option is missing a parameter
+     * @throws IllegalStateException    if one required option has not been set
      */
-    public List<String> process(String[] arguments) {
+    public List<String> process(String[] arguments) throws IllegalArgumentException, IllegalStateException {
         var unregistered = new ArrayList<String>();
         var args = List.of(arguments).iterator();
         var seen = new ArrayList<String>();

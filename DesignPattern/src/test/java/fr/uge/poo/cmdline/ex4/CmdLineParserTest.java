@@ -1,9 +1,11 @@
 package fr.uge.poo.cmdline.ex4;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -114,24 +116,33 @@ class CmdLineParserTest {
         var configBuilder = new PaintSettings.Builder();
 
         parser.registerWithParameter(
-                "-border-width",
-                (arg) -> configBuilder.withBorders(Integer.parseInt(arg))
+            "-border-width",
+            (arg) -> configBuilder.withBorders(Integer.parseInt(arg))
         );
         parser.registerWithParameter(
-                "-window-name",
-                configBuilder::withName
+            "-window-name",
+            true,
+            configBuilder::withName
         );
-        parser.registerFlag("-a", () -> flags.put("a", true));
-        parser.registerFlag("-b", () -> flags.put("b", true));
-        parser.registerFlag("-c", () -> flags.put("c", true));
+        parser.registerWithParameters(
+            "-min-size",
+            2,
+            (args) -> configBuilder.withSize(Integer.parseInt(args.get(0)), Integer.parseInt(args.get(1)))
+        );
+        parser.registerWithParameters(
+            "-remote-server",
+            2,
+            (args) -> configBuilder.withRemoteServer(args.get(0), Integer.parseInt(args.get(1)))
+        );
+        parser.registerFlag("-legacy", configBuilder::legacy);
+        parser.registerFlag("-no-borders", configBuilder::withoutBorders);
 
-        String[] args = {"-b", "aaa", "-c", "-border-width", "10", "-window-name", "test", "bbb"};
+        String[] args = {"-legacy", "aaa", "-border-width", "10", "-window-name", "test", "bbb"};
         var unregistered = parser.process(args);
         parser.process(args);
         var config = configBuilder.build();
-        assertFalse(flags.get("a"));
-        assertTrue(flags.get("b"));
-        assertTrue(flags.get("c"));
+        assertTrue(config.isLegacy());
+        assertTrue(config.hasBorders());
         assertTrue(unregistered.containsAll(List.of("aaa", "bbb")));
         assertEquals(10, config.getBorderWidth());
         assertEquals("test", config.getName());
@@ -148,12 +159,23 @@ class CmdLineParserTest {
     public void missingParameter() {
         var parser = new CmdLineParser();
         parser.registerWithParameter(
-                "-a",
-                (ignored) -> {}
+            "-a",
+            (ignored) -> {
+            }
         );
-        parser.registerFlag("-b", () -> {});
+        parser.registerFlag("-b", () -> {
+        });
 
-        String[] args = { "-a", "-b" };
+        String[] args = {"-a", "-b"};
         assertThrows(IllegalArgumentException.class, () -> parser.process(args));
+    }
+
+    @Test
+    public void missingRequiredParameter() {
+        var parser = new CmdLineParser();
+        parser.registerFlag("-a", true, () -> {
+        });
+        String[] args = {"aaa"};
+        assertThrows(IllegalStateException.class, () -> parser.process(args));
     }
 }

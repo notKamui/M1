@@ -2,6 +2,7 @@ package fr.uge.poo.cmdline.ex4;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
+
 import static java.util.Objects.requireNonNull;
 
 public class PaintSettings {
@@ -101,7 +102,7 @@ public class PaintSettings {
         return height;
     }
 
-    public boolean isHasBorders() {
+    public boolean hasBorders() {
         return hasBorders;
     }
 
