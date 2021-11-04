@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -38,7 +37,7 @@ public final class CmdLineParser {
      *
      * @param option  the name of the option
      * @param process the consumer process linked to the option
-     * @throws java.lang.IllegalStateException if the option is already registered
+     * @throws IllegalStateException if the option is already registered
      */
     public void registerWithParameter(String option, Consumer<String> process) throws IllegalStateException {
         requireNonNull(option);
