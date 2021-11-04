@@ -108,11 +108,6 @@ class CmdLineParserTest {
     @Test
     public void processAllOptions() {
         var parser = new CmdLineParser();
-        var flags = new HashMap<>(Map.of(
-            "a", false,
-            "b", false,
-            "c", false
-        ));
         var configBuilder = new PaintSettings.Builder();
 
         parser.registerWithParameter(
@@ -160,11 +155,9 @@ class CmdLineParserTest {
         var parser = new CmdLineParser();
         parser.registerWithParameter(
             "-a",
-            (ignored) -> {
-            }
+            (ignored) -> {}
         );
-        parser.registerFlag("-b", () -> {
-        });
+        parser.registerFlag("-b", () -> {});
 
         String[] args = {"-a", "-b"};
         assertThrows(IllegalArgumentException.class, () -> parser.process(args));
@@ -173,8 +166,7 @@ class CmdLineParserTest {
     @Test
     public void missingRequiredParameter() {
         var parser = new CmdLineParser();
-        parser.registerFlag("-a", true, () -> {
-        });
+        parser.registerFlag("-a", true, () -> {});
         String[] args = {"aaa"};
         assertThrows(IllegalStateException.class, () -> parser.process(args));
     }
