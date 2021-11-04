@@ -26,10 +26,22 @@ public final class CmdLineParser {
      * @throws IllegalStateException if the option is already registered
      */
     public void registerFlag(String option, Runnable process) throws IllegalStateException {
+        registerFlag(option, false, process);
+    }
+
+    /**
+     * Registers an option along with its linked process.
+     *
+     * @param option  the name of the option
+     * @param required true if the option should be required
+     * @param process the runnable process linked to the option
+     * @throws IllegalStateException if the option is already registered
+     */
+    public void registerFlag(String option, boolean required, Runnable process) throws IllegalStateException {
         requireNonNull(option);
         requireNonNull(process);
         checkOption(option);
-        optionToProcess.put(option, new Process(0, (ignored) -> process.run()));
+        optionToProcess.put(option, new Process(0, required, (ignored) -> process.run()));
     }
 
     /**
@@ -40,18 +52,51 @@ public final class CmdLineParser {
      * @throws IllegalStateException if the option is already registered
      */
     public void registerWithParameter(String option, Consumer<String> process) throws IllegalStateException {
+        registerWithParameter(option, false, process);
+    }
+
+    /**
+     * Registers an option with its linked process that receives a single argument.
+     *
+     * @param option  the name of the option
+     * @param required true if the option should be required
+     * @param process the consumer process linked to the option
+     * @throws IllegalStateException if the option is already registered
+     */
+    public void registerWithParameter(String option, boolean required, Consumer<String> process) throws IllegalStateException {
         requireNonNull(option);
         requireNonNull(process);
         checkOption(option);
-        optionToProcess.put(option, new Process(1, (args) -> process.accept(args.get(0))));
+        optionToProcess.put(option, new Process(1, required, (args) -> process.accept(args.get(0))));
     }
 
+    /**
+     * Registers an option with its linked process that receives a fixed amount of arguments.
+     *
+     * @param option the name of the option
+     * @param arity the arity of the option
+     * @param process the consumer process linked to the option
+     * @throws IllegalArgumentException if the option is already registered
+     */
     public void registerWithParameters(String option, int arity, Consumer<List<String>> process) throws IllegalArgumentException {
+        registerWithParameters(option, arity, false, process);
+    }
+
+    /**
+     * Registers an option with its linked process that receives a fixed amount of arguments.
+     *
+     * @param option the name of the option
+     * @param arity the arity of the option
+     * @param required true if the option should be required
+     * @param process the consumer process linked to the option
+     * @throws IllegalArgumentException if the option is already registered
+     */
+    public void registerWithParameters(String option, int arity, boolean required, Consumer<List<String>> process) throws IllegalArgumentException {
         requireNonNull(option);
         if (arity < 0) throw new IllegalArgumentException("Arity cannot be negative");
         requireNonNull(process);
         checkOption(option);
-        optionToProcess.put(option, new Process(arity, process));
+        optionToProcess.put(option, new Process(arity, required, process));
     }
 
     /**
@@ -63,6 +108,7 @@ public final class CmdLineParser {
     public List<String> process(String[] arguments) {
         var unregistered = new ArrayList<String>();
         var args = List.of(arguments).iterator();
+        var seen = new ArrayList<String>();
 
         while (args.hasNext()) {
             var option = args.next();
@@ -70,6 +116,7 @@ public final class CmdLineParser {
                 if (startsWithDash(option)) throw new IllegalArgumentException("Unregistered option " + option);
                 unregistered.add(option);
             } else {
+                seen.add(option);
                 var process = optionToProcess.get(option);
                 var params = new ArrayList<String>();
                 for (var i = 0; i < process.arity; i++) {
@@ -81,6 +128,14 @@ public final class CmdLineParser {
                 process.it().accept(params);
             }
         }
+
+        var requiredAreAllSeen = optionToProcess
+                .entrySet()
+                .stream()
+                .filter(it -> it.getValue().required())
+                .map(Map.Entry::getKey)
+                .allMatch(seen::contains);
+        if (!requiredAreAllSeen) throw new IllegalStateException("Some options have not been set");
         return unregistered;
     }
 
@@ -92,6 +147,6 @@ public final class CmdLineParser {
         return s.charAt(0) == '-';
     }
 
-    private static record Process(int arity, Consumer<List<String>> it) {
+    private static record Process(int arity, boolean required, Consumer<List<String>> it) {
     }
 }
