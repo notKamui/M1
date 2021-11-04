@@ -1,5 +1,6 @@
 package fr.uge.poo.cmdline.ex3;
 
+import java.net.InetSocketAddress;
 import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 
@@ -11,7 +12,7 @@ public class PaintSettings {
         private int height = 500;
         private boolean hasBorders = false;
         private int borderWidth = 10;
-        private String remoteServer;
+        private InetSocketAddress remoteServer;
 
         public Builder withName(String name) {
             this.name = requireNonNull(name);
@@ -51,8 +52,9 @@ public class PaintSettings {
             return this;
         }
 
-        private Builder withRemoteServer(String remote) {
-            this.remoteServer = requireNonNull(remote);
+        public Builder withRemoteServer(String address, int port) {
+            requireNonNull(address);
+            this.remoteServer = new InetSocketAddress(address, port);
             return this;
         }
 
@@ -70,7 +72,7 @@ public class PaintSettings {
     private final int height;
     private final boolean hasBorders;
     private final int borderWidth;
-    private final String remoteServer;
+    private final InetSocketAddress remoteServer;
 
     private PaintSettings(Builder builder) {
         requireNonNull(builder);
@@ -108,7 +110,7 @@ public class PaintSettings {
         return borderWidth;
     }
 
-    public Optional<String> getRemoteServer() {
+    public Optional<InetSocketAddress> getRemoteServer() {
         return Optional.ofNullable(remoteServer);
     }
 

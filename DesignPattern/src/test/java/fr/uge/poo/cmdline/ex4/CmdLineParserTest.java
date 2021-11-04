@@ -79,6 +79,31 @@ class CmdLineParserTest {
     }
 
     @Test
+    public void processOnlyOptionsWithSeveralParameters() {
+        var parser = new CmdLineParser();
+        var configBuilder = new PaintSettings.Builder();
+        configBuilder.withName("test");
+
+        parser.registerWithParameters(
+                "-min-size",
+                2,
+                (args) -> configBuilder.withSize(Integer.parseInt(args.get(0)), Integer.parseInt(args.get(1)))
+        );
+        parser.registerWithParameters(
+                "-remote-server",
+                2,
+                (args) -> configBuilder.withRemoteServer(args.get(0), Integer.parseInt(args.get(1)))
+        );
+
+        String[] args = {"-min-size", "10", "20", "-remote-server", "localhost", "8080"};
+        parser.process(args);
+        var config = configBuilder.build();
+        assertEquals(10, config.getWidth());
+        assertEquals(20, config.getHeight());
+        assertTrue(config.getRemoteServer().isPresent());
+    }
+
+    @Test
     public void processAllOptions() {
         var parser = new CmdLineParser();
         var flags = new HashMap<>(Map.of(
