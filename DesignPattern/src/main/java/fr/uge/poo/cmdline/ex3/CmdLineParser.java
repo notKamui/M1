@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -43,7 +44,7 @@ public final class CmdLineParser {
         requireNonNull(option);
         requireNonNull(process);
         checkOption(option);
-        optionToProcess.put(option, new Process(1, (args) -> process.accept(args.get(0))));
+        optionToProcess.put(option, new Process(1, process));
     }
 
     /**
@@ -59,11 +60,10 @@ public final class CmdLineParser {
             if (optionToProcess.containsKey(argument)) {
                 var process = optionToProcess.get(argument);
                 if (process.arity() > 0) {
-                    var subArgs = List.of(arguments).subList(i + 1, i + 1 + process.arity());
-                    process.it().accept(subArgs);
-                    i += subArgs.size();
+                    process.process().accept(arguments[i+1]);
+                    i++;
                 } else {
-                    process.it().accept(null);
+                    process.process().accept(null);
                 }
             } else {
                 unregistered.add(argument);
@@ -72,6 +72,6 @@ public final class CmdLineParser {
         return unregistered;
     }
 
-    private static record Process(int arity, Consumer<List<String>> it) {
+    private static record Process(int arity, Consumer<String> process) {
     }
 }

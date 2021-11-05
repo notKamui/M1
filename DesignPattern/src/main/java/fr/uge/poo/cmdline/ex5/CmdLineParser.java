@@ -1,4 +1,4 @@
-package fr.uge.poo.cmdline.ex4;
+package fr.uge.poo.cmdline.ex5;
 
 import java.util.ArrayList;
 import java.util.HashMap;
