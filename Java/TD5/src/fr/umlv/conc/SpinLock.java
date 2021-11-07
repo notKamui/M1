@@ -4,7 +4,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 public class SpinLock {
-    private boolean token = false;
+    private volatile boolean token = false;
     private static final VarHandle HANDLE;
 
     static {

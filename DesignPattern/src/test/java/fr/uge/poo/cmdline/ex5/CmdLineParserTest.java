@@ -1,5 +1,6 @@
 package fr.uge.poo.cmdline.ex5;
 
+import fr.uge.poo.cmdline.ex5.parser.CmdLineParser;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

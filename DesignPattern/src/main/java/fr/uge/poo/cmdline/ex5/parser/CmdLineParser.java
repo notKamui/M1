@@ -1,4 +1,4 @@
-package fr.uge.poo.cmdline.ex5;
+package fr.uge.poo.cmdline.ex5.parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ public final class CmdLineParser {
      * @param process the consumer process linked to the option
      * @throws IllegalStateException if the option is already registered
      */
-    public void registerWithParameter(String option, Consumer<String> process) throws IllegalStateException {
+    public void registerWithParameter(String option, Consumer<Arg> process) throws IllegalStateException {
         registerWithParameter(option, false, process);
     }
 
@@ -64,7 +64,7 @@ public final class CmdLineParser {
      * @param process the consumer process linked to the option
      * @throws IllegalStateException if the option is already registered
      */
-    public void registerWithParameter(String option, boolean required, Consumer<String> process) throws IllegalStateException {
+    public void registerWithParameter(String option, boolean required, Consumer<Arg> process) throws IllegalStateException {
         requireNonNull(option);
         requireNonNull(process);
         checkOption(option);
@@ -79,7 +79,7 @@ public final class CmdLineParser {
      * @param process the consumer process linked to the option
      * @throws IllegalArgumentException if the option is already registered
      */
-    public void registerWithParameters(String option, int arity, Consumer<List<String>> process) throws IllegalArgumentException {
+    public void registerWithParameters(String option, int arity, Consumer<List<Arg>> process) throws IllegalArgumentException {
         registerWithParameters(option, arity, false, process);
     }
 
@@ -92,7 +92,7 @@ public final class CmdLineParser {
      * @param process the consumer process linked to the option
      * @throws IllegalArgumentException if the option is already registered
      */
-    public void registerWithParameters(String option, int arity, boolean required, Consumer<List<String>> process) throws IllegalArgumentException {
+    public void registerWithParameters(String option, int arity, boolean required, Consumer<List<Arg>> process) throws IllegalArgumentException {
         requireNonNull(option);
         if (arity < 0) throw new IllegalArgumentException("Arity cannot be negative");
         requireNonNull(process);
@@ -121,7 +121,7 @@ public final class CmdLineParser {
             } else {
                 seen.add(option);
                 var process = optionToProcess.get(option);
-                var params = new ArrayList<String>();
+                var params = new ArrayList<Arg>();
                 for (var i = 0; i < process.arity; i++) {
                     if (!args.hasNext()) throw missingParameter(option);
                     var param = args.next();
@@ -150,6 +150,6 @@ public final class CmdLineParser {
         return s.charAt(0) == '-';
     }
 
-    private static record Process(int arity, boolean required, Consumer<List<String>> it) {
+    private static record Process(int arity, boolean required, Consumer<List<Arg>> it) {
     }
 }

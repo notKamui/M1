@@ -1,15 +1,16 @@
 package fr.umlv.conc;
 
 import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class RandomNumberGeneratorAtomicLong {
-    private long x;
+    private final AtomicLong x;
 
     public RandomNumberGeneratorAtomicLong(long seed) {
         if (seed == 0) {
             throw new IllegalArgumentException("seed == 0");
         }
-        x = seed;
+        x = new AtomicLong(seed);
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -46,9 +47,21 @@ public class RandomNumberGeneratorAtomicLong {
     }
 
     public long next() {  // Marsaglia's XorShift
-        x ^= x >>> 12;
-        x ^= x << 25;
-        x ^= x >>> 27;
-        return x * 2685821657736338717L;
+        /*while (true) {
+            var now = x.get();
+            var next = now;
+            next ^= next >>> 12;
+            next ^= next << 25;
+            next ^= next >>> 27;
+            if (x.compareAndSet(now, next)) {
+                return next * 2685821657736338717L;
+            }
+        }*/
+        return x.updateAndGet(n -> {
+            n ^= n >>> 12;
+            n ^= n << 25;
+            n ^= n >>> 27;
+            return n;
+        }) * 2685821657736338717L;
     }
 }
