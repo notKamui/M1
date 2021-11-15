@@ -47,3 +47,26 @@ It is not possible to initialize a generically typed array ; thus, our internal
 array must be initialized with a raw type before being cast, which leads
 to a warning (since the cast is unchecked). We can suppress it with
 `@SuppressWarning(unchecked)` since we're a 100% sure it is correct.
+
+### Q2
+
+Because `contains` is supposed to depend on the method
+`equals`, it makes sense, semantically, to also accept
+an `Object` as an argument. Indeed, if we have
+a bucket of apples only, while the answer is obvious,
+it is not incorrect to ask if it contains a banana.
+
+### Exercise 3
+
+### Q2
+
+`?` is the wildcard symbol ; it is (often) to be
+used along another type to signify either covariance
+or contravariance to restrict what types it can be
+(so by default, it's equivalent to `Object`).
+
+### Q3
+
+`forEach` should also receive a wildcard consumer
+since we want to be able to consume any object
+that is derived from the type of the contents of the set.

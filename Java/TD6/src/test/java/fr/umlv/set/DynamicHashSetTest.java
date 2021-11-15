@@ -1,11 +1,13 @@
 package fr.umlv.set;
 
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.stream.IntStream;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -143,21 +145,20 @@ public class DynamicHashSetTest {
     var set = new DynamicHashSet<>();
     assertThrows(NullPointerException.class, () -> set.contains(null));
   }
-  @Test @Tag("Q1")
+
+  @Test @Tag("Q2")
+  public void shouldNotFindAnythingIfItsTheWrongType() {
+    var set = new DynamicHashSet<String>();
+    assertFalse(set.contains(15));
+  }
+
+  @Test @Tag("Q3")
   public void shouldNotTakeTooLongToAskContains() {
-  var set = new DynamicHashSet<Integer>();
+    var set = new DynamicHashSet<Integer>();
     IntStream.range(0, 100_000).forEach(set::add);
     assertTimeoutPreemptively(Duration.ofMillis(5_000), () -> IntStream.range(0, 100_000).forEach(set::contains));
   }
 
-
-//  @Test @Tag("Q2")
-//  public void shouldNotFindAnythingIfItsTheWrongType() {
-//    var set = new DynamicHashSet<String>();
-//    assertFalse(set.contains(15));
-//  }
-//
-//
 //  // --- exercice 3 ---
 //
 //  @Test @Tag("Q1")

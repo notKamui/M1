@@ -1,5 +1,6 @@
 package fr.umlv.set;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public final class IntHashSet {
@@ -22,6 +23,7 @@ public final class IntHashSet {
     }
 
     public void forEach(Consumer<Integer> action) {
+        Objects.requireNonNull(action);
         for (var head : internal) {
             for (var entry = head; entry != null; entry = entry.next) {
                 action.accept(entry.value);
