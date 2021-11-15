@@ -38,3 +38,12 @@ private int hash(int value) {
 
 `forEach` should receive a function of type `(int) -> void` ; this is
 a `Consumer<Integer>`.
+
+## Exercise 2
+
+### Q1
+
+It is not possible to initialize a generically typed array ; thus, our internal
+array must be initialized with a raw type before being cast, which leads
+to a warning (since the cast is unchecked). We can suppress it with
+`@SuppressWarning(unchecked)` since we're a 100% sure it is correct.
