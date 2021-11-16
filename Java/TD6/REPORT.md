@@ -1,5 +1,13 @@
 # TD6 - Java - Jimmy Teillard
 
+**_IMPORTANT_**
+
+To launch the test suite, you need to run the following command at the root of the project :
+
+```sh
+./gradlew test
+```
+
 ## Exercise 1
 
 ### Q1
@@ -13,7 +21,7 @@ be a record, since it only contains read-only data with getters.
 ### Q3
 
 The modulo/remainder (%) is a very slow operation compared to bitwise comparisons,
-so we should avoid it ; we're able to do so by doing bit-masking depending on 
+so we should avoid it ; we're able to do so by doing bit-masking depending on
 the current size of the set.
 
 If the size of the set is 2, the hash function may only need to check the
