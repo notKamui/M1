@@ -1,7 +1,5 @@
 package fr.uge.poo.cmdline.ex5;
 
-import fr.uge.poo.cmdline.ex5.parser.CmdLineParser;
-
 import java.nio.file.Path;
 
 public class Application {
