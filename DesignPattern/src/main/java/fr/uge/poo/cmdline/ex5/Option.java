@@ -5,13 +5,14 @@ import java.util.function.Consumer;
 
 public interface Option {
     List<String> names();
+    String doc();
     int arity();
     boolean required();
     Consumer<List<String>> process();
 
-    record Flag(List<String> names, boolean required, Runnable run) implements Option {
-        public Flag(String name, boolean required, Runnable run) {
-            this(List.of(name), required, run);
+    record Flag(List<String> names, String doc, boolean required, Runnable run) implements Option {
+        public Flag(String name, String doc, boolean required, Runnable run) {
+            this(List.of(name), doc, required, run);
         }
 
         @Override
@@ -25,9 +26,9 @@ public interface Option {
         }
     }
 
-    record SimpleOption(List<String> names, boolean required, Consumer<String> consumer) implements Option {
-        public SimpleOption(String name, boolean required, Consumer<String> consumer) {
-            this(List.of(name), required, consumer);
+    record SimpleOption(List<String> names, String doc, boolean required, Consumer<String> consumer) implements Option {
+        public SimpleOption(String name, String doc, boolean required, Consumer<String> consumer) {
+            this(List.of(name), doc, required, consumer);
         }
 
         @Override
@@ -41,9 +42,9 @@ public interface Option {
         }
     }
 
-    record ComplexOption(List<String> names, int arity, boolean required, Consumer<List<String>> consumer) implements Option {
-        public ComplexOption(String name, int arity, boolean required, Consumer<List<String>> consumer) {
-            this(List.of(name), arity, required, consumer);
+    record ComplexOption(List<String> names, String doc, int arity, boolean required, Consumer<List<String>> consumer) implements Option {
+        public ComplexOption(String name, String doc, int arity, boolean required, Consumer<List<String>> consumer) {
+            this(List.of(name), doc, arity, required, consumer);
         }
 
         @Override

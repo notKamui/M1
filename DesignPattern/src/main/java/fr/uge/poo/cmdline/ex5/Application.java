@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Application {
     public static void main(String[] args) {
-        String[] arguments = { "-name", "test", "-legacy", "-no-borders", "filename1", "filename2" };
+        String[] arguments = { "-name", "test", "-legacy", "-nb", "-aa", "filename1", "filename2" };
 
         var cmdParser = new CmdLineParser();
         var settingsBuilder = new PaintSettings.Builder();
@@ -21,31 +21,31 @@ public class Application {
 //        cmdParser.registerFlag("-no-borders", settingsBuilder::withoutBorders);
 
         cmdParser.registerOption(new Option.SimpleOption(
-                "-name",
+                "-name", "set the name",
                 false,
                 settingsBuilder::withName
         ));
 
         cmdParser.registerOption(new Option.Flag(
-                "-legacy",
+                "-legacy", "set the legacy flag on",
                 false,
                 settingsBuilder::legacy
         ));
 
         cmdParser.registerOption(new Option.SimpleOption(
-                "-with-borders",
+                "-with-borders", "set the border flag on and sets the width",
                 false,
                 width -> settingsBuilder.withBorders(Integer.parseInt(width))
         ));
 
         cmdParser.registerOption(new Option.Flag(
-                List.of("-no-borders", "-nb"),
+                List.of("-no-borders", "-nb"), "set the border flag off",
                 false,
                 settingsBuilder::withoutBorders
         ));
 
         cmdParser.registerOption(new Option.ComplexOption(
-                "-aa",
+                "-aa", "",
                 2,
                 false,
                 argv -> System.out.println(argv.get(0) + argv.get(1))
@@ -57,5 +57,6 @@ public class Application {
 
         files.forEach(System.out::println);
         System.out.println(settings);
+        cmdParser.usage();
     }
 }

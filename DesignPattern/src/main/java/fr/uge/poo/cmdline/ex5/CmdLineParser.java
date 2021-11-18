@@ -2,9 +2,11 @@ package fr.uge.poo.cmdline.ex5;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -32,6 +34,29 @@ public final class CmdLineParser {
         }
     }
 
+    public void usage() {
+        var stringBuilder = new StringBuilder();
+        var options = new HashSet<>(nameToOption.values());
+        var mainNames = options
+                .stream()
+                .map(it -> it.names().get(0) + " arg".repeat(Math.max(0, it.arity())))
+                .toList();
+        stringBuilder
+                .append("Usage : command ")
+                .append(mainNames.stream().collect(Collectors.joining("] [", "[", "]")))
+                .append('\n');
+
+        for (var option : options) {
+            stringBuilder
+                    .append("\t")
+                    .append(String.join(", ", option.names()))
+                    .append(" : ")
+                    .append(option.doc())
+                    .append("\n");
+        }
+        System.out.println(stringBuilder);
+    }
+
     /**
      * Registers an option along with its linked process.
      *
@@ -55,7 +80,7 @@ public final class CmdLineParser {
         requireNonNull(option);
         requireNonNull(process);
         checkOption(option);
-        nameToOption.put(option, new Option.Flag(option, required, process));
+        nameToOption.put(option, new Option.Flag(option, "", required, process));
     }
 
     /**
@@ -81,7 +106,7 @@ public final class CmdLineParser {
         requireNonNull(option);
         requireNonNull(process);
         checkOption(option);
-        nameToOption.put(option, new Option.SimpleOption(option, required, process));
+        nameToOption.put(option, new Option.SimpleOption(option, "", required, process));
     }
 
     /**
@@ -110,7 +135,7 @@ public final class CmdLineParser {
         if (arity < 0) throw new IllegalArgumentException("Arity cannot be negative");
         requireNonNull(process);
         checkOption(option);
-        nameToOption.put(option, new Option.ComplexOption(option, arity, required, process));
+        nameToOption.put(option, new Option.ComplexOption(option, "", arity, required, process));
     }
 
     /**
