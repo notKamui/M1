@@ -10,9 +10,9 @@ public interface Option {
     boolean required();
     Consumer<List<String>> process();
 
-    record Flag(List<String> names, String doc, boolean required, Runnable run) implements Option {
-        public Flag(String name, String doc, boolean required, Runnable run) {
-            this(List.of(name), doc, required, run);
+    record Flag(List<String> names, String doc, boolean required, Runnable runnable) implements Option {
+        public Flag(String name, String doc, boolean required, Runnable runnable) {
+            this(List.of(name), doc, required, runnable);
         }
 
         @Override
@@ -22,7 +22,7 @@ public interface Option {
 
         @Override
         public Consumer<List<String>> process() {
-            return ignored -> run();
+            return ignored -> runnable.run();
         }
     }
 
