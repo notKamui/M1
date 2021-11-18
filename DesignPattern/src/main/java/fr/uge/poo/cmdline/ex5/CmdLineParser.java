@@ -12,11 +12,25 @@ import static java.util.Objects.requireNonNull;
  */
 public final class CmdLineParser {
     private void checkOption(String option) throws IllegalStateException {
-        if (optionToProcess.containsKey(option))
+        if (nameToOption.containsKey(option))
             throw new IllegalStateException("Option " + option + " is already defined");
     }
 
-    private final Map<String, Process> optionToProcess = new HashMap<>();
+    private final Map<String, Option> nameToOption = new HashMap<>();
+
+    /**
+     * Registers an option.
+     *
+     * @param option the option to be registered
+     * @throws IllegalStateException if the option is already registered
+     */
+    public void registerOption(Option option) throws IllegalStateException {
+        requireNonNull(option);
+        for (var name : option.names()) {
+            checkOption(name);
+            nameToOption.put(name, option);
+        }
+    }
 
     /**
      * Registers an option along with its linked process.
@@ -41,7 +55,7 @@ public final class CmdLineParser {
         requireNonNull(option);
         requireNonNull(process);
         checkOption(option);
-        optionToProcess.put(option, new Process(0, required, (ignored) -> process.run()));
+        nameToOption.put(option, new Option.Flag(option, required, process));
     }
 
     /**
@@ -67,7 +81,7 @@ public final class CmdLineParser {
         requireNonNull(option);
         requireNonNull(process);
         checkOption(option);
-        optionToProcess.put(option, new Process(1, required, (args) -> process.accept(args.get(0))));
+        nameToOption.put(option, new Option.SimpleOption(option, required, process));
     }
 
     /**
@@ -96,7 +110,7 @@ public final class CmdLineParser {
         if (arity < 0) throw new IllegalArgumentException("Arity cannot be negative");
         requireNonNull(process);
         checkOption(option);
-        optionToProcess.put(option, new Process(arity, required, process));
+        nameToOption.put(option, new Option.ComplexOption(option, arity, required, process));
     }
 
     /**
@@ -114,24 +128,24 @@ public final class CmdLineParser {
 
         while (args.hasNext()) {
             var option = args.next();
-            if (!optionToProcess.containsKey(option)) {
+            if (!nameToOption.containsKey(option)) {
                 if (startsWithDash(option)) throw new IllegalArgumentException("Unregistered option " + option);
                 unregistered.add(option);
             } else {
                 seen.add(option);
-                var process = optionToProcess.get(option);
+                var actualOption = nameToOption.get(option);
                 var params = new ArrayList<String>();
-                for (var i = 0; i < process.arity; i++) {
+                for (var i = 0; i < actualOption.arity(); i++) {
                     if (!args.hasNext()) throw missingParameter(option);
                     var param = args.next();
                     if (startsWithDash(param)) throw missingParameter(option);
                     params.add(param);
                 }
-                process.it().accept(params);
+                actualOption.process().accept(params);
             }
         }
 
-        var requiredAreAllSeen = optionToProcess
+        var requiredAreAllSeen = nameToOption
                 .entrySet()
                 .stream()
                 .filter(it -> it.getValue().required())
@@ -147,8 +161,5 @@ public final class CmdLineParser {
 
     private static boolean startsWithDash(String s) {
         return s.charAt(0) == '-';
-    }
-
-    private static record Process(int arity, boolean required, Consumer<List<String>> it) {
     }
 }
