@@ -52,6 +52,7 @@ public final class CmdLineParser {
                     .append(String.join(", ", option.names()))
                     .append(" : ")
                     .append(option.doc())
+                    .append(option.required() ? " (REQUIRED)" : "")
                     .append("\n");
         }
         System.out.println(stringBuilder);

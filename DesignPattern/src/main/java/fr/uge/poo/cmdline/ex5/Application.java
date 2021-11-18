@@ -45,9 +45,9 @@ public class Application {
         ));
 
         cmdParser.registerOption(new Option.ComplexOption(
-                "-aa", "",
+                "-aa", "yep",
                 2,
-                false,
+                true,
                 argv -> System.out.println(argv.get(0) + argv.get(1))
         ));
 
