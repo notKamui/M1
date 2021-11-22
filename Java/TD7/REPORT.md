@@ -38,3 +38,14 @@ and `next`. Our `iterator` should return an `Iterator<E>`.
 
 An `Iterable` is an object that has a method `iterator` and can be
 iterated over (with a foreach for example)
+
+## Exercise 2
+
+### Q2
+
+1. If `ResizeableFifo` implements `Queue` and extends `AbstractQueue`,
+   the only method left to override is `peek`, which returns the head
+   of the queue without removing it.
+2. `offer` should now return a boolean (true on success)
+3. We can remove `isEmpty` and `toString` since default implementations are already in
+   `AbstractCollection`, which `AbstractQueue` extends
