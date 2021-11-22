@@ -5,28 +5,24 @@ from typing import List
 @dataclass
 class Product:
     name: str
-    costs: List[float]
-    gain: float
+    costs: List[str]
+    gain: str
 
 @dataclass
 class Components:
-    m: int
-    n: int
-    limits: List[float]
+    m: str
+    n: str
+    limits: List[str]
     products: List[Product]
 
-def to_float_lst(lst: List[str]) -> List[float]:
-    return list(map(lambda l: float(l), lst))
-
-def get_m_n(content: List[str]) -> (int, int):
+def get_m_n(content: List[str]) -> (str, str):
     # getting m and n values and casting to int
     m, n, *_ = content[0].split()
-    return int(m), int(n)
+    return m, n
 
 def get_limits(content: List[str]) -> List[float]:
     # getting list of size m of the resource limits
-    limits = content[1].split()
-    return to_float_lst(limits)
+    return content[1].split()
 
 def get_products(content: List[str], amount: int) -> List[Product]:
     # reading n lines, starting at index 2, for each product
@@ -35,25 +31,62 @@ def get_products(content: List[str], amount: int) -> List[Product]:
         comps = content[i].split()
         name = comps[0]
         costs = comps[1:-1]
-        costs = to_float_lst(costs)
-        gain = float(comps[-1])
+        gain = comps[-1]
         products.append(Product(name, costs, gain))
     return products
 
 def get_components_from_file(fname: str) -> Components:
-    with open(fname) as f:
+    with open(fname, "r") as f:
         content = f.readlines()
 
         m, n = get_m_n(content)
         
         limits = get_limits(content)
-        if len(limits) != m:
+        if len(limits) != int(m):
             raise Exception("Invalid input: len(limits) != m")
 
-        products = get_products(content, n)
+        products = get_products(content, int(n))
 
         return Components(m, n, limits, products)
 
+def product_to_factor(product: Product) -> str:
+    return product.gain + product.name
 
-components = get_components_from_file(sys.argv[1])
-print(components)
+def lp_from_components(components: Components) -> str:
+    # building the objective function
+    objective = "max: "
+    objective += " + ".join(map(product_to_factor, components.products))
+    objective += ";\n"
+
+    # building each restriction
+    restrictions = []
+    m, n = int(components.m), int(components.n)
+    for i in range(m):
+        restriction = ""
+        for j in range(n):
+            p = components.products[j]
+            restriction += p.costs[i] + p.name
+            if j < n-1:
+                restriction += " + "
+        restriction += " <= " + components.limits[i] + ";"
+        restrictions.append(restriction)
+
+    return objective + '\n'.join(restrictions) + "\n"
+
+def write_to_file(content: str, fname: str):
+    with open(fname, "w") as f:
+        f.write(content)
+
+
+int_flag = False
+args = sys.argv[1:]
+if "-int" in args:
+    args.remove("-int")
+    int_flag = True
+components = get_components_from_file(args[0])
+lp = lp_from_components(components)
+print(int_flag)
+if int_flag:
+    print("AAA")
+    lp += "int " + ", ".join(map(lambda p: p.name, components.products)) + ";\n"
+write_to_file(lp, args[1])

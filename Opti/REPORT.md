@@ -53,6 +53,3 @@ Value of objective function: 6500
 Actual values of the variables:
 x                              10
 y                              25
-
-## Partie 2
-
