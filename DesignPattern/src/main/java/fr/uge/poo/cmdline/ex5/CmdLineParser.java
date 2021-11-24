@@ -35,26 +35,29 @@ public final class CmdLineParser {
         }
     }
 
+    /**
+     * Prints the usage of the registered options.
+     */
     public void usage() {
         var stringBuilder = new StringBuilder();
         var options = new HashSet<>(nameToOption.values());
         var mainNames = options
-                .stream()
-                .map(it -> it.names().get(0) + " arg".repeat(Math.max(0, it.arity())))
-                .toList();
+            .stream()
+            .map(it -> it.names().get(0) + " arg".repeat(Math.max(0, it.arity())))
+            .toList();
         stringBuilder
-                .append("Usage : command ")
-                .append(mainNames.stream().collect(Collectors.joining("] [", "[", "]")))
-                .append('\n');
+            .append("Usage : command ")
+            .append(mainNames.stream().collect(Collectors.joining("] [", "[", "]")))
+            .append('\n');
 
         for (var option : options) {
             stringBuilder
-                    .append("\t")
-                    .append(String.join(", ", option.names()))
-                    .append(" : ")
-                    .append(option.doc())
-                    .append(option.required() ? " (REQUIRED)" : "")
-                    .append("\n");
+                .append("\t")
+                .append(String.join(", ", option.names()))
+                .append(" : ")
+                .append(option.doc())
+                .append(option.required() ? " (REQUIRED)" : "")
+                .append("\n");
         }
         System.out.println(stringBuilder);
     }
