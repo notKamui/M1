@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -81,7 +82,12 @@ public final class CmdLineParser {
         requireNonNull(option);
         requireNonNull(process);
         checkOption(option);
-        nameToOption.put(option, new Option.Flag(option, "", required, process));
+        nameToOption.put(option, new Option.Builder()
+            .addName(option)
+            .withDoc("")
+            .isRequired(required)
+            .withFlag(process)
+            .build());
     }
 
     /**
@@ -107,7 +113,12 @@ public final class CmdLineParser {
         requireNonNull(option);
         requireNonNull(process);
         checkOption(option);
-        nameToOption.put(option, new Option.SimpleOption(option, "", required, process));
+        nameToOption.put(option, new Option.Builder()
+            .addName(option)
+            .withDoc("")
+            .isRequired(required)
+            .withStringProcess(process)
+            .build());
     }
 
     /**
@@ -136,7 +147,12 @@ public final class CmdLineParser {
         if (arity < 0) throw new IllegalArgumentException("Arity cannot be negative");
         requireNonNull(process);
         checkOption(option);
-        nameToOption.put(option, new Option.ComplexOption(option, "", arity, required, process));
+        nameToOption.put(option, new Option.Builder()
+            .addName(option)
+            .withDoc("")
+            .isRequired(required)
+            .withProcess(arity, process)
+            .build());
     }
 
     /**

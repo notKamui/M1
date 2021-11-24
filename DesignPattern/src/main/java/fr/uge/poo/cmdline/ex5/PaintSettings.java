@@ -2,10 +2,11 @@ package fr.uge.poo.cmdline.ex5;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
+
 import static java.util.Objects.requireNonNull;
 
 public class PaintSettings {
-    public static class Builder {
+    public static final class Builder {
         private String name;
         private boolean isLegacy = false;
         private int width = 500;
