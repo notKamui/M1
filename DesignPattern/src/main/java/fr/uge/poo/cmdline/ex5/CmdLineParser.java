@@ -69,6 +69,7 @@ public final class CmdLineParser {
      * @param process the runnable process linked to the option
      * @throws IllegalStateException if the option is already registered
      */
+    @Deprecated
     public void registerFlag(String option, Runnable process) throws IllegalStateException {
         registerFlag(option, false, process);
     }
@@ -81,6 +82,7 @@ public final class CmdLineParser {
      * @param process the runnable process linked to the option
      * @throws IllegalStateException if the option is already registered
      */
+    @Deprecated
     public void registerFlag(String option, boolean required, Runnable process) throws IllegalStateException {
         requireNonNull(option);
         requireNonNull(process);
@@ -100,6 +102,7 @@ public final class CmdLineParser {
      * @param process the consumer process linked to the option
      * @throws IllegalStateException if the option is already registered
      */
+    @Deprecated
     public void registerWithParameter(String option, Consumer<String> process) throws IllegalStateException {
         registerWithParameter(option, false, process);
     }
@@ -112,6 +115,7 @@ public final class CmdLineParser {
      * @param process the consumer process linked to the option
      * @throws IllegalStateException if the option is already registered
      */
+    @Deprecated
     public void registerWithParameter(String option, boolean required, Consumer<String> process) throws IllegalStateException {
         requireNonNull(option);
         requireNonNull(process);
@@ -132,6 +136,7 @@ public final class CmdLineParser {
      * @param process the consumer process linked to the option
      * @throws IllegalArgumentException if the option is already registered
      */
+    @Deprecated
     public void registerWithParameters(String option, int arity, Consumer<List<String>> process) throws IllegalArgumentException {
         registerWithParameters(option, arity, false, process);
     }
@@ -145,6 +150,7 @@ public final class CmdLineParser {
      * @param process the consumer process linked to the option
      * @throws IllegalArgumentException if the option is already registered
      */
+    @Deprecated
     public void registerWithParameters(String option, int arity, boolean required, Consumer<List<String>> process) throws IllegalArgumentException {
         requireNonNull(option);
         if (arity < 0) throw new IllegalArgumentException("Arity cannot be negative");
