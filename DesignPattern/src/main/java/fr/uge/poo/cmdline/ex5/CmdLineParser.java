@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -175,7 +174,8 @@ public final class CmdLineParser {
     public List<String> process(String[] arguments) throws IllegalArgumentException, IllegalStateException {
         var unregistered = new ArrayList<String>();
         var args = List.of(arguments).iterator();
-        var seen = new ArrayList<String>();
+
+        new ArgsValidator(new HashSet<>(nameToOption.values())).validate(arguments);
 
         while (args.hasNext()) {
             var option = args.next();
@@ -183,7 +183,6 @@ public final class CmdLineParser {
                 if (startsWithDash(option)) throw new IllegalArgumentException("Unregistered option " + option);
                 unregistered.add(option);
             } else {
-                seen.add(option);
                 var actualOption = nameToOption.get(option);
                 var params = new ArrayList<String>();
                 for (var i = 0; i < actualOption.arity(); i++) {
@@ -195,14 +194,6 @@ public final class CmdLineParser {
                 actualOption.process().accept(params);
             }
         }
-
-        var requiredAreAllSeen = nameToOption
-                .entrySet()
-                .stream()
-                .filter(it -> it.getValue().required())
-                .map(Map.Entry::getKey)
-                .allMatch(seen::contains);
-        if (!requiredAreAllSeen) throw new IllegalStateException("Some options have not been set");
         return unregistered;
     }
 
