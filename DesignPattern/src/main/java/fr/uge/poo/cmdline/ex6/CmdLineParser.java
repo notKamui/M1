@@ -178,6 +178,11 @@ public final class CmdLineParser {
         private final HashMap<String, Option> nameToOption = new HashMap<>();
         private final ArrayList<OptionManagerObserver> omObservers = new ArrayList<>();
 
+        /**
+         * Registers a new observer to the manager.
+         *
+         * @param observer the observer to be registered
+         */
         void registerObserver(OptionManagerObserver observer) {
             omObservers.add(requireNonNull(observer));
         }
