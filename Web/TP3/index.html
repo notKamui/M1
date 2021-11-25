@@ -41,14 +41,13 @@
             list-style-type: none;
             margin: 0;
             padding: 0;
-        }
-
-        nav ul li {
-            display: inline;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 20em;
         }
 
         nav ul li a {
-            margin: 0 1em;
             padding: 1em;
             background-color: #6b6b6b;
             color: white;
@@ -96,6 +95,13 @@
         </nav>
     </header>
     <div class="content">
+        <div>
+            <img src="entete.jpg" alt="truc">
+            <div>
+                <button><</button>
+                <button>></button>
+            </div>
+        </div>
         <main>
             <section>
                 <h2>Foobar</h2>
