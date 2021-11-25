@@ -145,12 +145,11 @@ public final class CmdLineParser {
 
         while (args.hasNext()) {
             var option = args.next();
-            if (!om.nameToOption.containsKey(option)) {
+            var proc = om.processOption(option);
+            if (proc.isEmpty()) {
                 if (startsWithDash(option)) throw new IllegalArgumentException("Unregistered option " + option);
                 unregistered.add(option);
             } else {
-                var proc = om.processOption(option);
-                if (proc.isEmpty()) throw new IllegalArgumentException("Unregistered option " + option);
                 var actualOption = proc.get();
                 var params = new ArrayList<String>();
                 for (var i = 0; i < actualOption.arity(); i++) {
@@ -162,6 +161,8 @@ public final class CmdLineParser {
                 actualOption.process().accept(params);
             }
         }
+
+        om.finishProcess();
         return unregistered;
     }
 

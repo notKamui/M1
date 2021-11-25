@@ -4,7 +4,7 @@ import java.nio.file.Path;
 
 public class Application {
     public static void main(String[] args) {
-        String[] arguments = { "-name", "test", "-legacy", "-nb", "filename1", "filename2" };
+        String[] arguments = { "-name", "test", "-legacy", "-nb", "-aa", "filename1", "filename2" };
 
         var cmdParser = new CmdLineParser();
         var settingsBuilder = new PaintSettings.Builder();
