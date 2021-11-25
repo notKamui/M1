@@ -1,11 +1,11 @@
 package fr.uge.poo.cmdline.ex5;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.ObjIntConsumer;
-
 import static java.util.Objects.requireNonNull;
 
 
@@ -13,13 +13,13 @@ import static java.util.Objects.requireNonNull;
  * Represents an option.
  */
 public class Option {
-    private final List<String> names;
+    private final Set<String> names;
     private final String doc;
     private final int arity;
     private final boolean required;
     private final Consumer<List<String>> process;
 
-    private Option(List<String> names, String doc, int arity, boolean required, Consumer<List<String>> process) {
+    private Option(Set<String> names, String doc, int arity, boolean required, Consumer<List<String>> process) {
         this.names = requireNonNull(names);
         this.doc = requireNonNull(doc);
         if (arity < 0) {
@@ -79,7 +79,7 @@ public class Option {
      * Option builder to safely create an option.
      */
     public static final class Builder {
-        private final List<String> names = new ArrayList<>();
+        private final Set<String> names = new HashSet<>();
         private String doc = "";
         private int arity = 0;
         private boolean required = false;
