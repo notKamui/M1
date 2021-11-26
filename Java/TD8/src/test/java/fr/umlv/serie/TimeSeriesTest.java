@@ -1,12 +1,14 @@
 package fr.umlv.serie;
 
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -444,7 +446,9 @@ public class TimeSeriesTest {
             i++;
         }
     }
-    @Test @Tag("Q8")
+
+    @Test
+    @Tag("Q8")
     public void indexOrNullNPE() {
         var timeSerie = new TimeSeries<String>();
         timeSerie.add(23L, "foo");
@@ -453,128 +457,146 @@ public class TimeSeriesTest {
     }
 
 
-//  @Test @Tag("Q9")
-//  public void indexAnd() {
-//    var timeSerie = new TimeSeries<String>();
-//    timeSerie.add(12L, "foo");
-//    timeSerie.add(21L, "bar");
-//    timeSerie.add(22L, "baz");
-//    timeSerie.add(30L, "whizz");
-//    var index1 = timeSerie.index(s -> s.startsWith("w") || s.startsWith("f"));
-//    var index2 = timeSerie.index(s -> s.startsWith("f"));
-//    var index = index1.and(index2);
-//    assertEquals(index.size(), 1);
-//    for(var data: index) {
-//      assertEquals(12L, data.timestamp());
-//      assertEquals("foo", data.element());
-//    }
-//  }
-//  @Test @Tag("Q9")
-//  public void indexAndNotTheSameTimeSerie() {
-//    var timeSerie1 = new TimeSeries<String>();
-//    timeSerie1.add(12L, "foo");
-//    var timeSerie2 = new TimeSeries<String>();
-//    timeSerie2.add(45L, "foo");
-//    assertThrows(IllegalArgumentException.class, () -> timeSerie1.index().and(timeSerie2.index()));
-//  }
-//  @Test @Tag("Q9")
-//  public void indexAnd2() {
-//    var timeSerie = new TimeSeries<String>();
-//    timeSerie.add(12L, "foo");
-//    timeSerie.add(21L, "bar");
-//    timeSerie.add(22L, "baz");
-//    timeSerie.add(30L, "whizz");
-//    var index1 = timeSerie.index(s -> s.endsWith("z"));
-//    var index2 = timeSerie.index(s -> s.startsWith("ba"));
-//    var index = index1.and(index2);
-//    assertEquals(index.size(), 1);
-//    for(var data: index) {
-//      assertEquals(22L, data.timestamp());
-//      assertEquals("baz", data.element());
-//    }
-//  }
-//  @Test @Tag("Q9")
-//  public void indexAndWithAnEmptyIndex() {
-//    var timeSerie = new TimeSeries<String>();
-//    timeSerie.add(12L, "foo");
-//    timeSerie.add(21L, "bar");
-//    timeSerie.add(22L, "baz");
-//    timeSerie.add(30L, "whizz");
-//    var index1 = timeSerie.index();
-//    var index2 = timeSerie.index(s -> s.startsWith("f"));
-//    var index = index1.and(index2);
-//    assertEquals(index.size(), 1);
-//    for(var data: index) {
-//      assertEquals(12L, data.timestamp());
-//      assertEquals("foo", data.element());
-//    }
-//  }
-//  @Test @Tag("Q9")
-//  public void indexAndWithTheOtherEmptyIndex() {
-//    var timeSerie = new TimeSeries<String>();
-//    timeSerie.add(12L, "foo");
-//    timeSerie.add(21L, "bar");
-//    timeSerie.add(22L, "baz");
-//    timeSerie.add(30L, "whizz");
-//    var index1 = timeSerie.index();
-//    var index2 = timeSerie.index(__ -> false);
-//    var index = index1.and(index2);
-//    assertEquals(index.size(), 0);
-//    for(var data: index) {
-//      fail();
-//    }
-//  }
-//  @Test @Tag("Q9")
-//  public void indexAndWithBothEmptyIndexes() {
-//    var timeSerie = new TimeSeries<String>();
-//    timeSerie.add(12L, "foo");
-//    timeSerie.add(21L, "bar");
-//    timeSerie.add(22L, "baz");
-//    timeSerie.add(30L, "whizz");
-//    var index1 = timeSerie.index(__ -> false);
-//    var index2 = timeSerie.index(__ -> false);
-//    var index = index1.and(index2);
-//    assertEquals(index.size(), 0);
-//    for(var data: index) {
-//      fail();
-//    }
-//  }
-//  @Test @Tag("Q9")
-//  public void indexAndALot() {
-//    var timeSerie = new TimeSeries<Integer>();
-//    IntStream.range(0, 1_000_000).forEach(i -> timeSerie.add(i, i));
-//    var index1 = timeSerie.index();
-//    var index2 = timeSerie.index();
-//    var index = index1.and(index2);
-//    assertEquals(index.size(), 1_000_000);
-//    var i = 0;
-//    for(var data: index) {
-//      assertEquals(i, data.timestamp());
-//      assertEquals(i, data.element());
-//      i++;
-//    }
-//  }
-//  @Test @Tag("Q9")
-//  public void indexAndNullNPE() {
-//    var timeSerie = new TimeSeries<String>();
-//    timeSerie.add(23L, "foo");
-//    var index = timeSerie.index();
-//    assertThrows(NullPointerException.class, () -> index.and(null));
-//  }
-//
-//
-//  @Test @Tag("Q10")
-//  public void indexOrCovariant() {
-//    TimeSeries<String> timeSerie = new TimeSeries<String>();
-//    TimeSeries<? extends String> timeSerie2 = timeSerie;
-//    var index = timeSerie.index().or(timeSerie2.index());
-//    assertEquals(0, index.size());
-//  }
-//  @Test @Tag("Q10")
-//  public void indexAndCovariant() {
-//    TimeSeries<String> timeSerie = new TimeSeries<String>();
-//    TimeSeries<? extends String> timeSerie2 = timeSerie;
-//    var index = timeSerie.index().and(timeSerie2.index());
-//    assertEquals(0, index.size());
-//  }
+    @Test
+    @Tag("Q9")
+    public void indexAnd() {
+        var timeSerie = new TimeSeries<String>();
+        timeSerie.add(12L, "foo");
+        timeSerie.add(21L, "bar");
+        timeSerie.add(22L, "baz");
+        timeSerie.add(30L, "whizz");
+        var index1 = timeSerie.index(s -> s.startsWith("w") || s.startsWith("f"));
+        var index2 = timeSerie.index(s -> s.startsWith("f"));
+        var index = index1.and(index2);
+        assertEquals(index.size(), 1);
+        for (var data : index) {
+            assertEquals(12L, data.timestamp());
+            assertEquals("foo", data.element());
+        }
+    }
+
+    @Test
+    @Tag("Q9")
+    public void indexAndNotTheSameTimeSerie() {
+        var timeSerie1 = new TimeSeries<String>();
+        timeSerie1.add(12L, "foo");
+        var timeSerie2 = new TimeSeries<String>();
+        timeSerie2.add(45L, "foo");
+        assertThrows(IllegalArgumentException.class, () -> timeSerie1.index().and(timeSerie2.index()));
+    }
+
+    @Test
+    @Tag("Q9")
+    public void indexAnd2() {
+        var timeSerie = new TimeSeries<String>();
+        timeSerie.add(12L, "foo");
+        timeSerie.add(21L, "bar");
+        timeSerie.add(22L, "baz");
+        timeSerie.add(30L, "whizz");
+        var index1 = timeSerie.index(s -> s.endsWith("z"));
+        var index2 = timeSerie.index(s -> s.startsWith("ba"));
+        var index = index1.and(index2);
+        assertEquals(index.size(), 1);
+        for (var data : index) {
+            assertEquals(22L, data.timestamp());
+            assertEquals("baz", data.element());
+        }
+    }
+
+    @Test
+    @Tag("Q9")
+    public void indexAndWithAnEmptyIndex() {
+        var timeSerie = new TimeSeries<String>();
+        timeSerie.add(12L, "foo");
+        timeSerie.add(21L, "bar");
+        timeSerie.add(22L, "baz");
+        timeSerie.add(30L, "whizz");
+        var index1 = timeSerie.index();
+        var index2 = timeSerie.index(s -> s.startsWith("f"));
+        var index = index1.and(index2);
+        assertEquals(index.size(), 1);
+        for (var data : index) {
+            assertEquals(12L, data.timestamp());
+            assertEquals("foo", data.element());
+        }
+    }
+
+    @Test
+    @Tag("Q9")
+    public void indexAndWithTheOtherEmptyIndex() {
+        var timeSerie = new TimeSeries<String>();
+        timeSerie.add(12L, "foo");
+        timeSerie.add(21L, "bar");
+        timeSerie.add(22L, "baz");
+        timeSerie.add(30L, "whizz");
+        var index1 = timeSerie.index();
+        var index2 = timeSerie.index(__ -> false);
+        var index = index1.and(index2);
+        assertEquals(index.size(), 0);
+        for (var data : index) {
+            fail();
+        }
+    }
+
+    @Test
+    @Tag("Q9")
+    public void indexAndWithBothEmptyIndexes() {
+        var timeSerie = new TimeSeries<String>();
+        timeSerie.add(12L, "foo");
+        timeSerie.add(21L, "bar");
+        timeSerie.add(22L, "baz");
+        timeSerie.add(30L, "whizz");
+        var index1 = timeSerie.index(__ -> false);
+        var index2 = timeSerie.index(__ -> false);
+        var index = index1.and(index2);
+        assertEquals(index.size(), 0);
+        for (var data : index) {
+            fail();
+        }
+    }
+
+    @Test
+    @Tag("Q9")
+    public void indexAndALot() {
+        var timeSerie = new TimeSeries<Integer>();
+        IntStream.range(0, 1_000_000).forEach(i -> timeSerie.add(i, i));
+        var index1 = timeSerie.index();
+        var index2 = timeSerie.index();
+        var index = index1.and(index2);
+        assertEquals(index.size(), 1_000_000);
+        var i = 0;
+        for (var data : index) {
+            assertEquals(i, data.timestamp());
+            assertEquals(i, data.element());
+            i++;
+        }
+    }
+
+    @Test
+    @Tag("Q9")
+    public void indexAndNullNPE() {
+        var timeSerie = new TimeSeries<String>();
+        timeSerie.add(23L, "foo");
+        var index = timeSerie.index();
+        assertThrows(NullPointerException.class, () -> index.and(null));
+    }
+
+
+    @Test
+    @Tag("Q10")
+    public void indexOrCovariant() {
+        TimeSeries<String> timeSerie = new TimeSeries<String>();
+        TimeSeries<? extends String> timeSerie2 = timeSerie;
+        var index = timeSerie.index().or(timeSerie2.index());
+        assertEquals(0, index.size());
+    }
+
+    @Test
+    @Tag("Q10")
+    public void indexAndCovariant() {
+        TimeSeries<String> timeSerie = new TimeSeries<String>();
+        TimeSeries<? extends String> timeSerie2 = timeSerie;
+        var index = timeSerie.index().and(timeSerie2.index());
+        assertEquals(0, index.size());
+    }
 }

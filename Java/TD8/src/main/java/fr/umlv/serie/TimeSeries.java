@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 import static java.util.Objects.requireNonNull;
 
 public final class TimeSeries<E> {
@@ -46,7 +47,7 @@ public final class TimeSeries<E> {
             return indices.length;
         }
 
-        public Index or(Index other) {
+        public Index or(TimeSeries<? extends E>.Index other) {
             checkInstance(requireNonNull(other));
             return new Index(self, IntStream
                 .concat(Arrays.stream(this.indices), Arrays.stream(other.indices))
@@ -55,10 +56,12 @@ public final class TimeSeries<E> {
                 .toArray());
         }
 
-        public Index and(Index other) {
+        public Index and(TimeSeries<? extends E>.Index other) {
             checkInstance(requireNonNull(other));
-            var cross = Arrays.stream(other.indices).boxed().collect(Collectors.toUnmodifiableSet());
-            return new Index(self, Arrays.stream(other.indices)
+            var cross = Arrays.stream(other.indices)
+                .boxed()
+                .collect(Collectors.toSet());
+            return new Index(self, Arrays.stream(this.indices)
                 .filter(cross::contains)
                 .toArray());
         }
@@ -95,7 +98,7 @@ public final class TimeSeries<E> {
                 .collect(Collectors.joining("\n"));
         }
 
-        private void checkInstance(Index other) {
+        private void checkInstance(TimeSeries<? extends E>.Index other) {
             if (this.self != other.self) {
                 throw new IllegalArgumentException("Indices are not from the same instance");
             }
