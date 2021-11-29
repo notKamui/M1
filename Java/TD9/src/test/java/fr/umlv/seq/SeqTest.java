@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -255,116 +256,152 @@ public class SeqTest {
     }
 
 
-//    // Q5
-//
-//    @Test @Tag("Q5")
-//    public void testMapSimple() {
-//        Seq<String> seq = Seq.of("1", "2");
-//        Seq<Integer> seq2 = seq.map(Integer::parseInt);
-//
-//        ArrayList<Integer> list = new ArrayList<>();
-//        seq2.forEach(list::add);
-//        assertEquals(List.of(1, 2), list);
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapNull() {
-//        var seq = Seq.of(1, 2);
-//        assertThrows(NullPointerException.class, () -> seq.map(null));
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapSignature1() {
-//        var seq = Seq.of(11, 75);
-//        UnaryOperator<Object> identity = x -> x;
-//        Seq<Object> seq2 = seq.map(identity);
-//        var list = new ArrayList<>();
-//        seq2.forEach(list::add);
-//        assertEquals(List.of(11, 75), list);
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapSignature2() {
-//        var seq = Seq.of("foo", "bar");
-//        UnaryOperator<String> identity = x -> x;
-//        Seq<Object> seq2 = seq.map(identity);
-//        var list = new ArrayList<>();
-//        seq2.forEach(list::add);
-//        assertEquals(List.of("foo", "bar"), list);
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapGet() {
-//        var seq = Seq.of(101, 201, 301);
-//        var seq2 = seq.map(x -> 2 * x);
-//        assertAll(
-//            () -> assertEquals((Integer)202, seq2.get(0)),
-//            () -> assertEquals((Integer)402, seq2.get(1)),
-//            () -> assertEquals((Integer)602, seq2.get(2))
-//        );
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapGetNotCalledIfOutOfBounds() {
-//        var seq = Seq.of(24, 36).map(__ -> fail(""));
-//        assertAll(
-//            () -> assertThrows(IndexOutOfBoundsException.class, () -> seq.get(-1)),
-//            () -> assertThrows(IndexOutOfBoundsException.class, () -> seq.get(2))
-//        );
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapSize() {
-//        var seq = Seq.of(101, 201, 301);
-//        seq = seq.map(x -> 2 * x);
-//        assertEquals(3, seq.size());
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapNotCalledForSize() {
-//        var seq = Seq.of(42, 777);
-//        var seq2 = seq.map(x -> { fail("should not be called"); return null; });
-//
-//        assertEquals(2, seq2.size());
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapShouldNotBeCalledForSize() {
-//        var seq = Seq.of(42, 777);
-//        var seq2 = seq.map(x -> { fail("should not be called"); return null; });
-//        var seq3 = seq2.map(x -> { fail("should not be called"); return null; });
-//
-//        assertEquals(2, seq3.size());
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapToString() {
-//        var seq = Seq.of(10, 20);
-//        seq = seq.map(x -> 2 * x);
-//        assertEquals("<20, 40>", seq.toString());
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapToStringShouldNotBeCalledIfEmpty() {
-//        var seq = Seq.of().map(__ -> fail(""));
-//        assertEquals("<>", seq.toString());
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapForEach() {
-//        var seq = Seq.of("1", "2", "3");
-//        var seq2 = seq.map(Integer::parseInt);
-//
-//        var list = new ArrayList<Integer>();
-//        seq2.forEach(list::add);
-//        assertEquals(List.of(1, 2, 3), list);
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapForEachCompose() {
-//        var seq = Seq.of("1", "2", "3");
-//        var seq2 = seq.map(Integer::parseInt);
-//        var seq3 = seq2.map(String::valueOf);
-//
-//        var list = new ArrayList<String>();
-//        seq3.forEach(list::add);
-//        assertEquals(List.of("1", "2", "3"), list);
-//    }
-//    @Test @Tag("Q5")
-//    public void testMapForEachShouldNotBeCalledIfEmpty() {
-//        var seq = Seq.of().map(__ -> fail(""));
-//        seq.forEach(__ -> fail(""));
-//    }
-//
-//
+    // Q5
+
+    @Test
+    @Tag("Q5")
+    public void testMapSimple() {
+        Seq<String> seq = Seq.of("1", "2");
+        Seq<Integer> seq2 = seq.map(Integer::parseInt);
+
+        ArrayList<Integer> list = new ArrayList<>();
+        seq2.forEach(list::add);
+        assertEquals(List.of(1, 2), list);
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapNull() {
+        var seq = Seq.of(1, 2);
+        assertThrows(NullPointerException.class, () -> seq.map(null));
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapSignature1() {
+        var seq = Seq.of(11, 75);
+        UnaryOperator<Object> identity = x -> x;
+        Seq<Object> seq2 = seq.map(identity);
+        var list = new ArrayList<>();
+        seq2.forEach(list::add);
+        assertEquals(List.of(11, 75), list);
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapSignature2() {
+        var seq = Seq.of("foo", "bar");
+        UnaryOperator<String> identity = x -> x;
+        Seq<Object> seq2 = seq.map(identity);
+        var list = new ArrayList<>();
+        seq2.forEach(list::add);
+        assertEquals(List.of("foo", "bar"), list);
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapGet() {
+        var seq = Seq.of(101, 201, 301);
+        var seq2 = seq.map(x -> 2 * x);
+        assertAll(
+            () -> assertEquals((Integer) 202, seq2.get(0)),
+            () -> assertEquals((Integer) 402, seq2.get(1)),
+            () -> assertEquals((Integer) 602, seq2.get(2))
+        );
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapGetNotCalledIfOutOfBounds() {
+        var seq = Seq.of(24, 36).map(__ -> fail(""));
+        assertAll(
+            () -> assertThrows(IndexOutOfBoundsException.class, () -> seq.get(-1)),
+            () -> assertThrows(IndexOutOfBoundsException.class, () -> seq.get(2))
+        );
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapSize() {
+        var seq = Seq.of(101, 201, 301);
+        seq = seq.map(x -> 2 * x);
+        assertEquals(3, seq.size());
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapNotCalledForSize() {
+        var seq = Seq.of(42, 777);
+        var seq2 = seq.map(x -> {
+            fail("should not be called");
+            return null;
+        });
+
+        assertEquals(2, seq2.size());
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapShouldNotBeCalledForSize() {
+        var seq = Seq.of(42, 777);
+        var seq2 = seq.map(x -> {
+            fail("should not be called");
+            return null;
+        });
+        var seq3 = seq2.map(x -> {
+            fail("should not be called");
+            return null;
+        });
+
+        assertEquals(2, seq3.size());
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapToString() {
+        var seq = Seq.of(10, 20);
+        seq = seq.map(x -> 2 * x);
+        assertEquals("<20, 40>", seq.toString());
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapToStringShouldNotBeCalledIfEmpty() {
+        var seq = Seq.of().map(__ -> fail(""));
+        assertEquals("<>", seq.toString());
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapForEach() {
+        var seq = Seq.of("1", "2", "3");
+        var seq2 = seq.map(Integer::parseInt);
+
+        var list = new ArrayList<Integer>();
+        seq2.forEach(list::add);
+        assertEquals(List.of(1, 2, 3), list);
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapForEachCompose() {
+        var seq = Seq.of("1", "2", "3");
+        var seq2 = seq.map(Integer::parseInt);
+        var seq3 = seq2.map(String::valueOf);
+
+        var list = new ArrayList<String>();
+        seq3.forEach(list::add);
+        assertEquals(List.of("1", "2", "3"), list);
+    }
+
+    @Test
+    @Tag("Q5")
+    public void testMapForEachShouldNotBeCalledIfEmpty() {
+        var seq = Seq.of().map(__ -> fail(""));
+        seq.forEach(__ -> fail(""));
+    }
+
+
 //    // Q6
 //
 //    @Test @Tag("Q6")

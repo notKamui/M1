@@ -15,7 +15,7 @@ public final class TimeSeries<E> {
 
     private final ArrayList<Data<E>> series = new ArrayList<>();
 
-    public record Data<E>(long timestamp, E element) {
+    public record Data<T>(long timestamp, T element) {
         public Data {
             requireNonNull(element);
         }
