@@ -42,10 +42,9 @@ public class Seq<E> {
         internal.forEach(e -> action.accept(mapper.apply(e)));
     }
 
-    @SuppressWarnings("unchecked")
     public <R> Seq<R> map(Function<? super E, ? extends R> mapper) {
         requireNonNull(mapper);
-        return new Seq<>(internal, it -> mapper.apply((E) it));
+        return new Seq<>(internal, mapper.compose(this.mapper));
     }
 
     @Override
