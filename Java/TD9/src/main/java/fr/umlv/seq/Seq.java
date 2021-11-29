@@ -9,20 +9,22 @@ import static java.util.Objects.requireNonNull;
 
 public class Seq<E> {
     private final List<?> internal;
-    private final Function<?, ? extends E> mapper;
+    private final Function<Object, ? extends E> mapper;
 
-    private Seq(List<?> internal, Function<?, ? extends E> mapper) {
+    private Seq(List<?> internal, Function<Object, ? extends E> mapper) {
         this.internal = requireNonNull(List.copyOf(internal));
         this.mapper = requireNonNull(mapper);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Seq<T> from(List<? extends T> list) {
-        return new Seq<>(requireNonNull(list), Function.identity());
+        return new Seq<>(requireNonNull(list), it -> (T) it);
     }
 
+    @SuppressWarnings("unchecked")
     @SafeVarargs
     public static <T> Seq<T> of(T... elements) {
-        return new Seq<>(requireNonNull(Arrays.stream(elements).toList()), Function.identity());
+        return new Seq<>(requireNonNull(Arrays.stream(elements).toList()), it -> (T) it);
     }
 
     public E get(int n) {
@@ -36,17 +38,20 @@ public class Seq<E> {
     }
 
     public void forEach(Consumer<? super E> action) {
+        requireNonNull(action);
         internal.forEach(e -> action.accept(mapper.apply(e)));
     }
 
+    @SuppressWarnings("unchecked")
     public <R> Seq<R> map(Function<? super E, ? extends R> mapper) {
-        return new Seq<>(internal, mapper);
+        requireNonNull(mapper);
+        return new Seq<>(internal, it -> mapper.apply((E) it));
     }
 
     @Override
     public String toString() {
         var sj = new StringJoiner(", ", "<", ">");
-        internal.forEach(e -> sj.add(e.toString()));
+        internal.forEach(e -> sj.add(mapper.apply(e).toString()));
         return sj.toString();
     }
 }
