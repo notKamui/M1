@@ -17,8 +17,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.UnaryOperator;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -402,126 +405,153 @@ public class SeqTest {
     }
 
 
-//    // Q6
-//
-//    @Test @Tag("Q6")
-//    public void testFirstSimple() {
-//        assertAll(
-//            () -> assertEquals("1", Seq.of("1", "2").findFirst().orElseThrow()),
-//            () -> assertEquals((Integer)11, Seq.of(11, 13).findFirst().orElseThrow())
-//        );
-//    }
-//    @Test @Tag("Q6")
-//    public void testFirstEmpty() {
-//        assertAll(
-//            () -> assertTrue(Seq.of().findFirst().isEmpty()),
-//            () -> assertFalse(Seq.of().findFirst().isPresent())
-//        );
-//    }
-//    @Test @Tag("Q6")
-//    public void testFirstMap() {
-//        var seq1 = Seq.of("1", "3").map(s -> s.concat(" zorg"));
-//        var seq2 = Seq.of().map(s -> s + " zorg");
-//        assertAll(
-//            () -> assertEquals("1 zorg", seq1.findFirst().orElseThrow()),
-//            () -> assertTrue(seq2.findFirst().isEmpty())
-//        );
-//    }
-//    @Test @Tag("Q6")
-//    public void testFirstMapCompose() {
-//        var seq1 = Seq.of("1", "3", "2");
-//        var seq2 = seq1.map(Integer::parseInt);
-//        var seq3 = seq2.map(String::valueOf);
-//        assertEquals("1", seq3.findFirst().orElseThrow());
-//    }
-//    @Test @Tag("Q6")
-//    public void testFirstMapNotCalledIfEmpty() {
-//        var seq = Seq.of().map(__ -> fail(""));
-//        assertTrue(seq.findFirst().isEmpty());
-//    }
-//    @Test @Tag("Q6")
-//    public void testFirstMapNotCalledMoreThanOnce() {
-//        var fun = new Object() {
-//            int counter;
-//            Object apply(Object o) {
-//                counter++;
-//                return o;
-//            }
-//        };
-//        var seq = Seq.of(1, 8, 45).map(fun::apply);
-//        assertEquals(1, seq.findFirst().orElseThrow());
-//        assertEquals(1, fun.counter);
-//    }
-//
-//
-//    // Q7
-//
-//    @Test @Tag("Q7")
-//    public void testIteratorEnhancedForIntegers() {
-//        var seq = Seq.of(25, 52);
-//        var list = new ArrayList<Integer>();
-//        for(Integer value: seq) {
-//            list.add(value);
-//        }
-//        assertEquals(List.of(25, 52), list);
-//    }
-//    @Test @Tag("Q7")
-//    public void testIteratorEnhancedForStrings() {
-//        var seq = Seq.of("25", "52");
-//        var list = new ArrayList<String>();
-//        for(String value: seq) {
-//            list.add(value);
-//        }
-//        assertEquals(List.of("25", "52"), list);
-//    }
-//    @Test @Tag("Q7")
-//    public void testIterator() {
-//        var seq = Seq.of("foo", "bar");
-//        Iterator<String> it = seq.iterator();
-//        assertTrue(it.hasNext());
-//        assertEquals("foo", it.next());
-//        assertTrue(it.hasNext());
-//        assertEquals("bar", it.next());
-//        assertFalse(it.hasNext());
-//    }
-//    @Test @Tag("Q7")
-//    public void testIteratorALot() {
-//        var seq = Seq.from(range(0, 10_000).boxed().collect(toUnmodifiableList()));
-//        Iterator<Integer> it = seq.iterator();
-//        for(var i = 0; i < 10_000; i++) {
-//            IntStream.range(0, 17).forEach(x -> assertTrue(it.hasNext()));
-//            assertEquals(i, (int)it.next());
-//        }
-//        IntStream.range(0, 17).forEach(x -> assertFalse(it.hasNext()));
-//    }
-//    @Test @Tag("Q7")
-//    public void testIteratorAtTheEnd() {
-//        var seq = Seq.of(67, 89);
-//        Iterator<Integer> it = seq.iterator();
-//        assertEquals(67, (int)it.next());
-//        assertEquals(89, (int)it.next());
-//        assertThrows(NoSuchElementException.class, it::next);
-//    }
-//    @Test @Tag("Q7")
-//    public void testIteratorMap() {
-//        var seq = Seq.of(13, 666).map(x -> x / 2);
-//        var list = new ArrayList<Integer>();
-//        seq.iterator().forEachRemaining(list::add);
-//        assertEquals(List.of(6, 333), list);
-//    }
-//    @Test @Tag("Q7")
-//    public void testIteratorRemove() {
-//        var empty = Seq.of();
-//        assertThrows(UnsupportedOperationException.class, () -> empty.iterator().remove());
-//    }
-//    @Test @Tag("Q7")
-//    public void testIteratorMapNotCalledIfEmpty() {
-//        var seq = Seq.of().map(__ -> fail(""));
-//        var it = seq.iterator();
-//        assertFalse(it.hasNext());
-//    }
-//
-//
+    // Q6
+
+    @Test
+    @Tag("Q6")
+    public void testFirstSimple() {
+        assertAll(
+            () -> assertEquals("1", Seq.of("1", "2").findFirst().orElseThrow()),
+            () -> assertEquals((Integer) 11, Seq.of(11, 13).findFirst().orElseThrow())
+        );
+    }
+
+    @Test
+    @Tag("Q6")
+    public void testFirstEmpty() {
+        assertAll(
+            () -> assertTrue(Seq.of().findFirst().isEmpty()),
+            () -> assertFalse(Seq.of().findFirst().isPresent())
+        );
+    }
+
+    @Test
+    @Tag("Q6")
+    public void testFirstMap() {
+        var seq1 = Seq.of("1", "3").map(s -> s.concat(" zorg"));
+        var seq2 = Seq.of().map(s -> s + " zorg");
+        assertAll(
+            () -> assertEquals("1 zorg", seq1.findFirst().orElseThrow()),
+            () -> assertTrue(seq2.findFirst().isEmpty())
+        );
+    }
+
+    @Test
+    @Tag("Q6")
+    public void testFirstMapCompose() {
+        var seq1 = Seq.of("1", "3", "2");
+        var seq2 = seq1.map(Integer::parseInt);
+        var seq3 = seq2.map(String::valueOf);
+        assertEquals("1", seq3.findFirst().orElseThrow());
+    }
+
+    @Test
+    @Tag("Q6")
+    public void testFirstMapNotCalledIfEmpty() {
+        var seq = Seq.of().map(__ -> fail(""));
+        assertTrue(seq.findFirst().isEmpty());
+    }
+
+    @Test
+    @Tag("Q6")
+    public void testFirstMapNotCalledMoreThanOnce() {
+        var fun = new Object() {
+            int counter;
+
+            Object apply(Object o) {
+                counter++;
+                return o;
+            }
+        };
+        var seq = Seq.of(1, 8, 45).map(fun::apply);
+        assertEquals(1, seq.findFirst().orElseThrow());
+        assertEquals(1, fun.counter);
+    }
+
+
+    // Q7
+
+    @Test
+    @Tag("Q7")
+    public void testIteratorEnhancedForIntegers() {
+        var seq = Seq.of(25, 52);
+        var list = new ArrayList<Integer>();
+        for (Integer value : seq) {
+            list.add(value);
+        }
+        assertEquals(List.of(25, 52), list);
+    }
+
+    @Test
+    @Tag("Q7")
+    public void testIteratorEnhancedForStrings() {
+        var seq = Seq.of("25", "52");
+        var list = new ArrayList<String>();
+        for (String value : seq) {
+            list.add(value);
+        }
+        assertEquals(List.of("25", "52"), list);
+    }
+
+    @Test
+    @Tag("Q7")
+    public void testIterator() {
+        var seq = Seq.of("foo", "bar");
+        Iterator<String> it = seq.iterator();
+        assertTrue(it.hasNext());
+        assertEquals("foo", it.next());
+        assertTrue(it.hasNext());
+        assertEquals("bar", it.next());
+        assertFalse(it.hasNext());
+    }
+
+    @Test
+    @Tag("Q7")
+    public void testIteratorALot() {
+        var seq = Seq.from(range(0, 10_000).boxed().toList());
+        Iterator<Integer> it = seq.iterator();
+        for (var i = 0; i < 10_000; i++) {
+            IntStream.range(0, 17).forEach(x -> assertTrue(it.hasNext()));
+            assertEquals(i, (int) it.next());
+        }
+        IntStream.range(0, 17).forEach(x -> assertFalse(it.hasNext()));
+    }
+
+    @Test
+    @Tag("Q7")
+    public void testIteratorAtTheEnd() {
+        var seq = Seq.of(67, 89);
+        Iterator<Integer> it = seq.iterator();
+        assertEquals(67, (int) it.next());
+        assertEquals(89, (int) it.next());
+        assertThrows(NoSuchElementException.class, it::next);
+    }
+
+    @Test
+    @Tag("Q7")
+    public void testIteratorMap() {
+        var seq = Seq.of(13, 666).map(x -> x / 2);
+        var list = new ArrayList<Integer>();
+        seq.iterator().forEachRemaining(list::add);
+        assertEquals(List.of(6, 333), list);
+    }
+
+    @Test
+    @Tag("Q7")
+    public void testIteratorRemove() {
+        var empty = Seq.of();
+        assertThrows(UnsupportedOperationException.class, () -> empty.iterator().remove());
+    }
+
+    @Test
+    @Tag("Q7")
+    public void testIteratorMapNotCalledIfEmpty() {
+        var seq = Seq.of().map(__ -> fail(""));
+        var it = seq.iterator();
+        assertFalse(it.hasNext());
+    }
+
+
 //    // Q8
 //
 //    @Test @Tag("Q8")
