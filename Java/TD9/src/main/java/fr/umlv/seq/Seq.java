@@ -8,10 +8,10 @@ import java.util.function.Function;
 import static java.util.Objects.requireNonNull;
 
 public class Seq<E> {
-    private final List<? extends E> internal;
-    private final Function<? super E, ? extends E> mapper;
+    private final List<?> internal;
+    private final Function<?, ? extends E> mapper;
 
-    private Seq(List<? extends E> internal, Function<? super E, ? extends E> mapper) {
+    private Seq(List<?> internal, Function<?, ? extends E> mapper) {
         this.internal = requireNonNull(List.copyOf(internal));
         this.mapper = requireNonNull(mapper);
     }
@@ -36,11 +36,11 @@ public class Seq<E> {
     }
 
     public void forEach(Consumer<? super E> action) {
-        internal.forEach(action);
+        internal.forEach(e -> action.accept(mapper.apply(e)));
     }
 
-    public Seq<E> map(Function<? super E, ? extends E> mapper) {
-        return new Seq<>(internal.stream().map(mapper).toList(), mapper);
+    public <R> Seq<R> map(Function<? super E, ? extends R> mapper) {
+        return new Seq<>(internal, mapper);
     }
 
     @Override
