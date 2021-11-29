@@ -1,16 +1,25 @@
 package fr.umlv.seq;
 
+import static java.lang.reflect.Modifier.FINAL;
+import static java.lang.reflect.Modifier.PRIVATE;
+import static java.util.stream.Collectors.toUnmodifiableList;
+import static java.util.stream.IntStream.range;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import static java.lang.reflect.Modifier.FINAL;
-import static java.lang.reflect.Modifier.PRIVATE;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("static-method")
 public class SeqTest {
@@ -103,116 +112,149 @@ public class SeqTest {
             .allMatch(f -> (f.getModifiers() & (PRIVATE | FINAL)) == (PRIVATE | FINAL)));
     }
 
-//    // Q2
-//
-//    @Test @Tag("Q2")
-//    public void testToString() {
-//        var seq = Seq.from(List.of(8, 5, 3));
-//        assertEquals(seq.toString(), "<8, 5, 3>");
-//    }
-//    @Test @Tag("Q2")
-//    public void testToStringOneElement() {
-//        var seq = Seq.from(List.of("hello"));
-//        assertEquals(seq.toString(), "<hello>");
-//    }
-//    @Test @Tag("Q2")
-//    public void testToStringEmpty() {
-//        var seq = Seq.from(List.of());
-//        assertEquals(seq.toString(), "<>");
-//    }
-//
-//
-//    // Q3
-//
-//    @Test @Tag("Q3")
-//    public void testOfSimple() {
-//        Seq<String> seq = Seq.of("foo", "bar");
-//        assertEquals(2, seq.size());
-//    }
-//    @Test @Tag("Q3")
-//    public void testOfSimple2() {
-//        Seq<Integer> seq = Seq.of(12, 45);
-//        assertEquals(2, seq.size());
-//    }
-//    @Test @Tag("Q3")
-//    public void testOfNullArray() {
-//        assertThrows(NullPointerException.class, () -> Seq.of((Object)null));
-//    }
-//    @Test @Tag("Q3")
-//    public void testOfNullElement() {
-//        assertThrows(NullPointerException.class, () -> Seq.of((Object[])null));
-//    }
-//    @Test @Tag("Q3")
-//    public void testOfSize() {
-//        var seq = Seq.of("78", "56", "34", "23");
-//        assertEquals(4, seq.size());
-//    }
-//    @Test @Tag("Q3")
-//    public void testOfGet() {
-//        var seq = Seq.of(101, 201, 301);
-//        assertAll(
-//            () -> assertEquals((Integer)101, seq.get(0)),
-//            () -> assertEquals((Integer)201, seq.get(1)),
-//            () -> assertEquals((Integer)301, seq.get(2))
-//        );
-//    }
-//    @Test @Tag("Q3")
-//    public void testOfGetOutOfBounds() {
-//        var seq = Seq.of("foo", "bar");
-//        assertAll(
-//            () -> assertThrows(IndexOutOfBoundsException.class, () -> seq.get(-1)),
-//            () -> assertThrows(IndexOutOfBoundsException.class, () -> seq.get(2))
-//        );
-//    }
-//    @Test @Tag("Q3")
-//    public void testOfToString() {
-//        var seq = Seq.of(8, 5, 3);
-//        assertEquals(seq.toString(), "<8, 5, 3>");
-//    }
-//    @Test @Tag("Q3")
-//    public void testOfToStringOneElement() {
-//        var seq = Seq.of("hello");
-//        assertEquals(seq.toString(), "<hello>");
-//    }
-//    @Test @Tag("Q3")
-//    public void testOfToStringEmpty() {
-//        var seq = Seq.of();
-//        assertEquals(seq.toString(), "<>");
-//    }
-//
-//
-//    // Q4
-//
-//    @Test @Tag("Q4")
-//    public void testForEachEmpty() {
-//        var empty = Seq.of();
-//        empty.forEach(x -> fail("should not be called"));
-//    }
-//    @Test @Tag("Q4")
-//    public void testForEachSignature() {
-//        var seq = Seq.of(1);
-//        seq.forEach((Object o) -> assertEquals(1, o));
-//    }
-//    @Test @Tag("Q4")
-//    public void testForEachNull() {
-//        var seq = Seq.of(1, 2);
-//        assertThrows(NullPointerException.class, () -> seq.forEach(null));
-//    }
-//    @Test @Tag("Q4")
-//    public void testForEachNullEmpty() {
-//        var seq = Seq.of();
-//        assertThrows(NullPointerException.class, () -> seq.forEach(null));
-//    }
-//    @Test @Tag("Q4")
-//    public void testForEachALot() {
-//        var list = range(0, 1_000_000).boxed().collect(toUnmodifiableList());
-//        var seq = Seq.from(list);
-//        var l = new ArrayList<Integer>();
-//        assertTimeoutPreemptively(Duration.ofMillis(1_000), () -> seq.forEach(l::add));
-//        assertEquals(list, l);
-//    }
-//
-//
+    // Q2
+
+    @Test
+    @Tag("Q2")
+    public void testToString() {
+        var seq = Seq.from(List.of(8, 5, 3));
+        assertEquals(seq.toString(), "<8, 5, 3>");
+    }
+
+    @Test
+    @Tag("Q2")
+    public void testToStringOneElement() {
+        var seq = Seq.from(List.of("hello"));
+        assertEquals(seq.toString(), "<hello>");
+    }
+
+    @Test
+    @Tag("Q2")
+    public void testToStringEmpty() {
+        var seq = Seq.from(List.of());
+        assertEquals(seq.toString(), "<>");
+    }
+
+
+    // Q3
+
+    @Test
+    @Tag("Q3")
+    public void testOfSimple() {
+        Seq<String> seq = Seq.of("foo", "bar");
+        assertEquals(2, seq.size());
+    }
+
+    @Test
+    @Tag("Q3")
+    public void testOfSimple2() {
+        Seq<Integer> seq = Seq.of(12, 45);
+        assertEquals(2, seq.size());
+    }
+
+    @Test
+    @Tag("Q3")
+    public void testOfNullArray() {
+        assertThrows(NullPointerException.class, () -> Seq.of((Object) null));
+    }
+
+    @Test
+    @Tag("Q3")
+    public void testOfNullElement() {
+        assertThrows(NullPointerException.class, () -> Seq.of((Object[]) null));
+    }
+
+    @Test
+    @Tag("Q3")
+    public void testOfSize() {
+        var seq = Seq.of("78", "56", "34", "23");
+        assertEquals(4, seq.size());
+    }
+
+    @Test
+    @Tag("Q3")
+    public void testOfGet() {
+        var seq = Seq.of(101, 201, 301);
+        assertAll(
+            () -> assertEquals((Integer) 101, seq.get(0)),
+            () -> assertEquals((Integer) 201, seq.get(1)),
+            () -> assertEquals((Integer) 301, seq.get(2))
+        );
+    }
+
+    @Test
+    @Tag("Q3")
+    public void testOfGetOutOfBounds() {
+        var seq = Seq.of("foo", "bar");
+        assertAll(
+            () -> assertThrows(IndexOutOfBoundsException.class, () -> seq.get(-1)),
+            () -> assertThrows(IndexOutOfBoundsException.class, () -> seq.get(2))
+        );
+    }
+
+    @Test
+    @Tag("Q3")
+    public void testOfToString() {
+        var seq = Seq.of(8, 5, 3);
+        assertEquals(seq.toString(), "<8, 5, 3>");
+    }
+
+    @Test
+    @Tag("Q3")
+    public void testOfToStringOneElement() {
+        var seq = Seq.of("hello");
+        assertEquals(seq.toString(), "<hello>");
+    }
+
+    @Test
+    @Tag("Q3")
+    public void testOfToStringEmpty() {
+        var seq = Seq.of();
+        assertEquals(seq.toString(), "<>");
+    }
+
+
+    // Q4
+
+    @Test
+    @Tag("Q4")
+    public void testForEachEmpty() {
+        var empty = Seq.of();
+        empty.forEach(x -> fail("should not be called"));
+    }
+
+    @Test
+    @Tag("Q4")
+    public void testForEachSignature() {
+        var seq = Seq.of(1);
+        seq.forEach((Object o) -> assertEquals(1, o));
+    }
+
+    @Test
+    @Tag("Q4")
+    public void testForEachNull() {
+        var seq = Seq.of(1, 2);
+        assertThrows(NullPointerException.class, () -> seq.forEach(null));
+    }
+
+    @Test
+    @Tag("Q4")
+    public void testForEachNullEmpty() {
+        var seq = Seq.of();
+        assertThrows(NullPointerException.class, () -> seq.forEach(null));
+    }
+
+    @Test
+    @Tag("Q4")
+    public void testForEachALot() {
+        var list = range(0, 1_000_000).boxed().toList();
+        var seq = Seq.from(list);
+        var l = new ArrayList<Integer>();
+        assertTimeoutPreemptively(Duration.ofMillis(1_000), () -> seq.forEach(l::add));
+        assertEquals(list, l);
+    }
+
+
 //    // Q5
 //
 //    @Test @Tag("Q5")
