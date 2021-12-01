@@ -1,5 +1,10 @@
 # Java Report - TD 8 - Jimmy Teillard
 
+***Important***
+
+To launch the test suite, run the following command :
+`./gradlew test`
+
 ## Q5
 
 `index(filter)` should receive a `Predicate<? super E>` 
