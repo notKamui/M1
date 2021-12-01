@@ -315,7 +315,7 @@ public final class CmdLineParser {
 
         @Override
         public void onRegisteredOption(OptionManager optionManager, Option option) {
-            documentation.add("- %s : %s".formatted(option.names().get(0), option.doc()));
+            documentation.add("\t%s : %s".formatted(option.names().get(0), option.doc()));
         }
 
         String usage() {

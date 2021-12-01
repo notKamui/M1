@@ -58,5 +58,6 @@ public class Application {
 
         files.forEach(System.out::println);
         System.out.println(settings);
+        cmdParser.usage();
     }
 }
