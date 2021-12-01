@@ -1,5 +1,6 @@
 package fr.uge.poo.cmdline.ex6;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -20,10 +22,11 @@ public final class CmdLineParser {
 
     public CmdLineParser() {
         om = new OptionManager();
-        om.registerObserver(new LoggerObserver());
+        //om.registerObserver(new LoggerObserver());
         om.registerObserver(new RequiredOptionObserver());
         this.doc = new DocumentationObserver();
         om.registerObserver(doc);
+        om.registerObserver(new OptionConflictObserver());
     }
 
     /**
@@ -143,6 +146,10 @@ public final class CmdLineParser {
             .build());
     }
 
+    private static ParseException missingParameter(String option) {
+        return new ParseException("Missing required option : " + option, 0);
+    }
+
     /**
      * Processes an array of arguments.
      *
@@ -151,7 +158,7 @@ public final class CmdLineParser {
      * @throws IllegalArgumentException if the list of arguments either contain an unregistered option or one option is missing a parameter
      * @throws IllegalStateException    if one required option has not been set
      */
-    public List<String> process(String[] arguments) throws IllegalArgumentException, IllegalStateException {
+    public List<String> process(String[] arguments) throws IllegalArgumentException, ParseException {
         var unregistered = new ArrayList<String>();
         var args = List.of(arguments).iterator();
 
@@ -159,7 +166,7 @@ public final class CmdLineParser {
             var option = args.next();
             var proc = om.processOption(option);
             if (proc.isEmpty()) {
-                if (startsWithDash(option)) throw new IllegalArgumentException("Unregistered option " + option);
+                if (startsWithDash(option)) throw new ParseException("Unregistered option " + option, 0);
                 unregistered.add(option);
             } else {
                 var actualOption = proc.get();
@@ -178,12 +185,19 @@ public final class CmdLineParser {
         return unregistered;
     }
 
-    private static IllegalArgumentException missingParameter(String option) {
-        return new IllegalArgumentException("Missing required option : " + option);
-    }
-
     private static boolean startsWithDash(String s) {
         return s.charAt(0) == '-';
+    }
+
+    private interface OptionManagerObserver {
+        default void onRegisteredOption(OptionManager optionManager, Option option) {
+        }
+
+        default void onProcessedOption(OptionManager optionManager, Option option) throws ParseException {
+        }
+
+        default void onFinishedProcess(OptionManager optionManager) throws ParseException {
+        }
     }
 
     private static final class OptionManager {
@@ -204,14 +218,16 @@ public final class CmdLineParser {
          *
          * @param option the option to register
          */
-        void register(Option option) {
+        void register(Option option) throws IllegalStateException {
             for (var name : option.names()) {
                 register(name, option);
             }
         }
 
-        private void register(String name, Option option) {
-            omObservers.forEach(observer -> observer.onRegisteredOption(this, option));
+        private void register(String name, Option option) throws IllegalStateException {
+            for (var observer : omObservers) {
+                observer.onRegisteredOption(this, option);
+            }
             if (nameToOption.containsKey(name)) {
                 throw new IllegalStateException("Option " + name + " is already registered.");
             }
@@ -226,30 +242,28 @@ public final class CmdLineParser {
          * @return the corresponding object option if it exists
          */
 
-        Optional<Option> processOption(String optionName) {
+        Optional<Option> processOption(String optionName) throws ParseException {
             var option = Optional.ofNullable(nameToOption.get(optionName));
-            option.ifPresent(o -> omObservers.forEach(observer -> observer.onProcessedOption(this, o)));
+            if (option.isPresent()) {
+                for (var observer : omObservers) {
+                    observer.onProcessedOption(this, option.get());
+                }
+            }
             return option;
         }
 
         /**
          * This method is called to signal the method process of the CmdLineParser is finished
          */
-        void finishProcess() {
-            omObservers.forEach(observer -> observer.onFinishedProcess(this));
+        void finishProcess() throws ParseException {
+            for (var observer : omObservers) {
+                observer.onFinishedProcess(this);
+            }
         }
 
         Set<Option> options() {
             return new HashSet<>(nameToOption.values());
         }
-    }
-
-    private interface OptionManagerObserver {
-        default void onRegisteredOption(OptionManager optionManager, Option option) {}
-
-        default void onProcessedOption(OptionManager optionManager, Option option) {}
-
-        default void onFinishedProcess(OptionManager optionManager) {}
     }
 
     private static class LoggerObserver implements OptionManagerObserver {
@@ -286,12 +300,12 @@ public final class CmdLineParser {
         }
 
         @Override
-        public void onFinishedProcess(OptionManager optionManager) {
+        public void onFinishedProcess(OptionManager optionManager) throws ParseException {
             var missing = required.stream()
                 .filter(option -> !seen.contains(option))
                 .findAny();
             if (missing.isPresent()) {
-                throw new IllegalStateException("Missing required option : " + missing.get().names().get(0));
+                throw new ParseException("Missing required option : " + missing.get().names().get(0), 0);
             }
         }
     }
@@ -310,14 +324,24 @@ public final class CmdLineParser {
     }
 
     private static class OptionConflictObserver implements OptionManagerObserver {
-        private final HashSet<String> seen = new HashSet<>();
+        private final HashSet<Option> seen = new HashSet<>();
 
         @Override
-        public void onRegisteredOption(OptionManager optionManager, Option option) {
-            if (option.conflicts().stream().anyMatch(seen::contains)) {
-                throw new IllegalStateException("Option " + option.names().get(0) + " conflicts with an already registered option");
+        public void onProcessedOption(OptionManager optionManager, Option option) throws ParseException {
+            seen.add(option);
+        }
+
+        @Override
+        public void onFinishedProcess(OptionManager optionManager) throws ParseException {
+            var seenNames = seen.stream().flatMap(option -> option.names().stream()).collect(Collectors.toSet());
+            for (var option : seen) {
+                if (option.conflicts().isEmpty()) continue;
+                for (var conflict : option.conflicts()) {
+                    if (seenNames.contains(conflict)) {
+                        throw new ParseException("Conflicting options : " + option.names().get(0) + " and " + conflict, 0);
+                    }
+                }
             }
-            seen.addAll(option.names());
         }
     }
 }

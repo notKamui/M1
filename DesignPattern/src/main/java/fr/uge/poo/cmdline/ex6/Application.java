@@ -1,10 +1,11 @@
 package fr.uge.poo.cmdline.ex6;
 
 import java.nio.file.Path;
+import java.text.ParseException;
 
 public class Application {
-    public static void main(String[] args) {
-        String[] arguments = { "-name", "test", "-legacy", "-nb", "-aa", "filename1", "filename2" };
+    public static void main(String[] args) throws ParseException {
+        String[] arguments = {"-name", "test", "-legacy", "-nb", "-aa", "filename1", "filename2"};
 
         var cmdParser = new CmdLineParser();
         var settingsBuilder = new PaintSettings.Builder();
