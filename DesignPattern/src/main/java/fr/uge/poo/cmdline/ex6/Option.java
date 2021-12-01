@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.ObjIntConsumer;
+
 import static java.util.Objects.requireNonNull;
 
 
@@ -18,8 +19,9 @@ public class Option {
     private final int arity;
     private final boolean required;
     private final Consumer<List<String>> process;
+    private final Set<String> conflicts;
 
-    private Option(Set<String> names, String doc, int arity, boolean required, Consumer<List<String>> process) {
+    private Option(Set<String> names, String doc, int arity, boolean required, Consumer<List<String>> process, Set<String> conflicts) {
         this.names = requireNonNull(names);
         this.doc = requireNonNull(doc);
         if (arity < 0) {
@@ -28,6 +30,7 @@ public class Option {
         this.arity = arity;
         this.required = required;
         this.process = requireNonNull(process);
+        this.conflicts = requireNonNull(conflicts);
     }
 
     /**
@@ -75,6 +78,15 @@ public class Option {
         return process;
     }
 
+    /**
+     * The set of conflicting options.
+     *
+     * @return the set of conflicting options
+     */
+    public Set<String> conflicts() {
+        return Set.copyOf(conflicts);
+    }
+
     @Override
     public String toString() {
         return names().get(0);
@@ -89,6 +101,7 @@ public class Option {
         private int arity = 0;
         private boolean required = false;
         private Consumer<List<String>> process = null;
+        private final Set<String> conflicts = new HashSet<>();
 
         /**
          * Adds a name to this option.
@@ -196,6 +209,17 @@ public class Option {
         }
 
         /**
+         * Adds a name conflict to this option.
+         *
+         * @param name the name to conflict with
+         * @return this builder
+         */
+        public Builder addConflict(String name) {
+            conflicts.add(name);
+            return this;
+        }
+
+        /**
          * Builds the option.
          *
          * @return the created option
@@ -204,7 +228,7 @@ public class Option {
             if (names.isEmpty()) {
                 throw new IllegalStateException("at least one name is required");
             }
-            return new Option(names, doc, arity, required, process);
+            return new Option(names, doc, arity, required, process, conflicts);
         }
     }
 }

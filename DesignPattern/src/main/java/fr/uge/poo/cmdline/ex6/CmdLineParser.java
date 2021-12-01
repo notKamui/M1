@@ -6,7 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -14,11 +16,21 @@ import static java.util.Objects.requireNonNull;
  */
 public final class CmdLineParser {
     private final OptionManager om;
+    private final DocumentationObserver doc;
 
     public CmdLineParser() {
         om = new OptionManager();
         om.registerObserver(new LoggerObserver());
         om.registerObserver(new RequiredOptionObserver());
+        this.doc = new DocumentationObserver();
+        om.registerObserver(doc);
+    }
+
+    /**
+     * Prints the usage message.
+     */
+    public void usage() {
+        System.out.println(doc.usage());
     }
 
     /**
@@ -240,7 +252,7 @@ public final class CmdLineParser {
         default void onFinishedProcess(OptionManager optionManager) {}
     }
 
-    private class LoggerObserver implements OptionManagerObserver {
+    private static class LoggerObserver implements OptionManagerObserver {
 
         @Override
         public void onRegisteredOption(OptionManager optionManager, Option option) {
@@ -258,7 +270,7 @@ public final class CmdLineParser {
         }
     }
 
-    private class RequiredOptionObserver implements OptionManagerObserver {
+    private static class RequiredOptionObserver implements OptionManagerObserver {
         private final HashSet<Option> required = new HashSet<>();
         private final HashSet<Option> seen = new HashSet<>();
 
@@ -281,6 +293,31 @@ public final class CmdLineParser {
             if (missing.isPresent()) {
                 throw new IllegalStateException("Missing required option : " + missing.get().names().get(0));
             }
+        }
+    }
+
+    private static class DocumentationObserver implements OptionManagerObserver {
+        private final StringJoiner documentation = new StringJoiner("\n").add("Usage :");
+
+        @Override
+        public void onRegisteredOption(OptionManager optionManager, Option option) {
+            documentation.add("- %s : %s".formatted(option.names().get(0), option.doc()));
+        }
+
+        String usage() {
+            return documentation.toString();
+        }
+    }
+
+    private static class OptionConflictObserver implements OptionManagerObserver {
+        private final HashSet<String> seen = new HashSet<>();
+
+        @Override
+        public void onRegisteredOption(OptionManager optionManager, Option option) {
+            if (option.conflicts().stream().anyMatch(seen::contains)) {
+                throw new IllegalStateException("Option " + option.names().get(0) + " conflicts with an already registered option");
+            }
+            seen.addAll(option.names());
         }
     }
 }
