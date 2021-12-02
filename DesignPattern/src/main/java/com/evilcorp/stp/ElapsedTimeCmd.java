@@ -3,7 +3,7 @@ package com.evilcorp.stp;
 import java.util.List;
 import java.util.Objects;
 
-public class ElapsedTimeCmd implements STPCommand {
+public final class ElapsedTimeCmd implements STPCommand {
 
     private final List<Integer> timers;
 
@@ -14,5 +14,10 @@ public class ElapsedTimeCmd implements STPCommand {
 
     public List<Integer> getTimers() {
         return timers;
+    }
+
+    @Override
+    public void accept(STPCommandVisitor visitor) {
+        visitor.visit(this);
     }
 }

@@ -1,7 +1,9 @@
 package com.evilcorp.stp;
 
-public class HelloCmd implements STPCommand {
+public final class HelloCmd implements STPCommand {
 
-
-
+    @Override
+    public void accept(STPCommandVisitor visitor) {
+        visitor.visit(this);
+    }
 }

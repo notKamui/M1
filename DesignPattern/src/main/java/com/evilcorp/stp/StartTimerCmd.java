@@ -1,6 +1,6 @@
 package com.evilcorp.stp;
 
-public class StartTimerCmd implements STPCommand {
+public final class StartTimerCmd implements STPCommand {
 
     private final int  timerId;
 
@@ -10,5 +10,10 @@ public class StartTimerCmd implements STPCommand {
 
     public int getTimerId() {
         return timerId;
+    }
+
+    @Override
+    public void accept(STPCommandVisitor visitor) {
+        visitor.visit(this);
     }
 }
