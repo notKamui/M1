@@ -6,11 +6,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -193,7 +191,7 @@ public final class CmdLineParser {
         default void onRegisteredOption(OptionManager optionManager, Option option) {
         }
 
-        default void onProcessedOption(OptionManager optionManager, Option option) throws ParseException {
+        default void onProcessedOption(OptionManager optionManager, Option option) {
         }
 
         default void onFinishedProcess(OptionManager optionManager) throws ParseException {
@@ -242,7 +240,7 @@ public final class CmdLineParser {
          * @return the corresponding object option if it exists
          */
 
-        Optional<Option> processOption(String optionName) throws ParseException {
+        Optional<Option> processOption(String optionName) {
             var option = Optional.ofNullable(nameToOption.get(optionName));
             if (option.isPresent()) {
                 for (var observer : omObservers) {
@@ -259,10 +257,6 @@ public final class CmdLineParser {
             for (var observer : omObservers) {
                 observer.onFinishedProcess(this);
             }
-        }
-
-        Set<Option> options() {
-            return new HashSet<>(nameToOption.values());
         }
     }
 
@@ -327,7 +321,7 @@ public final class CmdLineParser {
         private final HashSet<Option> seen = new HashSet<>();
 
         @Override
-        public void onProcessedOption(OptionManager optionManager, Option option) throws ParseException {
+        public void onProcessedOption(OptionManager optionManager, Option option) {
             seen.add(option);
         }
 
