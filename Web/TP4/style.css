@@ -1,0 +1,103 @@
+ /* {
+    margin:0;
+    padding:0;
+}*/ 
+
+/************************************************/
+/*Feuille de style cours Master info 28/10/2021*/
+/************************************************/
+
+/*Common style*/
+
+/* {
+    margin:0;
+    padding:0;
+}*/
+
+
+
+
+.container {
+    background: gold;
+    max-width:1200px;
+    margin:0 auto;/*Permet de centrer mon container dans la fenêtre du navigateur*/
+    border:1px solid #e8e8e8;
+   /*border-width:1px;
+    border-style:solid;
+    border-color:#e8e8e8*/
+}
+
+.header {
+    background:pink;
+}
+
+/*Navigation*/
+
+.navbar {
+    background: white;
+    border-top:1px solid #e8e8e8;
+    border-bottom:1px solid #e8e8e8;
+}
+
+.navbar ul {
+    list-style:none;/*J'enlève les puces*/
+    margin:0;
+    padding:0;
+    overflow:hidden;/*Je remets le flottant dans navbar. J'utilise un BFC*/
+}
+
+.navbar li {
+    float:left;/*Les éléments li flottent à gauche les uns des autres. L'élément est sorti de navbar.J'utilise un BFC*/
+}
+
+.navbar a {
+    display:block;/*Je transforme mon élément inline en élément block afin de pouvoir lui affecter des dimensions*/
+    padding:20px;
+    border-right:1px solid #e8e8e8;
+    text-decoration: none;
+    color:black;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    color:red;
+}
+
+.navbar li:nth-child(1) a {
+    color:red;
+}
+
+.navbar li ul {
+    display:none;
+}
+
+.navbar li:hover ul {
+    display:block;
+    position:absolute;
+    background: white;
+}
+
+.core {
+    display: flex;
+}
+
+
+main {
+    background:tomato;
+    width: 70%;
+}
+
+.aside {
+    background:deepskyblue;
+    width: 30%;
+}
+
+.footer {
+    background:orange;
+    display: flex;
+    justify-content: center;
+}
+
+.footer ul li {
+    display: inline;
+}
