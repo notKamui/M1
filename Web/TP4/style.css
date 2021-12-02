@@ -60,10 +60,6 @@
     color: red;
 }
 
-.navbar li:nth-child(1) a {
-    color: red;
-}
-
 .navbar li ul {
     display: none;
 }
