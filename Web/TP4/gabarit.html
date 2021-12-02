@@ -15,25 +15,27 @@
   <body>
     <div class="container">
       <header class="header">
-        <h1>Nom de mon site</h1>
-        <img
-          src="images/logo.png"
-          width=""
-          height=""
-          alt="Logo de mon entreprise"
-        />
+        <div class="top-header">
+          <img
+            src="images/logo.png"
+            width=""
+            height=""
+            alt="Logo de mon entreprise"
+          />
+          <input type="text" placeholder="Recherche">
+        </div>
         <nav class="navbar">
           <ul>
             <li><a href="#">Item 1</a></li>
             <li>
               <a href="#">Item 2</a>
               <ul>
-                <li><a href="#">Item 1</a></li>
-                <li><a href="#">Item 2</a></li>
-                <li><a href="#">Item 2</a></li>
+                <li><a href="#">Item A</a></li>
+                <li><a href="#">Item B</a></li>
+                <li><a href="#">Item C</a></li>
               </ul>
             </li>
-            <li><a href="#">Item 2</a></li>
+            <li><a href="#">Item 3</a></li>
           </ul>
         </nav>
       </header>
@@ -43,7 +45,10 @@
             <h2>Titre de la section</h2>
             <article>
               <h2>Titre article</h2>
-              <img src="" width="" height="" alt="Logo de mon entreprise" />
+              <div class="article-head">
+                <img src="images/slider01.gif" width="" height="" alt="Logo de mon entreprise" />
+                <button>Hover me</button>
+              </div>
               <p>
                 Lorem Ipsum is simply dummy text of the printing and typesetting
                 industry. Lorem Ipsum has been the industry's standard dummy
@@ -60,6 +65,10 @@
           </section>
         </main>
         <aside role="complementary" class="aside">
+          <picture>
+            <source media="(max-width: 576px)" srcset="images/image1.jpg">
+            <img src="images/image1-577.jpg" alt="logo">
+          </picture>
           <h3>Nom template 1</h3>
           <h3>Nom template 2</h3>
           <h3>Nom template 3</h3>
