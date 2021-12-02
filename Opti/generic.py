@@ -1,6 +1,7 @@
 import sys
+import os
 from dataclasses import dataclass
-from typing import List
+from typing import List, Tuple
 
 @dataclass
 class Product:
@@ -15,7 +16,7 @@ class Components:
     limits: List[str]
     products: List[Product]
 
-def get_m_n(content: List[str]) -> (str, str):
+def get_m_n(content: List[str]) -> Tuple[str, str]:
     # getting m and n values and casting to int
     m, n, *_ = content[0].split()
     return m, n
@@ -77,16 +78,18 @@ def write_to_file(content: str, fname: str):
     with open(fname, "w") as f:
         f.write(content)
 
+if __name__ == "__main__":
+    int_flag = False
+    args = sys.argv[1:]
+    if "-int" in args:
+        args.remove("-int")
+        int_flag = True
+    components = get_components_from_file(args[0])
+    lp = lp_from_components(components)
+    print(int_flag)
+    if int_flag:
+        print("AAA")
+        lp += "int " + ", ".join(map(lambda p: p.name, components.products)) + ";\n"
+    write_to_file(lp, args[1])
 
-int_flag = False
-args = sys.argv[1:]
-if "-int" in args:
-    args.remove("-int")
-    int_flag = True
-components = get_components_from_file(args[0])
-lp = lp_from_components(components)
-print(int_flag)
-if int_flag:
-    print("AAA")
-    lp += "int " + ", ".join(map(lambda p: p.name, components.products)) + ";\n"
-write_to_file(lp, args[1])
+    os.popen("lp_solve " + args[1])
