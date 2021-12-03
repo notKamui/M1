@@ -213,3 +213,27 @@ python3 generic.py data/bigdata.txt data.lp  1,34s user 0,06s system 99% cpu 1,4
 3. 1.417
 
 Avec contrainte : np-difficile
+
+## Partie 2
+
+### Exercice 9
+
+```
+$ lp_solve lp/steel.lp
+
+Value of objective function: 135.00000000
+
+Actual values of the variables:
+x1                             41
+x2                              1
+x3                              0
+x4                              0
+x5                              0
+x6                             50
+x7                             43
+```
+
+41 découpes `6*50`
+1 découpe `4*50 ; 1*100`
+50 découpes `1*50 ; 2*120`
+43 découpes `3*100`

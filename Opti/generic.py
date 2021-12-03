@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys
 import os
 from dataclasses import dataclass
@@ -20,18 +22,31 @@ class Components:
 
 
 def get_m_n(content: List[str]) -> Tuple[str, str]:
-    """Retrieves m and n values from a data content"""
+    """Retrieves m and n values from a data content
+
+    :param content: the data content
+    :return: m and n values
+    """
     m, n, *_ = content[0].split()
     return m, n
 
 
 def get_limits(content: List[str]) -> List[float]:
-    """Retrieves the limits from a data content"""
+    """Retrieves the limits from a data content
+
+    :param content: the data content
+    :return: the limits
+    """
     return content[1].split()
 
 
 def get_products(content: List[str], amount: int) -> List[Product]:
-    """Retrieves the products from a data content"""
+    """Retrieves the products from a data content
+
+    :param content: the data content
+    :param amount: the amount of products
+    :return: the products
+    """
     # reading n lines, starting at index 2, for each product
     products = []
     for i in range(2, amount+2):
@@ -44,28 +59,44 @@ def get_products(content: List[str], amount: int) -> List[Product]:
 
 
 def get_components_from_file(fname: str) -> Components:
-    """Builds components from a data file"""
-    with open(fname, "r") as f:
-        content = f.readlines()
+    """Builds components from a data file
 
-        m, n = get_m_n(content)
+    :param fname: the data file name
+    :return: the components
+    """
+    try:
+        with open(fname, "r") as f:
+            content = f.readlines()
 
-        limits = get_limits(content)
-        if len(limits) != int(m):
-            raise Exception("Invalid input: len(limits) != m")
+            m, n = get_m_n(content)
 
-        products = get_products(content, int(n))
+            limits = get_limits(content)
+            if len(limits) != int(m):
+                raise Exception("Invalid input: len(limits) != m")
 
-        return Components(m, n, limits, products)
+            products = get_products(content, int(n))
+
+            return Components(m, n, limits, products)
+    except:
+        print("Error reading file")
+        sys.exit(1)
 
 
 def product_to_factor(product: Product) -> str:
-    """Implicit product as string"""
+    """Implicit product as string
+
+    :param product: the product
+    :return: the product as string from gain and name as a factor
+    """
     return product.gain + product.name
 
 
 def lp_from_components(components: Components) -> str:
-    """Builds a lp file from components"""
+    """Builds a lp file from components
+
+    :param components: the components
+    :return: the lp file content
+    """
     # building the objective function
     objective = "max: "
     objective += " + ".join(map(product_to_factor, components.products))
@@ -88,13 +119,24 @@ def lp_from_components(components: Components) -> str:
 
 
 def write_to_file(content: str, fname: str):
-    """Writes the given content to a file"""
-    with open(fname, "w") as f:
-        f.write(content)
+    """Writes the given content to a file
+
+    :param content: the content
+    :param fname: the file name to write to
+    """
+    try:
+        with open(fname, "w") as f:
+            f.write(content)
+    except:
+        print("Error writing to file")
+        sys.exit(1)
 
 
 def parse_lp_output(fname: str):
-    """Runs lp_solve on the given file and parses the output"""
+    """Runs lp_solve on the given file and parses the output
+
+    :param fname: the file name to read from
+    """
     with os.popen("lp_solve " + fname) as output:
         lines = output.readlines()
         count = 0
@@ -113,6 +155,9 @@ if __name__ == "__main__":
     if "-int" in args:
         args.remove("-int")
         int_flag = True
+    if len(args) != 2:
+        print("Usage: ./generic.py [-int] <input_file> <output_file>")
+        sys.exit(1)
     components = get_components_from_file(args[0])
     lp = lp_from_components(components)
     if int_flag:
