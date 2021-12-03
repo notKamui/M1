@@ -12,9 +12,9 @@ import static java.util.Objects.requireNonNull;
 
 public class Seq<E> implements Iterable<E> {
     private final List<?> internal;
-    private final Function<Object, ? extends E> mapper;
+    private final Function<? super Object, E> mapper;
 
-    private Seq(List<?> internal, Function<Object, ? extends E> mapper) {
+    private Seq(List<?> internal, Function<? super Object, E> mapper) {
         this.internal = requireNonNull(List.copyOf(internal));
         this.mapper = requireNonNull(mapper);
     }
@@ -24,10 +24,9 @@ public class Seq<E> implements Iterable<E> {
         return new Seq<>(requireNonNull(list), it -> (T) it);
     }
 
-    @SuppressWarnings("unchecked")
     @SafeVarargs
     public static <T> Seq<T> of(T... elements) {
-        return new Seq<>(requireNonNull(Arrays.stream(elements).toList()), it -> (T) it);
+        return from(List.of(requireNonNull(elements)));
     }
 
     public E get(int n) {

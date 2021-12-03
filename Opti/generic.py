@@ -98,13 +98,13 @@ def parse_lp_output(fname: str):
     with os.popen("lp_solve " + fname) as output:
         lines = output.readlines()
         count = 0
-        print("opt =", lines[1].split(":")[1].strip())
         for i in range(4, 4 + len(components.products)):
             line = lines[i].split()
             if float(line[1]) != 0:
                 print(" = ".join(line))
                 count += 1
-        print("|> ", count, " different products")
+        print("|> optimum:", lines[1].split(":")[1].strip())
+        print("|>", count, "different product(s)")
 
 
 if __name__ == "__main__":
