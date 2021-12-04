@@ -3,6 +3,7 @@ package fr.uge.poo.cmdline.ex7;
 import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -250,5 +251,49 @@ class CmdLineParserTest {
         assertThrows(ParseException.class, () -> {
             cmdParser.process(arguments);
         });
+    }
+
+    @Test
+    public void processPolicyStandard() {
+        var hosts = new ArrayList<String>();
+        var cmdParser = new CmdLineParser();
+        var optionHosts = new Option.Builder().addName("-hosts").withProcess(2, hosts::addAll).build();
+        cmdParser.registerOption(optionHosts);
+        cmdParser.registerFlag("-legacy", () -> {
+        });
+        String[] arguments = {"-hosts", "localhost", "-legacy", "file"};
+        assertThrows(ParseException.class, () -> {
+            cmdParser.process(arguments, ParameterRetrievalStrategy.STANDARD);
+        });
+    }
+
+    @Test
+    public void processPolicyRelaxed() throws ParseException {
+        var hosts = new ArrayList<String>();
+        var cmdParser = new CmdLineParser();
+        var optionHosts = new Option.Builder().addName("-hosts").withProcess(2, hosts::addAll).build();
+        cmdParser.registerOption(optionHosts);
+        cmdParser.registerFlag("-legacy", () -> {
+        });
+        String[] arguments = {"-hosts", "localhost", "-legacy", "file"};
+        cmdParser.process(arguments, ParameterRetrievalStrategy.RELAXED);
+        assertEquals(1, hosts.size());
+        assertEquals("localhost", hosts.get(0));
+    }
+
+
+    @Test
+    public void processPolicyOldSchool() throws ParseException {
+        var hosts = new ArrayList<String>();
+        var cmdParser = new CmdLineParser();
+        var optionHosts = new Option.Builder().addName("-hosts").withProcess(2, hosts::addAll).build();
+        cmdParser.registerOption(optionHosts);
+        cmdParser.registerFlag("-legacy", () -> {
+        });
+        String[] arguments = {"-hosts", "localhost", "-legacy", "file"};
+        cmdParser.process(arguments, ParameterRetrievalStrategy.OLDSCHOOL);
+        assertEquals(2, hosts.size());
+        assertEquals("localhost", hosts.get(0));
+        assertEquals("-legacy", hosts.get(1));
     }
 }

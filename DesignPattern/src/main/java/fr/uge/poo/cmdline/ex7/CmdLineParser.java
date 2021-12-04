@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -25,14 +26,6 @@ public final class CmdLineParser {
         this.doc = new DocumentationObserver();
         om.registerObserver(doc);
         om.registerObserver(new OptionConflictObserver());
-    }
-
-    private static ParseException missingParameter(String option) {
-        return new ParseException("Missing required option : " + option, 0);
-    }
-
-    private static boolean startsWithDash(String s) {
-        return s.charAt(0) == '-';
     }
 
     /**
@@ -117,16 +110,20 @@ public final class CmdLineParser {
             .build());
     }
 
+    private static boolean startsWithDash(String s) {
+        return s.charAt(0) == '-';
+    }
+
     /**
      * Registers an option with its linked process that receives a fixed amount of arguments.
      *
      * @param option  the name of the option
      * @param arity   the arity of the option
      * @param process the consumer process linked to the option
-     * @throws IllegalArgumentException if the option is already registered
+     * @throws IllegalStateException if the option is already registered
      */
     @Deprecated
-    public void registerWithParameters(String option, int arity, Consumer<List<String>> process) throws IllegalArgumentException {
+    public void registerWithParameters(String option, int arity, Consumer<List<String>> process) throws IllegalStateException {
         registerWithParameters(option, arity, false, process);
     }
 
@@ -137,12 +134,12 @@ public final class CmdLineParser {
      * @param arity    the arity of the option
      * @param required true if the option should be required
      * @param process  the consumer process linked to the option
-     * @throws IllegalArgumentException if the option is already registered
+     * @throws IllegalStateException if the option is already registered
      */
     @Deprecated
-    public void registerWithParameters(String option, int arity, boolean required, Consumer<List<String>> process) throws IllegalArgumentException {
+    public void registerWithParameters(String option, int arity, boolean required, Consumer<List<String>> process) throws IllegalStateException {
         requireNonNull(option);
-        if (arity < 0) throw new IllegalArgumentException("Arity cannot be negative");
+        if (arity < 0) throw new IllegalStateException("Arity cannot be negative");
         requireNonNull(process);
         om.register(option, new Option.Builder()
             .addName(option)
@@ -153,38 +150,14 @@ public final class CmdLineParser {
     }
 
     /**
-     * Processes an array of arguments.
+     * Processes an array of arguments with the STANDARD {@link ParameterRetrievalStrategy} policy.
      *
      * @param arguments an array of arguments to process
      * @return the list of arguments that are not registered options
-     * @throws IllegalArgumentException if the list of arguments either contain an unregistered option or one option is missing a parameter
-     * @throws IllegalStateException    if one required option has not been set
+     * @throws ParseException if an error while processing the arguments occurs
      */
-    public List<String> process(String[] arguments) throws IllegalArgumentException, ParseException {
-        var unregistered = new ArrayList<String>();
-        var args = List.of(arguments).iterator();
-
-        while (args.hasNext()) {
-            var option = args.next();
-            var proc = om.processOption(option);
-            if (proc.isEmpty()) {
-                if (startsWithDash(option)) throw new ParseException("Unregistered option " + option, 0);
-                unregistered.add(option);
-            } else {
-                var actualOption = proc.get();
-                var params = new ArrayList<String>();
-                for (var i = 0; i < actualOption.arity(); i++) {
-                    if (!args.hasNext()) throw missingParameter(option);
-                    var param = args.next();
-                    if (startsWithDash(param)) throw missingParameter(option);
-                    params.add(param);
-                }
-                actualOption.process().accept(params);
-            }
-        }
-
-        om.finishProcess();
-        return unregistered;
+    public List<String> process(String[] arguments) throws ParseException {
+        return process(arguments, ParameterRetrievalStrategy.STANDARD);
     }
 
     private interface OptionManagerObserver {
@@ -337,5 +310,34 @@ public final class CmdLineParser {
                 }
             }
         }
+    }
+
+    /**
+     * Processes an array of arguments.
+     *
+     * @param arguments         an array of arguments to process
+     * @param retrievalStrategy the retrieval strategy to use
+     * @return the list of arguments that are not registered options
+     * @throws ParseException if an error while processing the arguments occurs
+     */
+    public List<String> process(String[] arguments, ParameterRetrievalStrategy retrievalStrategy) throws ParseException {
+        var unregistered = new ArrayList<String>();
+        var args = PeekIterator.of(List.of(arguments));
+        while (args.hasNext()) {
+            var option = args.next();
+            System.out.println(option);
+            var proc = om.processOption(option);
+            if (proc.isEmpty()) {
+                if (startsWithDash(option)) throw new ParseException("Unregistered option " + option, 0);
+                unregistered.add(option);
+            } else {
+                var actualOption = proc.get();
+                var params = retrievalStrategy.retrieveParameter(args, actualOption, option);
+                actualOption.process().accept(params);
+            }
+        }
+
+        om.finishProcess();
+        return unregistered;
     }
 }
