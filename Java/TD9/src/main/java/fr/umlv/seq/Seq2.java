@@ -12,38 +12,40 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import static java.util.Objects.requireNonNull;
 
-public class Seq<E> implements Iterable<E> {
-    private final List<?> internal;
+public class Seq2<E> implements Iterable<E> {
+    private final Object[] internal;
     private final Function<Object, E> mapper;
 
-    private Seq(List<?> internal, Function<Object, E> mapper) {
-        this.internal = List.copyOf(requireNonNull(internal));
+    private Seq2(Object[] internal, Function<Object, E> mapper) {
+        this.internal = requireNonNull(internal);
         this.mapper = requireNonNull(mapper);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Seq<T> from(List<? extends T> list) {
-        return new Seq<>(list, it -> (T) it);
+    public static <T> Seq2<T> from(List<? extends T> list) {
+        requireNonNull(list);
+        for (var e : list) requireNonNull(e);
+        return new Seq2<>(list.toArray(), it -> (T) it);
     }
 
     @SafeVarargs
-    public static <T> Seq<T> of(T... elements) {
+    public static <T> Seq2<T> of(T... elements) {
         return from(List.of(elements));
     }
 
     public E get(int n) {
         if (n < 0 || n >= size())
             throw new IndexOutOfBoundsException("Index out of bounds 0 until" + size() + " for " + n);
-        return mapper.apply(internal.get(n));
+        return mapper.apply(internal[n]);
     }
 
     public int size() {
-        return internal.size();
+        return internal.length;
     }
 
-    public <R> Seq<R> map(Function<? super E, ? extends R> mapper) {
+    public <R> Seq2<R> map(Function<? super E, ? extends R> mapper) {
         requireNonNull(mapper);
-        return new Seq<>(internal, this.mapper.andThen(mapper));
+        return new Seq2<>(internal, this.mapper.andThen(mapper));
     }
 
     public Optional<E> findFirst() {
@@ -76,42 +78,51 @@ public class Seq<E> implements Iterable<E> {
         };
     }
 
-    private Spliterator<E> splitMapper(Spliterator<?> self) {
-        if (self == null) return null;
+    private Spliterator<E> spliterator(int start, int end) {
         return new Spliterator<>() {
+            private int counter = start;
 
             @Override
             public boolean tryAdvance(Consumer<? super E> action) {
                 requireNonNull(action);
-                return self.tryAdvance(e -> action.accept(mapper.apply(e)));
+                if (counter >= end) return false;
+                action.accept(get(counter));
+                counter++;
+                return true;
             }
 
             @Override
             public Spliterator<E> trySplit() {
-                return splitMapper(self.trySplit());
+                var left = counter;
+                counter = (counter + end) >>> 1;
+                return left < counter
+                    ? spliterator(left, counter)
+                    : null;
             }
 
             @Override
             public long estimateSize() {
-                return self.estimateSize();
+                return end - counter;
             }
 
             @Override
             public int characteristics() {
-                return self.characteristics() | IMMUTABLE | NONNULL | ORDERED | SIZED | SUBSIZED;
+                return SIZED | NONNULL | ORDERED | IMMUTABLE;
             }
         };
     }
 
     @Override
     public Spliterator<E> spliterator() {
-        return splitMapper(internal.spliterator());
+        return spliterator(0, size());
     }
 
     @Override
     public void forEach(Consumer<? super E> action) {
         requireNonNull(action);
-        internal.forEach(e -> action.accept(mapper.apply(e)));
+        for (var e : internal) {
+            action.accept(mapper.apply(e));
+        }
     }
 
     @Override
