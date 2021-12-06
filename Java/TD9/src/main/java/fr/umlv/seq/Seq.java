@@ -137,7 +137,7 @@ public class Seq<E> implements Iterable<E> {
 
             @Override
             public int characteristics() {
-                return self.characteristics() | IMMUTABLE | NONNULL | ORDERED;
+                return self.characteristics() | IMMUTABLE | NONNULL | ORDERED | SIZED | SUBSIZED;
             }
         };
     }
