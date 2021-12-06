@@ -14,9 +14,9 @@ import static java.util.Objects.requireNonNull;
 
 public class Seq<E> implements Iterable<E> {
     private final List<?> internal;
-    private final Function<? super Object, E> mapper;
+    private final Function<Object, E> mapper;
 
-    private Seq(List<?> internal, Function<? super Object, E> mapper) {
+    private Seq(List<?> internal, Function<Object, E> mapper) {
         this.internal = requireNonNull(List.copyOf(internal));
         this.mapper = requireNonNull(mapper);
     }
