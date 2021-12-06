@@ -23,12 +23,12 @@ public class Seq<E> implements Iterable<E> {
 
     @SuppressWarnings("unchecked")
     public static <T> Seq<T> from(List<? extends T> list) {
-        return new Seq<>(requireNonNull(list), it -> (T) it);
+        return new Seq<>(list, it -> (T) it);
     }
 
     @SafeVarargs
     public static <T> Seq<T> of(T... elements) {
-        return from(List.of(requireNonNull(elements)));
+        return from(List.of(elements));
     }
 
     public E get(int n) {
