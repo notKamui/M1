@@ -29,8 +29,11 @@ public class Seq2<E> implements Iterable<E> {
     }
 
     @SafeVarargs
+    @SuppressWarnings("unchecked")
     public static <T> Seq2<T> of(T... elements) {
-        return from(List.of(elements));
+        requireNonNull(elements);
+        for (var e : elements) requireNonNull(e);
+        return new Seq2<>(elements, it -> (T) it);
     }
 
     public E get(int n) {
