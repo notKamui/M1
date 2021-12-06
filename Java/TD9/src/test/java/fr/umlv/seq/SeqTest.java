@@ -20,8 +20,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -552,110 +556,136 @@ public class SeqTest {
     }
 
 
-//    // Q8
-//
-//    @Test @Tag("Q8")
-//    public void testStreamSimple() {
-//        var list = List.of("foo", "bar");
-//        var seq = Seq.from(list);
-//        Stream<String> stream = seq.stream();
-//        assertEquals(list, stream.collect(toUnmodifiableList()));
-//    }
-//    @Test @Tag("Q8")
-//    public void testStreamSimple2() {
-//        var list = new ArrayList<Integer>();
-//        Stream<Integer> stream = Seq.of(7, 77).stream();
-//        stream.forEach(list::add);
-//        assertEquals(List.of(7, 77), list);
-//    }
-//    @Test @Tag("Q8")
-//    public void testStreamCount() {
-//        var list = range(0, 1_000).boxed().collect(toUnmodifiableList());
-//        var seq = Seq.from(list);
-//        var stream = seq.stream();
-//        assertEquals(seq.size(), stream.count());
-//    }
-//    @Test @Tag("Q8")
-//    public void testLazyMApAndNoAdditionalDataStructure() {
-//        var list = List.of("foo", "bar");
-//        var stream = Seq.from(list).map(__->fail()).stream();
-//    }
-//    @Test @Tag("Q8")
-//    public void testStreamALot() {
-//        var list = range(0, 1_000_000).boxed().collect(toUnmodifiableList());
-//        var stream = Seq.from(list).stream();
-//        assertEquals(list, stream.collect(toUnmodifiableList()));
-//    }
-//    @Test @Tag("Q8")
-//    public void testParallelStreamALot() {
-//        var list = range(0, 1_000_000).boxed().collect(toUnmodifiableList());
-//        var stream = Seq.from(list).stream().parallel();
-//        assertEquals(list, stream.collect(toUnmodifiableList()));
-//    }
-//    @Test @Tag("Q8")
-//    public void testStreamSpliteratorCharacteristic() {
-//        var spliterator = Seq.of("foo").stream().spliterator();
-//        assertTrue(spliterator.hasCharacteristics(Spliterator.IMMUTABLE));
-//        assertTrue(spliterator.hasCharacteristics(Spliterator.NONNULL));
-//        assertTrue(spliterator.hasCharacteristics(Spliterator.ORDERED));
-//    }
-//    @Test @Tag("Q8")
-//    public void testStreamConsumerNull() {
-//        assertAll(
-//            () -> assertThrows(NullPointerException.class, () -> Seq.of().stream().spliterator().forEachRemaining(null)),
-//            () -> assertThrows(NullPointerException.class, () -> Seq.of().stream().spliterator().tryAdvance(null))
-//        );
-//    }
-//    @Test @Tag("Q8")
-//    public void testStreamSpliteratorNotSplitable() {
-//        assertAll(
-//            () -> assertNull(Seq.of().stream().spliterator().trySplit()),
-//            () -> assertNull(Seq.of("foo").stream().spliterator().trySplit())
-//        );
-//    }
-//    @Test @Tag("Q8")
-//    public void testMapStream() {
-//        var seq1 = Seq.of("1", "3").map(s -> s.concat(" fizz"));
-//        var seq2 = seq1.map(s -> s + " buzz");
-//        assertAll(
-//            () -> assertEquals("1 fizz - 3 fizz",seq1.stream().collect(Collectors.joining(" - "))),
-//            () -> assertEquals("1 fizz buzz - 3 fizz buzz",seq2.stream().collect(Collectors.joining(" - ")))
-//        );
-//    }
-//    @Test @Tag("Q8")
-//    public void testFirstMapStream() {
-//        var seq1 = Seq.of("1", "3").map(s -> s.concat(" zorg"));
-//        var seq2 = Seq.of().map(s -> s + " zorg");
-//        assertAll(
-//            () -> assertEquals(seq1.stream().findFirst().orElseThrow(), seq1.findFirst().orElseThrow()),
-//            () -> assertTrue(seq2.findFirst().isEmpty())
-//        );
-//    }
-//
-//
-//    // Q9
-//
-//    @Test @Tag("Q9")
-//    public void testStreamSpliteratorSplitable() {
-//        var list = range(0, 1_000_000).boxed().collect(toUnmodifiableList());
-//        var spliterator = Seq.from(list).stream().spliterator();
-//        assertNotNull(spliterator.trySplit());
-//    }
-//    @Test @Tag("Q9")
-//    public void testStreamSpliteratorSplitableAndFair() {
-//        var list = range(0, 1_000_000).boxed().collect(toUnmodifiableList());
-//        var spliterator = Seq.from(list).stream().spliterator();
-//        var spliterator2 = spliterator.trySplit();
-//        assertNotNull(spliterator2);
-//        assertEquals(1_000_000 / 2, spliterator.estimateSize());
-//        assertEquals(1_000_000 / 2, spliterator2.estimateSize());
-//    }
-//    @Test @Tag("Q9")
-//    public void testStreamSpliteratorSplitableWithMap() {
-//        var list = range(0, 1_000_000).boxed().collect(toUnmodifiableList());
-//        var spliterator = Seq.from(list).map(x->42).stream().spliterator();
-//        var newSpliterator = spliterator.trySplit();
-//        assertNotNull(newSpliterator);
-//        assertEquals(42, StreamSupport.stream(newSpliterator,false).findFirst().orElseThrow());
-//    }
+    // Q8
+
+    @Test
+    @Tag("Q8")
+    public void testStreamSimple() {
+        var list = List.of("foo", "bar");
+        var seq = Seq.from(list);
+        Stream<String> stream = seq.stream();
+        assertEquals(list, stream.toList());
+    }
+
+    @Test
+    @Tag("Q8")
+    public void testStreamSimple2() {
+        var list = new ArrayList<Integer>();
+        Stream<Integer> stream = Seq.of(7, 77).stream();
+        stream.forEach(list::add);
+        assertEquals(List.of(7, 77), list);
+    }
+
+    @Test
+    @Tag("Q8")
+    public void testStreamCount() {
+        var list = range(0, 1_000).boxed().toList();
+        var seq = Seq.from(list);
+        var stream = seq.stream();
+        assertEquals(seq.size(), stream.count());
+    }
+
+    @Test
+    @Tag("Q8")
+    public void testLazyMApAndNoAdditionalDataStructure() {
+        var list = List.of("foo", "bar");
+        var stream = Seq.from(list).map(__ -> fail()).stream();
+    }
+
+    @Test
+    @Tag("Q8")
+    public void testStreamALot() {
+        var list = range(0, 1_000_000).boxed().toList();
+        var stream = Seq.from(list).stream();
+        assertEquals(list, stream.toList());
+    }
+
+    @Test
+    @Tag("Q8")
+    public void testParallelStreamALot() {
+        var list = range(0, 1_000_000).boxed().toList();
+        var stream = Seq.from(list).stream().parallel();
+        assertEquals(list, stream.toList());
+    }
+
+    @Test
+    @Tag("Q8")
+    public void testStreamSpliteratorCharacteristic() {
+        var spliterator = Seq.of("foo").stream().spliterator();
+        assertTrue(spliterator.hasCharacteristics(Spliterator.IMMUTABLE));
+        assertTrue(spliterator.hasCharacteristics(Spliterator.NONNULL));
+        assertTrue(spliterator.hasCharacteristics(Spliterator.ORDERED));
+    }
+
+    @Test
+    @Tag("Q8")
+    public void testStreamConsumerNull() {
+        assertAll(
+            () -> assertThrows(NullPointerException.class, () -> Seq.of().stream().spliterator().forEachRemaining(null)),
+            () -> assertThrows(NullPointerException.class, () -> Seq.of().stream().spliterator().tryAdvance(null))
+        );
+    }
+
+    @Test
+    @Tag("Q8")
+    public void testStreamSpliteratorNotSplitable() {
+        assertAll(
+            () -> assertNull(Seq.of().stream().spliterator().trySplit()),
+            () -> assertNull(Seq.of("foo").stream().spliterator().trySplit())
+        );
+    }
+
+    @Test
+    @Tag("Q8")
+    public void testMapStream() {
+        var seq1 = Seq.of("1", "3").map(s -> s.concat(" fizz"));
+        var seq2 = seq1.map(s -> s + " buzz");
+        assertAll(
+            () -> assertEquals("1 fizz - 3 fizz", seq1.stream().collect(Collectors.joining(" - "))),
+            () -> assertEquals("1 fizz buzz - 3 fizz buzz", seq2.stream().collect(Collectors.joining(" - ")))
+        );
+    }
+
+    @Test
+    @Tag("Q8")
+    public void testFirstMapStream() {
+        var seq1 = Seq.of("1", "3").map(s -> s.concat(" zorg"));
+        var seq2 = Seq.of().map(s -> s + " zorg");
+        assertAll(
+            () -> assertEquals(seq1.stream().findFirst().orElseThrow(), seq1.findFirst().orElseThrow()),
+            () -> assertTrue(seq2.findFirst().isEmpty())
+        );
+    }
+
+
+    // Q9
+
+    @Test
+    @Tag("Q9")
+    public void testStreamSpliteratorSplitable() {
+        var list = range(0, 1_000_000).boxed().toList();
+        var spliterator = Seq.from(list).stream().spliterator();
+        assertNotNull(spliterator.trySplit());
+    }
+
+    @Test
+    @Tag("Q9")
+    public void testStreamSpliteratorSplitableAndFair() {
+        var list = range(0, 1_000_000).boxed().toList();
+        var spliterator = Seq.from(list).stream().spliterator();
+        var spliterator2 = spliterator.trySplit();
+        assertNotNull(spliterator2);
+        assertEquals(1_000_000 / 2, spliterator.estimateSize());
+        assertEquals(1_000_000 / 2, spliterator2.estimateSize());
+    }
+
+    @Test
+    @Tag("Q9")
+    public void testStreamSpliteratorSplitableWithMap() {
+        var list = range(0, 1_000_000).boxed().toList();
+        var spliterator = Seq.from(list).map(x -> 42).stream().spliterator();
+        var newSpliterator = spliterator.trySplit();
+        assertNotNull(newSpliterator);
+        assertEquals(42, StreamSupport.stream(newSpliterator, false).findFirst().orElseThrow());
+    }
 }
