@@ -17,7 +17,7 @@ public class Seq<E> implements Iterable<E> {
     private final Function<Object, E> mapper;
 
     private Seq(List<?> internal, Function<Object, E> mapper) {
-        this.internal = requireNonNull(List.copyOf(internal));
+        this.internal = List.copyOf(requireNonNull(internal));
         this.mapper = requireNonNull(mapper);
     }
 
