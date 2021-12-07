@@ -17,6 +17,11 @@ public final class ElapsedTimeCmd implements STPCommand {
     }
 
     @Override
+    public String name() {
+        return "ElapsedTimeCmd";
+    }
+
+    @Override
     public void accept(STPCommandVisitor visitor) {
         visitor.visit(this);
     }

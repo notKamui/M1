@@ -45,12 +45,12 @@ public class PeekIterator<T> implements Iterator<T> {
      * @throws NoSuchElementException if there is no next element.
      */
     public T next() {
-        if (!hasNext()) throw new NoSuchElementException("No more elements");
         T value;
         if (peeked != null) {
             value = peeked;
             peeked = null;
         } else {
+            if (!hasNext()) throw new NoSuchElementException("No more elements");
             value = iterator.next();
         }
         return value;
@@ -63,9 +63,9 @@ public class PeekIterator<T> implements Iterator<T> {
      * @throws NoSuchElementException if there is no next element.
      */
     public T peek() {
-        if (!hasNext()) throw new NoSuchElementException("No more elements");
         T value;
         if (peeked == null) {
+            if (!hasNext()) throw new NoSuchElementException("No more elements");
             peeked = iterator.next();
         }
         value = peeked;

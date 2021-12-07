@@ -7,6 +7,7 @@ import com.evilcorp.stphipster.STPCommandProcessor;
 import com.evilcorp.stphipster.STPParser;
 import com.evilcorp.stphipster.StartTimerCmd;
 import com.evilcorp.stphipster.StopTimerCmd;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Optional;
@@ -40,11 +41,11 @@ public class ApplicationHipster {
                 var timerId = cmd.timerId();
                 var startTime = timers.get(timerId);
                 if (startTime == null){
-                    System.out.println("Timer "+timerId+" was never started");
+                    System.out.println("Timer " + timerId + " was never started");
                     return;
                 }
                 var currentTime =  System.currentTimeMillis();
-                System.out.println("Timer "+timerId+" was stopped after running for "+(currentTime-startTime)+"ms");
+                System.out.println("Timer " + timerId + " was stopped after running for " + (currentTime - startTime) + "ms");
                 timers.put(timerId, null);
             }
 
@@ -57,13 +58,13 @@ public class ApplicationHipster {
                         System.out.println("Unknown timer "+timerId);
                         continue;
                     }
-                    System.out.println("Ellapsed time on timerId "+timerId+" : "+(currentTime-startTime)+"ms");
+                    System.out.println("Elapsed time on timerId " + timerId + " : " + (currentTime - startTime) + "ms");
                 }
             }
         };
         while(scan.hasNextLine()){
             var line = scan.nextLine();
-            if (line.equals("quit")){
+            if (line.equals("quit")) {
                 break;
             }
             Optional<STPCommand> answer = STPParser.parse(line);
