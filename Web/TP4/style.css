@@ -78,6 +78,10 @@ main {
     align-items: center;
 }
 
+.article-head img {
+    width: 70%;
+}
+
 .article-head button {
     transition: 500ms ease-in-out;
     background-color: aliceblue;
@@ -87,7 +91,7 @@ main {
 }
 
 .article-head button:hover {
-    transform: scale(120%) rotate(720deg);
+    transform: scale(1.2) rotate(720deg);
     transition: 500ms ease-in-out;
     background-color: red;
     color: white;

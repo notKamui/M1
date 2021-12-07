@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="description" content="">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="reset.css">
+    <style>
+        .form {
+            padding: 2em;
+        }
+
+        .field {
+            margin: 1em;
+        }
+    </style>
+    <script>
+        function validateForm() {
+            const userform = document.userform;
+
+            const firstname = userform.firstname;
+            if (firstname.value === "") {
+                alert("Please enter a firstname");
+                firstname.focus();
+                return false;
+            }
+
+            const lastname = userform.lastname;
+            if (lastname.value === "") {
+                alert("Please enter a lastname");
+                lastname.focus();
+                return false;
+            }
+
+            const age = userform.age;
+            if (userform.age.value === "") {
+                alert("Please enter an age");
+                age.focus();
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <form class="form" action="#" method="POST" name="userform" onsubmit="return validateForm()" enctype="text/plain">
+        <div class="field">
+            <label for="firstname">Firstname :</label>
+            <input type="text" name="firstname" id="firstname" pattern="\p{L}{2,}" required>
+        </div>
+        <div class="field">
+            <label for="lastname">Lastname :</label>
+            <input type="text" name="lastname" id="lastname" pattern="\p{L}{2,}" required>
+        </div>
+        <div class="field">
+            <label for="age">Age :</label>
+            <input type="number" name="age" id="age" pattern="[0-9]+" required>
+        </div>
+
+        <input class="field" type="submit" value="Submit">
+    </form>
+</body>
+</html>

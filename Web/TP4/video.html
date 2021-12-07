@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="description" content="">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="reset.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .videoplayer {
+            width: 45em;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ctrl {
+            margin-top: 1em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .button {
+            background-color: aliceblue;
+            width: 3.5em;
+            height: 3.5em;
+            border: 0;
+            padding: 1em;
+            border-radius: 999px;
+            transition: 300ms ease-in-out;
+        }
+
+        .button:hover {
+            background-color: slateblue;
+            transform: scale(1.1);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="videoplayer">
+        <video src="media/bunny.mp4" poster="media/bunny.jpg" id="video"></video>
+        <div class="ctrl">
+            <div class="leftctrl">
+                <button class="button" onclick="video.play()"><i class="material-icons">play_arrow</i></button>
+                <button class="button" onclick="video.pause()"><i class="material-icons">pause</i></button>
+            </div>
+            <div class="rightctrl">
+                <button class="button" onclick="video.load()"><i class="material-icons">stop</i></button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
