@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -160,6 +161,35 @@ public final class CmdLineParser {
         return process(arguments, ParameterRetrievalStrategy.STANDARD);
     }
 
+    /**
+     * Processes an array of arguments.
+     *
+     * @param arguments         an array of arguments to process
+     * @param retrievalStrategy the retrieval strategy to use
+     * @return the list of arguments that are not registered options
+     * @throws ParseException if an error while processing the arguments occurs
+     */
+    public List<String> process(String[] arguments, ParameterRetrievalStrategy retrievalStrategy) throws ParseException {
+        var unregistered = new ArrayList<String>();
+        var args = PeekIterator.of(List.of(arguments));
+        while (args.hasNext()) {
+            var option = args.next();
+            System.out.println(option);
+            var proc = om.processOption(option);
+            if (proc.isEmpty()) {
+                if (startsWithDash(option)) throw new ParseException("Unregistered option " + option, 0);
+                unregistered.add(option);
+            } else {
+                var actualOption = proc.get();
+                var params = retrievalStrategy.retrieveParameter(args, actualOption, option, om.nameToOption.keySet());
+                actualOption.process().accept(params);
+            }
+        }
+
+        om.finishProcess();
+        return unregistered;
+    }
+
     private interface OptionManagerObserver {
         default void onRegisteredOption(OptionManager optionManager, Option option) {
         }
@@ -174,6 +204,7 @@ public final class CmdLineParser {
     private static final class OptionManager {
         private final HashMap<String, Option> nameToOption = new HashMap<>();
         private final ArrayList<OptionManagerObserver> omObservers = new ArrayList<>();
+        private final HashSet<Option> seen = new HashSet<>();
 
         /**
          * Registers a new observer to the manager.
@@ -219,6 +250,7 @@ public final class CmdLineParser {
                 for (var observer : omObservers) {
                     observer.onProcessedOption(this, option.get());
                 }
+                seen.add(option.get());
             }
             return option;
         }
@@ -230,6 +262,10 @@ public final class CmdLineParser {
             for (var observer : omObservers) {
                 observer.onFinishedProcess(this);
             }
+        }
+
+        Set<Option> seen() {
+            return Set.copyOf(seen);
         }
     }
 
@@ -253,7 +289,6 @@ public final class CmdLineParser {
 
     private static class RequiredOptionObserver implements OptionManagerObserver {
         private final HashSet<Option> required = new HashSet<>();
-        private final HashSet<Option> seen = new HashSet<>();
 
         @Override
         public void onRegisteredOption(OptionManager optionManager, Option option) {
@@ -262,12 +297,8 @@ public final class CmdLineParser {
         }
 
         @Override
-        public void onProcessedOption(OptionManager optionManager, Option option) {
-            seen.add(option);
-        }
-
-        @Override
         public void onFinishedProcess(OptionManager optionManager) throws ParseException {
+            var seen = optionManager.seen();
             var missing = required.stream()
                 .filter(option -> !seen.contains(option))
                 .findAny();
@@ -291,15 +322,10 @@ public final class CmdLineParser {
     }
 
     private static class OptionConflictObserver implements OptionManagerObserver {
-        private final HashSet<Option> seen = new HashSet<>();
-
-        @Override
-        public void onProcessedOption(OptionManager optionManager, Option option) {
-            seen.add(option);
-        }
 
         @Override
         public void onFinishedProcess(OptionManager optionManager) throws ParseException {
+            var seen = optionManager.seen();
             var seenNames = seen.stream().flatMap(option -> option.names().stream()).collect(Collectors.toSet());
             for (var option : seen) {
                 if (option.conflicts().isEmpty()) continue;
@@ -310,34 +336,5 @@ public final class CmdLineParser {
                 }
             }
         }
-    }
-
-    /**
-     * Processes an array of arguments.
-     *
-     * @param arguments         an array of arguments to process
-     * @param retrievalStrategy the retrieval strategy to use
-     * @return the list of arguments that are not registered options
-     * @throws ParseException if an error while processing the arguments occurs
-     */
-    public List<String> process(String[] arguments, ParameterRetrievalStrategy retrievalStrategy) throws ParseException {
-        var unregistered = new ArrayList<String>();
-        var args = PeekIterator.of(List.of(arguments));
-        while (args.hasNext()) {
-            var option = args.next();
-            System.out.println(option);
-            var proc = om.processOption(option);
-            if (proc.isEmpty()) {
-                if (startsWithDash(option)) throw new ParseException("Unregistered option " + option, 0);
-                unregistered.add(option);
-            } else {
-                var actualOption = proc.get();
-                var params = retrievalStrategy.retrieveParameter(args, actualOption, option);
-                actualOption.process().accept(params);
-            }
-        }
-
-        om.finishProcess();
-        return unregistered;
     }
 }

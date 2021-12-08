@@ -8,7 +8,7 @@ public record Value(int value) implements Expr {
     }
 
     @Override
-    public int accept(ExprVisitor visitor) {
+    public String accept(ExprVisitor visitor) {
         return visitor.visit(this);
     }
 }

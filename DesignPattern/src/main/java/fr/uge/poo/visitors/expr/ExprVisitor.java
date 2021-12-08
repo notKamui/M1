@@ -1,7 +1,7 @@
 package fr.uge.poo.visitors.expr;
 
 public interface ExprVisitor {
-    int visit(BinOp binOp);
+    String visit(BinOp binOp);
 
-    int visit(Value value);
+    String visit(Value value);
 }

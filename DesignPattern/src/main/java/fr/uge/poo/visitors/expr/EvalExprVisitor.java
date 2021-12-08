@@ -2,17 +2,17 @@ package fr.uge.poo.visitors.expr;
 
 public class EvalExprVisitor implements ExprVisitor {
     @Override
-    public int visit(BinOp binOp) {
+    public String visit(BinOp binOp) {
         return binOp
             .operator()
             .applyAsInt(
-                binOp.left().accept(this),
-                binOp.right().accept(this)
-            );
+                Integer.parseInt(binOp.left().accept(this)),
+                Integer.parseInt(binOp.right().accept(this))
+            ) + "";
     }
 
     @Override
-    public int visit(Value value) {
-        return value.value();
+    public String visit(Value value) {
+        return value.value() + "";
     }
 }

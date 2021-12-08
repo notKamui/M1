@@ -8,7 +8,8 @@ public class Application {
         Iterator<String> it = Pattern.compile(" ").splitAsStream("+ * 4 + 1 1 + 2 3").iterator();
         Expr expr = Expr.parseExpr(it);
         var evaluator = new EvalExprVisitor();
-        System.out.println(expr);
+        var toString = new ToStringVisitor();
+        System.out.println(expr.accept(toString));
         System.out.println(expr.accept(evaluator));
     }
 }

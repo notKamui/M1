@@ -17,5 +17,5 @@ public interface Expr {
         };
     }
 
-    int accept(ExprVisitor visitor);
+    String accept(ExprVisitor visitor);
 }

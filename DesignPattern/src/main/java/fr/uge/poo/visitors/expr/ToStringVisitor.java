@@ -2,12 +2,16 @@ package fr.uge.poo.visitors.expr;
 
 public class ToStringVisitor implements ExprVisitor {
     @Override
-    public int visit(BinOp binOp) {
-        return 0;
+    public String visit(BinOp binOp) {
+        return "(%s %s %s)".formatted(
+            binOp.left().accept(this),
+            binOp.opName(),
+            binOp.right().accept(this)
+        );
     }
 
     @Override
-    public int visit(Value value) {
-        return 0;
+    public String visit(Value value) {
+        return value.value() + "";
     }
 }

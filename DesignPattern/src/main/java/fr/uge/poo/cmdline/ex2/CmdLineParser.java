@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -72,6 +73,6 @@ public final class CmdLineParser {
         return unregistered;
     }
 
-    private static record Process(int arity, Consumer<List<String>> it) {
+    private record Process(int arity, Consumer<List<String>> it) {
     }
 }
