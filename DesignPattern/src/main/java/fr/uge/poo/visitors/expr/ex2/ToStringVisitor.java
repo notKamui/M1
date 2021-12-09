@@ -1,4 +1,4 @@
-package fr.uge.poo.visitors.expr;
+package fr.uge.poo.visitors.expr.ex2;
 
 /**
  * Expression visitor that returns nothing relevant, and with a unique {@link StringBuilder} context

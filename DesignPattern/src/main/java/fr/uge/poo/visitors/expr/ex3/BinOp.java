@@ -1,4 +1,4 @@
-package fr.uge.poo.visitors.expr;
+package fr.uge.poo.visitors.expr.ex3;
 
 import java.util.Objects;
 import java.util.function.IntBinaryOperator;
@@ -26,10 +26,5 @@ public record BinOp(
         Objects.requireNonNull(right);
         Objects.requireNonNull(opName);
         Objects.requireNonNull(operator);
-    }
-
-    @Override
-    public <R, C> R accept(ExprVisitor<R, C> visitor, C context) {
-        return visitor.visit(this, context);
     }
 }
