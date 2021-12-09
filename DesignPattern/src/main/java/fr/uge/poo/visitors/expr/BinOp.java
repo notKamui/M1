@@ -3,6 +3,9 @@ package fr.uge.poo.visitors.expr;
 import java.util.Objects;
 import java.util.function.IntBinaryOperator;
 
+/**
+ * Binary operator node
+ */
 public record BinOp(
     Expr left,
     Expr right,
@@ -10,6 +13,14 @@ public record BinOp(
     IntBinaryOperator operator
 ) implements Expr {
 
+    /**
+     * Constructs and operator node.
+     *
+     * @param left the left node
+     * @param right the right node
+     * @param opName the name of the operator
+     * @param operator the operation itself
+     */
     public BinOp {
         Objects.requireNonNull(left);
         Objects.requireNonNull(right);
@@ -18,7 +29,7 @@ public record BinOp(
     }
 
     @Override
-    public String accept(ExprVisitor visitor) {
-        return visitor.visit(this);
+    public <R, C> R accept(ExprVisitor<R, C> visitor, C context) {
+        return visitor.visit(this, context);
     }
 }

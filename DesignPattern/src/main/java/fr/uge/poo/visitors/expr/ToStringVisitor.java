@@ -1,17 +1,23 @@
 package fr.uge.poo.visitors.expr;
 
-public class ToStringVisitor implements ExprVisitor {
+/**
+ * Expression visitor that returns nothing relevant, and with a unique {@link StringBuilder} context
+ * to apply the infix expression.
+ */
+public class ToStringVisitor implements ExprVisitor<Object, StringBuilder> {
     @Override
-    public String visit(BinOp binOp) {
-        return "(%s %s %s)".formatted(
-            binOp.left().accept(this),
-            binOp.opName(),
-            binOp.right().accept(this)
-        );
+    public Object visit(BinOp binOp, StringBuilder context) {
+        context.append('(');
+        binOp.left().accept(this, context);
+        context.append(' ').append(binOp.opName()).append(' ');
+        binOp.right().accept(this, context);
+        context.append(')');
+        return null;
     }
 
     @Override
-    public String visit(Value value) {
-        return value.value() + "";
+    public Object visit(Value value, StringBuilder context) {
+        context.append(value.value());
+        return null;
     }
 }

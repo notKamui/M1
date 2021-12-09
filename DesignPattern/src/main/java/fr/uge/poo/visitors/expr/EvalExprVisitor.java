@@ -1,18 +1,22 @@
 package fr.uge.poo.visitors.expr;
 
-public class EvalExprVisitor implements ExprVisitor {
+/**
+ * Expression visitor that returns an {@link Integer}, without context
+ * to apply the result of the evaluation of the actual expression.
+ */
+public class EvalExprVisitor implements ExprVisitor<Integer, Object> {
     @Override
-    public String visit(BinOp binOp) {
+    public Integer visit(BinOp binOp, Object context) {
         return binOp
             .operator()
             .applyAsInt(
-                Integer.parseInt(binOp.left().accept(this)),
-                Integer.parseInt(binOp.right().accept(this))
-            ) + "";
+                binOp.left().accept(this, null),
+                binOp.right().accept(this, null)
+            );
     }
 
     @Override
-    public String visit(Value value) {
-        return value.value() + "";
+    public Integer visit(Value value, Object context) {
+        return value.value();
     }
 }
