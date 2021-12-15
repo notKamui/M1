@@ -21,7 +21,8 @@ public class JSONPrinterTest {
         var person = new Person("John", "Doe");
         var personJSON = JSONPrinter.toJSON(person);
         assertEquals(
-            Map.of("firstName", "John", "lastName", "Doe"), IncompleteJSONParser.parse(personJSON));
+            Map.of("firstName", "John", "lastName", "Doe"), IncompleteJSONParser.parse(personJSON)
+        );
     }
 
     @Test @Tag("Q1")
@@ -48,7 +49,8 @@ public class JSONPrinterTest {
         var bookJSON = JSONPrinter.toJSON(book);
         assertEquals(
             Map.of("book-title", "The Girl with The Dragon Tattoo", "book-author", "Stieg Larsson", "book-price", 100),
-            IncompleteJSONParser.parse(bookJSON));
+            IncompleteJSONParser.parse(bookJSON)
+        );
     }
 
 
@@ -60,6 +62,7 @@ public class JSONPrinterTest {
         var bookJSON = JSONPrinter.toJSON(book);
         assertEquals(
             Map.of("book-title", "The Girl with The Dragon Tattoo", "an_author", "Stieg Larsson", "price", 100),
-            IncompleteJSONParser.parse(bookJSON));
+            IncompleteJSONParser.parse(bookJSON)
+        );
     }
 }
