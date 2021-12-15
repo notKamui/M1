@@ -5,23 +5,24 @@ import java.lang.reflect.Method;
 import java.lang.reflect.RecordComponent;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class JSONPrinter {
-    private final static HashMap<Class<?>, RecordComponent[]> CLASS_TO_COMPONENTS = new HashMap<>();
+    private final static ClassValue<List<Function<Record, String>>> CACHE = new ClassValue<>() {
+        @Override
+        protected List<Function<Record, String>> computeValue(Class<?> type) {
+            return Arrays.stream(type.getRecordComponents()).map(JSONPrinter::makeJson).toList();
+        }
+    };
 
     private JSONPrinter() {
     }
 
     public static String toJSON(Record serializable) {
-        return Arrays.stream(getRecordComponents(serializable.getClass()))
-            .map(component -> {
-                var accessor = component.getAccessor();
-                var name = propName(accessor);
-                var escape = escape(invoke(accessor, serializable));
-                return "\"%s\": %s".formatted(name, escape);
-            })
+        return CACHE.get(serializable.getClass()).stream()
+            .map(component -> component.apply(serializable))
             .collect(Collectors.joining(",\n", "{\n", "\n}"));
     }
 
@@ -48,15 +49,10 @@ public class JSONPrinter {
             : propName;
     }
 
-    private static RecordComponent[] getRecordComponents(Class<?> clazz) {
-        RecordComponent[] components;
-        if (CLASS_TO_COMPONENTS.containsKey(clazz)) {
-            components = CLASS_TO_COMPONENTS.get(clazz);
-        } else {
-            components = clazz.getRecordComponents();
-            CLASS_TO_COMPONENTS.put(clazz, components);
-        }
-        return components;
+    private static Function<Record, String> makeJson(RecordComponent component) {
+        var accessor = component.getAccessor();
+        var name = propName(accessor);
+        return record -> "\"%s\": %s".formatted(name, escape(invoke(accessor, record)));
     }
 
     private static String escape(Object o) {
