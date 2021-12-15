@@ -1,32 +1,24 @@
 package fr.umlv.reversible;
 
+import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.RandomAccess;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
 
-public interface Reversible<E> extends Iterable<E> {
-
-    int size();
-
-    E get(int index);
-
-    Reversible<E> reversed();
-
-    default Stream<E> stream() {
-        return StreamSupport.stream(spliterator(), true);
-    }
+public abstract class Reversible2<E> extends AbstractList<E> implements Iterable<E>, List<E>, RandomAccess {
 
     @SafeVarargs
-    static <E> Reversible<E> fromArray(E... elements) {
+    static <E> Reversible2<E> fromArray(E... elements) {
         requireNonNull(elements);
         for (var e : elements) {
             requireNonNull(e);
@@ -34,17 +26,19 @@ public interface Reversible<E> extends Iterable<E> {
         return instance(Arrays.asList(elements), elements.length, false, null);
     }
 
-    static <E> Reversible<E> fromList(List<? extends E> list) {
+    @SuppressWarnings("unchecked")
+    static <E> Reversible2<E> fromList(List<? extends E> list) {
         requireNonNull(list);
+        if (!(list instanceof RandomAccess)) throw new IllegalArgumentException("list must be RandomAccess");
         for (var e : list) {
             requireNonNull(e);
         }
-        return instance(list, list.size(), false, null);
+        return instance((List<E>) list, list.size(), false, null);
     }
 
-    private static <E> Reversible<E> instance(List<? extends E> list, int size, boolean isReversed, Reversible<E> reverse) {
-        return new Reversible<>() {
-            private Reversible<E> reverseSelf = reverse;
+    private static <E> Reversible2<E> instance(List<E> list, int size, boolean isReversed, Reversible2<E> reverse) {
+        return new Reversible2<>() {
+            private Reversible2<E> reverseSelf = reverse;
 
             @Override
             public Iterator<E> iterator() {
@@ -114,7 +108,7 @@ public interface Reversible<E> extends Iterable<E> {
 
             @Override
             public E get(int index) {
-                Objects.checkIndex(index, size);
+                checkIndex(index, size);
                 if (list.size() < size) throw new IllegalStateException();
                 var e = list.get(isReversed ? size - index - 1 : index);
                 requireNonNull(e);
@@ -122,12 +116,26 @@ public interface Reversible<E> extends Iterable<E> {
             }
 
             @Override
-            public Reversible<E> reversed() {
+            public E set(int index, E element) {
+                requireNonNull(element);
+                var old = get(index);
+                list.set(isReversed ? size - index - 1 : index, element);
+                return old;
+            }
+
+            @Override
+            public Reversible2<E> reversed() {
                 if (reverseSelf == null) {
                     reverseSelf = instance(list, size, !isReversed, this);
                 }
                 return reverseSelf;
             }
         };
+    }
+
+    public abstract Reversible2<E> reversed();
+
+    public Stream<E> stream() {
+        return StreamSupport.stream(spliterator(), true);
     }
 }
