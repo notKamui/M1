@@ -21,8 +21,10 @@ public class JSONPrinter {
     }
 
     public static String toJSON(Record serializable) {
-        return CACHE.get(serializable.getClass()).stream()
-            .map(component -> component.apply(serializable))
+        return CACHE
+            .get(serializable.getClass())
+            .stream()
+            .map(mapper -> mapper.apply(serializable))
             .collect(Collectors.joining(",\n", "{\n", "\n}"));
     }
 
@@ -33,8 +35,8 @@ public class JSONPrinter {
             throw (IllegalAccessError) new IllegalAccessError().initCause(e);
         } catch (InvocationTargetException e) {
             var cause = e.getCause();
-            if (cause instanceof RuntimeException ex) throw ex;
-            if (cause instanceof Error ex) throw ex;
+            if (cause instanceof RuntimeException rex) throw rex;
+            if (cause instanceof Error err) throw err;
             throw new UndeclaredThrowableException(e);
         }
     }
