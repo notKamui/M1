@@ -2,6 +2,7 @@ package fr.uge.poo.visitors.expr.ex3;
 
 import java.util.HashMap;
 import java.util.function.BiFunction;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -31,11 +32,16 @@ public class ExprVisitor<R, C> {
     /**
      * Visits an expression tree with a context and returns the result
      *
-     * @param expr the expression tree to visit
-     * @param context the context of the visitor
-     * @return the result of the visit
+     * @param expr    the expression tree to visit
+     * @param context the context of the visitor (may be null)
+     * @return the result of the visit (may be null)
      */
     public R visit(Expr expr, C context) {
-        return applications.get(expr.getClass()).apply(expr, context);
+        requireNonNull(expr);
+        var application = applications.get(expr.getClass());
+        if (application == null) {
+            throw new IllegalArgumentException("No visitor application for " + expr.getClass());
+        }
+        return application.apply(expr, context);
     }
 }
