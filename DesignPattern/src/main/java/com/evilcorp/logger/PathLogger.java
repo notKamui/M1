@@ -11,8 +11,13 @@ import java.nio.file.StandardOpenOption;
 
 public class PathLogger implements Logger, Closeable, AutoCloseable {
     private final BufferedWriter buffer;
+    private final Logger next;
 
     public PathLogger(Path path) {
+        this(path, null);
+    }
+
+    public PathLogger(Path path, Logger next) {
         try {
             this.buffer = Files.newBufferedWriter(
                 path,
@@ -23,10 +28,12 @@ public class PathLogger implements Logger, Closeable, AutoCloseable {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+        this.next = next;
     }
 
     @Override
     public void log(Level level, String message) {
+        if (next != null) next.log(level, message);
         try {
             buffer.write(level + " " + message);
             buffer.newLine();
