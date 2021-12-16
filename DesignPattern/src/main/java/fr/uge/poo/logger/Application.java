@@ -10,7 +10,7 @@ public class Application {
 
     public static void main(String[] args) {
         try (var pathLogger = new PathLogger(Path.of("tmp", "logs.txt"))) {
-            var logger = new FilteredLogger(pathLogger, Logger.Level.WARNING, true, SystemLogger.instance());
+            var logger = new FilteredLogger(pathLogger, level -> level.ordinal() <= Logger.Level.WARNING.ordinal(), SystemLogger.instance());
             logger.log(Logger.Level.INFO, "Hello world");
             logger.log(Logger.Level.WARNING, "Watch out!");
             logger.log(Logger.Level.ERROR, "Oh no!");
