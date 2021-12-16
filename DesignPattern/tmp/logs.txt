@@ -1,0 +1,2 @@
+WARNING Watch out!
+ERROR Oh no!
