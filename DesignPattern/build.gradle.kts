@@ -14,8 +14,13 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 tasks {
-    compileJava {
+    withType<JavaCompile> {
         options.compilerArgs.add("--enable-preview")
         options.release.set(17)
     }
@@ -24,7 +29,7 @@ tasks {
         jvmArgs("--enable-preview")
     }
 
-    test {
+    withType<Test> {
         useJUnitPlatform()
         jvmArgs("--enable-preview")
     }
