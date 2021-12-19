@@ -161,7 +161,7 @@ def write_CNF_to_file(fname, cnf, N):
     """
     vars = dict()
     with open(fname, "w+") as f:
-        f.write("p cnf %d %d\n" % (N**3, len(cnf)))
+        f.write("p cnf %d %d\n" % (N*N*N, len(cnf)))
         for clause in cnf:
             line = ""
             for lit in clause:
