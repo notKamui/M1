@@ -5,6 +5,8 @@ import itertools
 import math
 import sys
 import doctest
+import os
+import subprocess
 
 
 def var(i, j, k):
@@ -154,18 +156,24 @@ def literal_to_integer(l, N):
     return s*(N*N*(i - 1) + N*(j - 1) + k)
 
 
-def writeCNFToFile(fname, cnf, N):
+def write_CNF_to_file(fname, cnf, N):
     """Writes the CNF of a board of size N to a given file
     """
+    vars = dict()
     with open(fname, "w+") as f:
         f.write("p cnf %d %d\n" % (N**3, len(cnf)))
         for clause in cnf:
-            line = ' '.join(map(lambda term: str(
-                literal_to_integer(term, N)), clause))
-            f.write("%s 0\n" % line)
+            line = ""
+            for lit in clause:
+                n = literal_to_integer(lit, N)
+                if lit[0] == 1:
+                    vars[n] = lit
+                line += "%d " % n
+            f.write("%s0\n" % line)
+    return vars
 
 
-def parseCNFFromFile(fname):
+def parse_CNF_from_file(fname):
     """Reads a CNF from a file and returns a list of clauses and the dimension of the grid.
     """
     with open(fname, "r") as f:
@@ -181,11 +189,55 @@ def parseCNFFromFile(fname):
     return cnf, N
 
 
+def parse_minisat_output(fname, vars, N):
+    """Runs minisat on a given file and parses the output to display it back into a sudoku grid.
+    """
+    outfile = fname + ".out"
+    subprocess.call(
+        ["minisat", fname, outfile],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    )
+
+    with open(outfile, "r") as f:
+        lines = f.readlines()
+        if lines[0] != "SAT\n":
+            print("This grid is unsolvable")
+            return
+
+        solution = list(filter(lambda x: x > 0, map(
+            lambda x: int(x), lines[1].split())))
+
+        grid = []
+        for var in solution:
+            grid.append(vars[var][3])
+
+        for i in range(N*N):
+            print(str(grid[i]).rjust(2, " "), end=" ")
+            if (i+1) % N == 0:
+                print()
+
+
 def main():
     doctest.testmod()
 
-    cnf, N = parseCNFFromFile(sys.argv[1])
-    writeCNFToFile(sys.argv[1] + ".cnf", cnf + generate_rules(N), N)
+    args = sys.argv[1:]
+    clean = False
+    if "-c" in args:
+        clean = True
+        args.remove("-c")
+    if len(args) != 1:
+        print("Usage: python sudoku.py <filename> [-c]")
+        return
+
+    cnf, N = parse_CNF_from_file(sys.argv[1])
+    cnffile = sys.argv[1] + ".cnf"
+    vars = write_CNF_to_file(cnffile, cnf + generate_rules(N), N)
+    parse_minisat_output(cnffile, vars, N)
+
+    if clean:
+        os.remove(cnffile)
+        os.remove(cnffile + ".out")
 
 
 if __name__ == "__main__":
