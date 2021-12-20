@@ -7,7 +7,7 @@ public class Application {
         var it = Pattern.compile(" ").splitAsStream("+ * 4 + 1 1 + 2 3").iterator();
         var expr = Expr.parseExpr(it);
 
-        var evaluator = new ExprVisitor<Integer, Object>();
+        var evaluator = new ExprVisitor<Integer, Void>();
         evaluator
             .when(BinOp.class, (binOp, context) -> binOp
                 .operator()
@@ -19,7 +19,7 @@ public class Application {
             .when(Value.class, (value, context) -> value.value());
         System.out.println(evaluator.visit(expr, null));
 
-        var toString = new ExprVisitor<Object, StringBuilder>();
+        var toString = new ExprVisitor<Void, StringBuilder>();
         toString
             .when(BinOp.class, (binOp, context) -> {
                 context.append('(');

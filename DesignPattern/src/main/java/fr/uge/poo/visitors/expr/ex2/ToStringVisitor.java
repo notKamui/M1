@@ -4,9 +4,9 @@ package fr.uge.poo.visitors.expr.ex2;
  * Expression visitor that returns nothing relevant, and with a unique {@link StringBuilder} context
  * to apply the infix expression.
  */
-public class ToStringVisitor implements ExprVisitor<Object, StringBuilder> {
+public class ToStringVisitor implements ExprVisitor<Void, StringBuilder> {
     @Override
-    public Object visit(BinOp binOp, StringBuilder context) {
+    public Void visit(BinOp binOp, StringBuilder context) {
         context.append('(');
         binOp.left().accept(this, context);
         context.append(' ').append(binOp.opName()).append(' ');
@@ -16,7 +16,7 @@ public class ToStringVisitor implements ExprVisitor<Object, StringBuilder> {
     }
 
     @Override
-    public Object visit(Value value, StringBuilder context) {
+    public Void visit(Value value, StringBuilder context) {
         context.append(value.value());
         return null;
     }
