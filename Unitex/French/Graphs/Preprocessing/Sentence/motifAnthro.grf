@@ -1,0 +1,47 @@
+#Unigraph
+SIZE 1401 896
+FONT Times New Roman:  12
+OFONT Times New Roman:B 12
+BCOLOR 16777215
+FCOLOR 0
+ACOLOR 12632256
+SCOLOR 255
+CCOLOR 255
+DBOXES y
+DFRAME y
+DDATE y
+DFILE y
+DDIR n
+DRIG n
+DRST n
+FITS 100
+PORIENT L
+#
+27
+"<E>" 254 320 2 5 14 
+"" 936 288 0 
+"M.+Mr." 384 228 1 21 
+":Prenoms" 636 228 2 8 12 
+"\" \"" 652 332 1 8 
+":LettreMaj+:PhTh" 340 332 2 6 9 
+"#." 468 332 2 4 9 
+"Dr.+MM.+Prof.+Pr." 376 156 2 8 21 
+"<UPPER>+<FIRST>" 786 156 1 15 
+"#-#" 504 380 1 10 
+":PhTh" 580 384 3 11 4 12 
+"#." 744 340 2 4 12 
+"\" \"" 852 384 1 1 
+"Description de motifs anthroponymiques contenant un point" 44 32 0 
+"<E>" 320 200 2 2 7 
+"<E>" 868 156 1 1 
+"ex : \"Ph. Dupont\"+     \" J.-Ph. Dupont\"" 300 380 0 
+"ex : \"Dr. Dupont\"" 284 104 0 
+"excepté les cas ou le prénom abrégé est ambigu avec un sigle de 2 lettres" 40 56 0 
+"ex : \"M. J.P. de Lamotte\"" 500 264 0 
+"ex : \"M. J. MacEnroe\"" 756 112 0 
+"<E>" 492 230 2 8 3 
+"<FIRST>" 336 462 1 23 
+":LettreMaj+:PhTh" 441 462 1 24 
+"#." 577 462 1 25 
+"<UPPER>+<FIRST>" 718 462 0 
+"Provoque des erreurs dans+*Des O.V.{S}N.I. attaquent" 483 536 0 

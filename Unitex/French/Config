@@ -1,0 +1,8 @@
+#Unitex configuration file
+#Wed Jan 12 18:11:18 CET 2022
+DATE=false
+FILE\ NAME=false
+LOGGING\ DIR=/usr/local/apps/alternatives/Unitex/Unitex3.2rc/App
+MAX\ TEXT\ FILE\ SIZE=2097152
+FRAME=false
+ICON\ BAR\ POSITION=North

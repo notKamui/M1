@@ -1,0 +1,58 @@
+0000000003
+-1 Norm
+: -2 1 -3 1 9 2 8 2 7 1 6 1 5 2 4 2 2 2 1 1 
+t 
+: 3 1 
+f 
+-2 PostContractions
+: 14 1 13 1 12 1 11 1 10 1 
+t 
+f 
+-3 PostElisions
+: 37 1 36 1 35 1 34 2 33 1 32 1 31 1 30 1 29 1 28 1 27 1 26 1 25 1 24 1 23 1 22 1 21 1 20 1 19 1 18 1 17 1 16 1 15 1 
+: 3 3 
+: 3 4 
+t 
+: 39 3 38 3 
+f 
+%<E>
+%de/{de,.PREP+z1} {des,un.DET+Dind+z1:mp:fp} 
+%d/{de,.PREP+z1} {des,un.DET+Dind+z1:mp:fp} 
+%'
+%d/{de,.PREP+z1}
+%d/{de,.DET+Dind+z1:mp:fp}
+%de/{de,.PREP+z1} {du,.DET+Dind+z1:ms}
+%de/{de,.PREP+z1} {de la,du.DET+Dind+z1:fs}
+%d/{de,.PREP+z1} {du,.DET+Dind+z1:ms}
+%d/{de,.PREP+z1} {de la,du.DET+Dind+z1:fs}
+%du/{de,.PREP+z1} {le,.DET+Ddef+z1:ms} 
+%audit/{à,.PREP+z1} {ledit,.A+z2:ms} 
+%des/{de,.PREP+z1} {les,le.DET+Ddef+z1:mp:fp}
+%au/{à,.PREP+z1} {le,.DET+Ddef+z1:ms} 
+%aux/{à,.PREP+z1} {les,le.DET+Ddef+z1:mp:fp}
+%j/{je,.PRO+PpvIL+z1:1ms:1fs}
+%c/{ce,.PRO+PpvIL+z1:3ms:3mp}
+%ç/{ce,.PRO+PpvIL+z1:3ms:3mp}
+%jusqu/{jusque,.PREP+z1}
+%m/{me,.PRO+PpvLE+z1:1ms:1fs}
+%n/{ne,.XI+z1}
+%qu/{que,.CONJS+z1}
+%qu/{que,.PRO+PronQ+z1}
+%l/{le,.DET+Ddef+z1:ms}
+%l/{la,le.DET+Ddef+z1:fs}
+%l/{le,.PRO+PpvLE+z1:3ms}
+%l/{la,le.PRO+PpvLE+z1:3fs}
+%m/{me,.PRO+PpvLUI+z1:1ms:1fs}
+%presqu/{presque,.ADV+z1}
+%presqu/{presque,.DET+Pred+z1}
+%quelqu/{quelque,.ADV+z1}
+%quelqu/{quelque,.DET+Dadj+z1:ms:fs}
+%s/{se,.PRO+PpvLE+z1:3fs:3ms:3fp:3mp}
+%s/{se,.PRO+PpvLUI+z1:3fs:3ms:3fp:3mp}
+%s/{si,.CONJS+z1}
+%t/{te,.PRO+PpvLE+z1:2ms:2fs}
+%t/{tu,.PRO+PpvIL+z1:2ms:2fs}
+%t/{te,.PRO+PpvLUI+z1:2ms:2fs}
+%il/{il,il.PRO+PpvIL+z1:3ms}
+%ils/{ils,il.PRO+PpvIL+z1:3mp}
+f
