@@ -49,6 +49,8 @@ public class StoreWithByteOrder {
 				}
 				bb.putLong(scanner.nextLong());
 			}
+			bb.flip();
+			outChannel.write(bb);
 		}
 	}
 }
