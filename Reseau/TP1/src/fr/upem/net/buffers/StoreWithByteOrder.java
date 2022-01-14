@@ -22,7 +22,6 @@ public class StoreWithByteOrder {
 			return;
 		}
 		var path = Path.of(args[1]);
-
 		var order = switch (args[0].toUpperCase()) {
 			case "LE" -> ByteOrder.LITTLE_ENDIAN;
 			case "BE" -> ByteOrder.BIG_ENDIAN;
