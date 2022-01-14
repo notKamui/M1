@@ -12,6 +12,8 @@ import static java.nio.file.StandardOpenOption.WRITE;
 
 public class StoreWithByteOrder {
 
+	private final static int BUFFER_SIZE = 64;
+
 	public static void usage() {
 		System.out.println("StoreWithByteOrder [LE|BE] filename");
 	}
@@ -33,18 +35,19 @@ public class StoreWithByteOrder {
 		};
 		if (order == null) return;
 
-		var bb = ByteBuffer.allocate(8);
+		var bb = ByteBuffer.allocate(BUFFER_SIZE);
 		bb.order(order);
 		try (
 			var outChannel = FileChannel.open(path, WRITE, CREATE, TRUNCATE_EXISTING);
 			var scanner = new Scanner(System.in)
 		) {
 			while (scanner.hasNextLong()) {
-				var l = scanner.nextLong();
-				bb.putLong(l);
-				bb.flip();
-				outChannel.write(bb);
-				bb.clear();
+				if (bb.remaining() < Long.BYTES) {
+					bb.flip();
+					outChannel.write(bb);
+					bb.clear();
+				}
+				bb.putLong(scanner.nextLong());
 			}
 		}
 	}
