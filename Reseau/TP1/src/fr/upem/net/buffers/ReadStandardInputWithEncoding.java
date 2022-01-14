@@ -15,7 +15,7 @@ public class ReadStandardInputWithEncoding {
 
 	private static String stringFromStandardInput(Charset cs) throws IOException {
 		try (var channel = Channels.newChannel(System.in)) {
-			var bb = ByteBuffer.allocate(64);
+			var bb = ByteBuffer.allocate(BUFFER_SIZE);
 			while (channel.read(bb) != -1) {
 				if (!bb.hasRemaining()) {
 					var newbb = ByteBuffer.allocate(bb.capacity() * 2);
