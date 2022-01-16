@@ -1,0 +1,106 @@
+/* DEFAULT MEDIA IS MOBILE (mobile first ; derivations are for tablet and desktop, see @media below) */
+
+body {
+    width: 100vw;
+}
+
+/* HEADER */
+
+nav {
+    height: 60px; /* fixed height so that flex can center vertically */
+}
+.nav-content {
+    height: 100%;
+    display: flex;
+    justify-content: space-around; /* evenly spaces each child element horizontaly */
+    background-color: orange;
+}
+.nav-link {
+    height: 100%;
+    width: 100%;
+    display: flex; /* those three lines will center anything horizontally and vertically following the flex direction and flow*/
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: 200ms ease-in-out;
+}
+.nav-link:hover {
+    background-color: rgb(184, 101, 0);
+    cursor: pointer;
+}
+
+.banner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* relative postion so that the picture can be absolte without breaking the flow */
+    overflow: hidden; /* don't bother with the image getting too big below */
+    height: 300px;
+    border-bottom: solid 5px indianred;
+}
+.banner-picture-wrapper {
+    z-index: -999; /* to make sure it's below everything, since it's a background */
+    position: absolute; /* that makes putting things on top of it possible */
+    pointer-events: none;
+    height: 100%;
+    min-width: 100%;
+}
+.banner-picture {
+    width: auto;
+    height: auto;
+    min-width: 100%;
+    min-height: 100%;
+}
+.banner-button {
+    width: fit-content;
+    height: fit-content;
+    opacity: 60%;
+    border-radius: 20px;
+    padding: 1em 2em;
+    background-color: black;
+    color: white;
+    font-weight: 900;
+    font-size: 1.5em;
+    border-color: white;
+    transition: 200ms ease-in-out;
+}
+.banner-button:hover {
+    opacity: 100%;
+    transform: scale(110%);
+    cursor: pointer;
+}
+
+/* PAGE CONTENT */
+
+main {
+    background-color: skyblue;
+    padding: 1rem;
+}
+
+aside {
+    background-color: pink;
+    padding: 1rem;
+}
+
+/* FOOTER */
+
+footer {
+    background-color: yellow;
+    padding: 1rem;
+}
+
+/* MEDIA TABLET/DESKTOP */
+
+@media screen and (min-width: 577px) { /* Change style when on tablet or desktop, as in, the width of the viewport > 576 */
+    .banner-picture {
+        max-width: 100%;
+    }
+
+    .page-content {
+        display: flex;
+    }
+
+    .page-content * {
+        width: 100%;
+    }
+}

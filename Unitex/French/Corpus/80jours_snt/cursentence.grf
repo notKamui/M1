@@ -1,0 +1,27 @@
+#Unigraph
+SIZE 940 500
+FONT Times New Roman:  10
+OFONT Times New Roman:B 10
+BCOLOR 16777215
+FCOLOR 0
+ACOLOR 12632256
+SCOLOR 16711680
+CCOLOR 255
+DBOXES y
+DFRAME y
+DDATE y
+DFILE y
+DDIR y
+DRIG n
+DRST n
+FITS 100
+PORIENT L
+#
+7
+"<E>" 50 100 2 2 3 
+"" 640 100 0 
+"{Chapitre,chapitre.N+z1:ms}/0 0 0 0 7 0" 100 300 3 4 5 6 
+"{Chapitre,chapitrer.V+z2:P1s:P3s:S1s:S3s:Y2s}/0 0 0 0 7 0" 100 200 3 4 5 6 
+"{I,ï.N+z1:ms:mp}/2 0 0 2 0 0" 390 250 1 1 
+"{I,î.N+z1:ms:mp}/2 0 0 2 0 0" 390 150 1 1 
+"{I,i.N+z1:ms:mp}/2 0 0 2 0 0" 390 50 1 1 

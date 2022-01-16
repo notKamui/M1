@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr"> <!-- Language is important for accessibility -->
+<head>
+    <meta charset="UTF-8">
+    <meta
+      name="description"
+      content="Page d'examen"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="reset.css"> 
+    <link rel="stylesheet" href="style.css" />
+    <title>Examen</title>
+</head>
+<body>
+    <header> <!-- The header semantically contains the top of the page, the welcoming content ; here, the navigation and the banner (or hero/jumbotron) -->
+        <nav>
+            <ul class="nav-content">
+                <li class="nav-link"><a href="#">Qui sommes-nous ?</a></li>
+                <li class="nav-link"><a href="#">Projets</a></li>
+                <li class="nav-link"><a href="#">Contact</a></li>
+                <li class="nav-link"><a href="#">Nos clients</a></li>
+            </ul class="nav-content">
+        </nav>
+        <div class="banner"> <!-- The banner gets its own section, so that we can easily manipulate what's inside without impacting on the rest of the parent element -->
+            <picture class="banner-picture-wrapper"> <!-- Useful for responsive designs, we can give multiple source sets depending on the viewport width ; here the default is for mobile -->
+                <source class="banner-picture" media="(min-width: 577px)" srcset="images/image1.jpg">
+                <img class="banner-picture" src="images/image1-577.jpg" alt="Image de banière, plusieurs personnes en réunion sont en chemises bleues" title="Image de banière">
+            </picture>
+            <button class="banner-button">Cliquez ici</button>
+        </div>
+    </header>
+    <div class="page-content"> <!-- The page content gets own section ; to see it in another way, the header and the footer are semantically separate entities from the content -->
+        <main>Principale</main>
+        <aside>Bannière</aside>
+    </div>
+    <footer>Footer</footer>
+</body>
+</html>

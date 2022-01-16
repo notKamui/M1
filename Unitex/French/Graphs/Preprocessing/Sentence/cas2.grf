@@ -1,0 +1,56 @@
+#Unigraph
+SIZE 1552 896
+FONT Times New Roman:  12
+OFONT Times New Roman:B 12
+BCOLOR 16777215
+FCOLOR 0
+ACOLOR 12632256
+SCOLOR 255
+CCOLOR 255
+DBOXES y
+DFRAME y
+DDATE y
+DFILE y
+DDIR n
+DRIG n
+DRST n
+FITS 100
+PORIENT L
+#
+36
+"<E>" 200 424 4 2 10 8 32 
+"" 1200 424 0 
+":sigles" 384 708 3 7 27 18 
+"Description des motifs+qui peuvent suivre un sigle" 260 752 0 
+"<E>" 1100 752 1 1 
+":motifAnthro" 888 152 1 6 
+"<E>" 1028 152 1 1 
+"." 500 708 2 26 16 
+"<E>" 380 152 2 5 29 
+"<E>" 1012 496 1 23 
+":sigles_prenoms" 328 424 2 11 1 
+"#." 460 467 3 18 19 20 
+"<PRE>+<MAJ>" 896 240 1 23 
+"\" \"/{S}" 816 192 2 5 12 
+"<E>/{S}" 892 360 1 9 
+":parentheses+:crochets" 868 624 1 9 
+"<MIN>+,+\":\"" 852 468 1 9 
+"?+!+;+<$>" 688 360 1 14 
+"..." 684 528 2 16 15 
+"<E>" 636 324 3 13 12 17 
+"<E>" 692 468 2 16 15 
+"Traitement des ambiguïtés du point dans les sigles et motifs anthroponymiques contenant des abréviations" 14 28 0 
+"M. J.-P. Dupont+DR. Seux" 308 136 0 
+"<E>" 1084 372 1 1 
+"Ambiguïté de+\"chez Louis X. Pour la cour, ...\"+avec un anthroponyme \"X. Pour\" => non résolues car il faut faire la liste exhaustive de tous les rois V et X qui aient pu exister !" 288 840 0 
+"Ambiguïté sigles-prénoms lorsque les+prénoms composés sont abrégés+ex : \"J.P.\"" 292 360 0 
+"<E>" 540 708 4 18 31 15 17 
+"<E>" 528 752 1 4 
+"La plupart du temps un sigle+suivi de point puis de <PRE>, <MAJ>...+est bien la fin d'une phrase" 816 680 0 
+":rois" 436 192 1 30 
+"#." 516 192 1 13 
+"\" \"" 692 616 1 15 
+"www." 400 795 1 33 
+"<MOT>" 519 793 2 34 35 
+"<E>" 937 788 1 4 
+"." 629 767 1 33 

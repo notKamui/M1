@@ -1,0 +1,42 @@
+#Unigraph
+SIZE 952 1335
+FONT Times New Roman:  12
+OFONT Times New Roman:B 12
+BCOLOR 16777215
+FCOLOR 0
+ACOLOR 12632256
+SCOLOR 255
+CCOLOR 255
+DBOXES y
+DFRAME y
+DDATE y
+DFILE y
+DDIR n
+DRIG n
+DRST n
+FITS 100
+PORIENT L
+#
+22
+"<E>" 212 432 3 3 8 21 
+"" 836 400 0 
+":AbrPoint" 316 204 1 7 
+":AbrPointMilFin" 284 432 3 9 10 20 
+"<PRE>+<MAJ>/{S}" 488 492 1 20 
+":abr_nb" 320 280 1 7 
+":nb_abr" 324 356 2 19 7 
+"<E>" 756 280 1 1 
+":Abr_nbAmb" 316 544 1 9 
+"<E>" 432 544 2 4 11 
+"<NB>/{S}" 616 432 1 20 
+":Nombres" 508 622 1 20 
+"Abréviations (liste non exhaustive) qui peuvent entrer en conflit avec la fin d'une phrase" 20 32 0 
+"Attention : certaines abréviations peuvent être ambigües avec un mot par exemple vol. pour volume et vol pour un avion" 116 776 0 
+"Abréviations suivies d'un point+ suivies d'un nombre" 308 248 0 
+"Abréviations qui ne peuvent se trouver en fin de phrases+(non ambiguës avec la fin de phrase)" 312 168 0 
+"Abréviations précédées+d'un nombre" 312 324 0 
+"abréviations ambiguës avec d'autres mots" 204 572 0 
+"Dans le cas suivant, on a choisi de ne pas mettre de fin de phrase+ex : \"On a lu le vol. 2\"+      \"Il attrapait les papillons en vol. 15 papillons furent capturés ce jour là\"" 368 728 0 
+"<PRE>+<MAJ>/{S}" 644 356 1 7 
+"<E>" 812 496 1 1 
+"<E>" 244 280 3 2 5 6 
