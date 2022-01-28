@@ -190,3 +190,4 @@ gradle-app.setting
 
 !Server*.jar
 !File2Hex.jar
+!UDPProxy.jar
