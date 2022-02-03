@@ -42,10 +42,9 @@ public class ClientUpperCaseUDPTimeout {
                 channel.send(bytes, server);
                 LOGGER.info("Sent : " + line);
                 var queue = new ArrayBlockingQueue<Packet>(1);
-                final var finalChannel= channel;
                 var listener = new Thread(() -> {
                     try {
-                        var sender = (InetSocketAddress) finalChannel.receive(buffer);
+                        var sender = (InetSocketAddress) channel.receive(buffer);
                         buffer.flip();
                         queue.put(new Packet(sender, buffer.remaining(), cs.decode(buffer).toString()));
                         buffer.clear();
@@ -58,7 +57,7 @@ public class ClientUpperCaseUDPTimeout {
                 listener.interrupt();
                 if (packet == null) {
                     LOGGER.warning("The server did not answer");
-                    channel = DatagramChannel.open();
+                    channel.disconnect();
                     channel.bind(null);
                 } else {
                     LOGGER.info("Received %d bytes from %s : %s%n".formatted(

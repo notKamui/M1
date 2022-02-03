@@ -44,10 +44,9 @@ public class ClientUpperCaseUDPRetry {
                 do {
                     var bytes = cs.encode(line);
                     channel.send(bytes, server);
-                    var finalChannel = channel;
                     var listener = new Thread(() -> {
                         try {
-                            var sender = (InetSocketAddress) finalChannel.receive(buffer);
+                            var sender = (InetSocketAddress) channel.receive(buffer);
                             buffer.flip();
                             queue.put(new Packet(sender, buffer.remaining(), cs.decode(buffer).toString()));
                             buffer.clear();
@@ -61,7 +60,7 @@ public class ClientUpperCaseUDPRetry {
                     packet = queue.poll(2, TimeUnit.SECONDS);
                     listener.interrupt();
                     if (packet == null) {
-                        channel = DatagramChannel.open();
+                        channel.disconnect();
                         channel.bind(null);
                     }
                 } while (packet == null);
