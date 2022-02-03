@@ -30,44 +30,48 @@ public class ClientUpperCaseUDPTimeout {
 
         var server = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
         var cs = Charset.forName(args[2]);
-        var buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
-        var channel = DatagramChannel.open();
-        channel.bind(null);
-        try (var scanner = new Scanner(System.in)) {
-            while (scanner.hasNextLine()) {
-                var line = scanner.nextLine();
-                var bytes = cs.encode(line);
+        var queue = new ArrayBlockingQueue<Packet>(1);
 
-                channel.send(bytes, server);
-                LOGGER.info("Sent : " + line);
-                var queue = new ArrayBlockingQueue<Packet>(1);
-                var listener = new Thread(() -> {
+        try (var channel = DatagramChannel.open()) {
+            channel.bind(null);
+            var thread = new Thread(() -> {
+                while (!Thread.interrupted()) {
+                    var buffer = ByteBuffer.allocate(BUFFER_SIZE);
                     try {
                         var sender = (InetSocketAddress) channel.receive(buffer);
                         buffer.flip();
                         queue.put(new Packet(sender, buffer.remaining(), cs.decode(buffer).toString()));
-                        buffer.clear();
                     } catch (IOException | InterruptedException e) {
-                        LOGGER.warning("Error while receiving");
+                        return;
                     }
-                });
-                listener.start();
-                var packet = queue.poll(2, TimeUnit.SECONDS);
-                listener.interrupt();
-                if (packet == null) {
-                    LOGGER.warning("The server did not answer");
-                    channel.disconnect();
-                    channel.bind(null);
-                } else {
-                    LOGGER.info("Received %d bytes from %s : %s%n".formatted(
-                        packet.size(),
-                        packet.address(),
-                        packet.message()
-                    ));
+                    buffer.clear();
+                }
+            });
+            thread.start();
+            try (var scanner = new Scanner(System.in)) {
+                while (scanner.hasNextLine()) {
+                    try {
+                        var line = scanner.nextLine();
+                        Packet packet;
+                        LOGGER.info("Sending: " + line);
+                        channel.send(cs.encode(line), server);
+                        packet = queue.poll(2, TimeUnit.SECONDS);
+                        if (packet == null) {
+                            LOGGER.warning("Server did not respond");
+                        } else {
+                            LOGGER.info("Received %d bytes from %s : %s%n".formatted(
+                                packet.size(),
+                                packet.address(),
+                                packet.message()
+                            ));
+                        }
+                    } catch (IOException | InterruptedException e) {
+                        LOGGER.warning("Error while sending message");
+                    }
                 }
             }
+            thread.interrupt();
         }
-        channel.close();
     }
 }

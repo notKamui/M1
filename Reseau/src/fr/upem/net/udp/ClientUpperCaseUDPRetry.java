@@ -3,7 +3,6 @@ package fr.upem.net.udp;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.DatagramChannel;
 import java.nio.charset.Charset;
 import java.util.Scanner;
@@ -23,7 +22,7 @@ public class ClientUpperCaseUDPRetry {
     private record Packet(InetSocketAddress address, int size, String message) {
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
         if (args.length != 3) {
             usage();
             return;
@@ -31,46 +30,46 @@ public class ClientUpperCaseUDPRetry {
 
         var server = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
         var cs = Charset.forName(args[2]);
-        var buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
-        var channel = DatagramChannel.open();
-        channel.bind(null);
-        try (var scanner = new Scanner(System.in)) {
-            while (scanner.hasNextLine()) {
-                var line = scanner.nextLine();
-                LOGGER.info("Sending : " + line);
-                var queue = new ArrayBlockingQueue<Packet>(1);
-                Packet packet;
-                do {
-                    var bytes = cs.encode(line);
-                    channel.send(bytes, server);
-                    var listener = new Thread(() -> {
-                        try {
-                            var sender = (InetSocketAddress) channel.receive(buffer);
-                            buffer.flip();
-                            queue.put(new Packet(sender, buffer.remaining(), cs.decode(buffer).toString()));
-                            buffer.clear();
-                        } catch (IOException e) {
-                            LOGGER.warning("Error while receiving. Retrying...");
-                        } catch (InterruptedException e) {
-                            LOGGER.warning("Listener interrupted");
-                        }
-                    });
-                    listener.start();
-                    packet = queue.poll(2, TimeUnit.SECONDS);
-                    listener.interrupt();
-                    if (packet == null) {
-                        channel.disconnect();
-                        channel.bind(null);
+        var queue = new ArrayBlockingQueue<Packet>(1);
+
+        try (var channel = DatagramChannel.open()) {
+            channel.bind(null);
+            var thread = new Thread(() -> {
+                while (!Thread.interrupted()) {
+                    var buffer = ByteBuffer.allocate(BUFFER_SIZE);
+                    try {
+                        var sender = (InetSocketAddress) channel.receive(buffer);
+                        buffer.flip();
+                        queue.put(new Packet(sender, buffer.remaining(), cs.decode(buffer).toString()));
+                    } catch (IOException | InterruptedException e) {
+                        return;
                     }
-                } while (packet == null);
-                LOGGER.info("Received %d bytes from %s : %s%n".formatted(
-                    packet.size(),
-                    packet.address(),
-                    packet.message()
-                ));
+                    buffer.clear();
+                }
+            });
+            thread.start();
+            try (var scanner = new Scanner(System.in)) {
+                while (scanner.hasNextLine()) {
+                    try {
+                        var line = scanner.nextLine();
+                        Packet packet;
+                        do {
+                            LOGGER.info("Sending: " + line);
+                            channel.send(cs.encode(line), server);
+                            packet = queue.poll(2, TimeUnit.SECONDS);
+                        } while (packet == null);
+                        LOGGER.info("Received %d bytes from %s : %s%n".formatted(
+                            packet.size(),
+                            packet.address(),
+                            packet.message()
+                        ));
+                    } catch (IOException | InterruptedException e) {
+                        LOGGER.warning("Error while sending message");
+                    }
+                }
             }
-            channel.close();
+            thread.interrupt();
         }
     }
 }
