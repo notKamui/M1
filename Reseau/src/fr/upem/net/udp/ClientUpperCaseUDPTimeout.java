@@ -22,7 +22,7 @@ public class ClientUpperCaseUDPTimeout {
     private record Packet(InetSocketAddress address, int size, String message) {
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
         if (args.length != 3) {
             usage();
             return;
