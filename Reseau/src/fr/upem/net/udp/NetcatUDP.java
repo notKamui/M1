@@ -25,12 +25,12 @@ public class NetcatUDP {
         var buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
         try (var channel = DatagramChannel.open()) {
+            channel.bind(null);
             try (var scanner = new Scanner(System.in)) {
                 while (scanner.hasNextLine()) {
                     var line = scanner.nextLine();
                     var bytes = cs.encode(line);
 
-                    channel.bind(null);
                     channel.send(bytes, server);
                     System.out.println("Sent : " + line);
                     var sender = (InetSocketAddress) channel.receive(buffer);
