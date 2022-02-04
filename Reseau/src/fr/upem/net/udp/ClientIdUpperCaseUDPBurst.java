@@ -14,6 +14,10 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -71,18 +75,28 @@ public class ClientIdUpperCaseUDPBurst {
     }
 
     private void senderThreadRun() {
-        answersLog.forEach(line -> {
+        while (true) {
+            answersLog.forEach(line -> {
+                try {
+                    dc.send(UTF8.encode(line), serverAddress);
+                } catch (IOException e) {
+                    LOGGER.severe("Error while sending messages");
+                }
+            });
             try {
-                dc.send(UTF8.encode(line), serverAddress);
-            } catch (IOException e) {
-                LOGGER.severe("Error while sending messages");
+                Thread.sleep(timeout);
+            } catch (InterruptedException e) {
+                return;
             }
-        });
+        }
     }
 
     public void launch() throws IOException {
         var bitset = new BitSet(nbLines);
         Thread senderThread = new Thread(this::senderThreadRun);
+        var executor = Executors
+            .newSingleThreadScheduledExecutor()
+            .scheduleAtFixedRate(this::senderThreadRun, 0, timeout, TimeUnit.MILLISECONDS);
         senderThread.start();
 
 
