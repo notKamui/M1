@@ -3,6 +3,7 @@ package fr.upem.net.udp;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.DatagramChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -51,8 +52,10 @@ public class ClientUpperCaseUDPFile {
                         channel.receive(buffer);
                         buffer.flip();
                         queue.put(cs.decode(buffer).toString());
-                    } catch (IOException | InterruptedException e) {
+                    } catch (AsynchronousCloseException | InterruptedException e) {
                         return;
+                    } catch (IOException e) {
+                        LOGGER.severe(e.getMessage());
                     }
                     buffer.clear();
                 }
@@ -68,8 +71,10 @@ public class ClientUpperCaseUDPFile {
                     } while (msg == null);
                     LOGGER.info("Received: " + msg);
                     upperCaseLines.add(msg);
-                } catch (IOException | InterruptedException e) {
+                } catch (AsynchronousCloseException | InterruptedException e) {
                     LOGGER.warning("Error while sending message");
+                } catch (IOException e) {
+                    LOGGER.severe(e.getMessage());
                 }
             }
             thread.interrupt();

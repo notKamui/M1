@@ -3,6 +3,7 @@ package fr.upem.net.udp;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.DatagramChannel;
 import java.nio.charset.Charset;
 import java.util.Scanner;
@@ -11,15 +12,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class ClientUpperCaseUDPRetry {
-    private static final Logger LOGGER = Logger.getLogger(ClientUpperCaseUDPRetry.class.getName());
-
     public static final int BUFFER_SIZE = 1024;
+    private static final Logger LOGGER = Logger.getLogger(ClientUpperCaseUDPRetry.class.getName());
 
     private static void usage() {
         System.out.println("Usage : NetcatUDP host port charset");
-    }
-
-    private record Packet(InetSocketAddress address, int size, String message) {
     }
 
     public static void main(String[] args) throws IOException {
@@ -42,8 +39,10 @@ public class ClientUpperCaseUDPRetry {
                         var sender = (InetSocketAddress) channel.receive(buffer);
                         buffer.flip();
                         queue.put(new Packet(sender, buffer.remaining(), cs.decode(buffer).toString()));
-                    } catch (IOException | InterruptedException e) {
+                    } catch (AsynchronousCloseException | InterruptedException e) {
                         return;
+                    } catch (IOException e) {
+                        LOGGER.severe(e.getMessage());
                     }
                     buffer.clear();
                 }
@@ -64,12 +63,17 @@ public class ClientUpperCaseUDPRetry {
                             packet.address(),
                             packet.message()
                         ));
-                    } catch (IOException | InterruptedException e) {
+                    } catch (AsynchronousCloseException | InterruptedException e) {
                         LOGGER.warning("Error while sending message");
+                    } catch (IOException e) {
+                        LOGGER.severe(e.getMessage());
                     }
                 }
             }
             thread.interrupt();
         }
+    }
+
+    private record Packet(InetSocketAddress address, int size, String message) {
     }
 }
