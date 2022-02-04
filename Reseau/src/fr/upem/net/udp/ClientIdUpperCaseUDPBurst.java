@@ -13,8 +13,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ClientIdUpperCaseUDPBurst {
 
@@ -92,21 +95,23 @@ public class ClientIdUpperCaseUDPBurst {
     }
 
     private static class AnswersLog {
-        private final List<String> messages;
+        private final Map<Integer, String> messages;
 
         public AnswersLog(List<String> messages) {
-            this.messages = new ArrayList<>(messages);
+            this.messages = IntStream.range(0, messages.size())
+                .boxed()
+                .collect(Collectors.toMap(i -> i, messages::get));
         }
 
-        public void remove(int index) {
+        public void remove(int id) {
             synchronized (messages) {
-                messages.remove(index);
+                messages.remove(id);
             }
         }
 
         public void forEach(Consumer<? super String> consumer) {
             synchronized (messages) {
-                messages.forEach(consumer);
+                messages.values().forEach(consumer);
             }
         }
     }
