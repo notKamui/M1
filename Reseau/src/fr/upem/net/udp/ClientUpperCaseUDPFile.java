@@ -25,7 +25,7 @@ public class ClientUpperCaseUDPFile {
         System.out.println("Usage : ClientUpperCaseUDPFile in-filename out-filename timeout host port ");
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         if (args.length != 5) {
             usage();
             return;
@@ -71,8 +71,6 @@ public class ClientUpperCaseUDPFile {
                     } while (msg == null);
                     LOGGER.info("Received: " + msg);
                     upperCaseLines.add(msg);
-                } catch (AsynchronousCloseException | InterruptedException e) {
-                    LOGGER.warning("Error while sending message");
                 } catch (IOException e) {
                     LOGGER.severe(e.getMessage());
                 }
