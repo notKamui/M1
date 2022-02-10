@@ -3,39 +3,37 @@ package fr.upem.net.udp;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class ClientIdUpperCaseUDPBurst {
 
+    private static Logger logger = Logger.getLogger(ClientIdUpperCaseUDPBurst.class.getName());
     private static final Charset UTF8 = StandardCharsets.UTF_8;
     private static final int BUFFER_SIZE = 1024;
-    private static final Logger LOGGER = Logger.getLogger(ClientIdUpperCaseUDPBurst.class.getName());
     private final List<String> lines;
     private final int nbLines;
-    private final String[] upperCaseLines;
+    private final String[] upperCaseLines; //
     private final int timeout;
     private final String outFilename;
     private final InetSocketAddress serverAddress;
     private final DatagramChannel dc;
-    private final AnswersLog answersLog;
+    private final AnswersLog answersLog;         // Thread-safe structure keeping track of missing responses
+
+    public static void usage() {
+        System.out.println("Usage : ClientIdUpperCaseUDPBurst in-filename out-filename timeout host port ");
+    }
 
     public ClientIdUpperCaseUDPBurst(List<String> lines, int timeout, InetSocketAddress serverAddress, String outFilename) throws IOException {
         this.lines = lines;
@@ -46,11 +44,64 @@ public class ClientIdUpperCaseUDPBurst {
         this.dc = DatagramChannel.open();
         dc.bind(null);
         this.upperCaseLines = new String[nbLines];
-        this.answersLog = null; // TODO
+        this.answersLog = new AnswersLog(nbLines);
     }
 
-    public static void usage() {
-        System.out.println("Usage : ClientIdUpperCaseUDPBurst in-filename out-filename timeout host port ");
+    private void senderThreadRun() {
+        var buffers = IntStream.range(0, nbLines).mapToObj(i -> {
+            var buffer = ByteBuffer.allocate(BUFFER_SIZE);
+            buffer.putLong(i);
+            buffer.put(UTF8.encode(lines.get(i)));
+            return buffer;
+        }).toArray(ByteBuffer[]::new);
+        while (true) {
+            try {
+                for (int id : answersLog.remaining()) {
+                    dc.send(buffers[id].flip(), serverAddress);
+                    System.out.println("Sending " + id);
+                }
+                Thread.sleep(timeout);
+            } catch (InterruptedException e) {
+                return;
+            } catch (IOException e) {
+                logger.severe(e.getMessage());
+            }
+        }
+    }
+
+    public void launch() throws IOException {
+        var buffer = ByteBuffer.allocate(BUFFER_SIZE);
+
+        Thread senderThread = new Thread(this::senderThreadRun);
+        senderThread.start();
+
+        try {
+            while (!answersLog.isComplete()) {
+                buffer.clear();
+                dc.receive(buffer);
+                buffer.flip();
+
+                if (buffer.remaining() < Long.BYTES) {
+                    logger.severe("Invalid packet format, skipping");
+                    continue;
+                }
+
+                var id = buffer.getLong();
+                var message = UTF8.decode(buffer).toString();
+                System.out.println("Received: " + message + " of id " + id);
+                answersLog.validate((int) id);
+                upperCaseLines[(int) id] = message;
+            }
+            senderThread.interrupt();
+            Files.write(Paths.get(outFilename), Arrays.asList(upperCaseLines), UTF8,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.WRITE,
+                StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Fatal error in listener", e);
+        } finally {
+            dc.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -71,61 +122,32 @@ public class ClientIdUpperCaseUDPBurst {
         //Create client with the parameters and launch it
         ClientIdUpperCaseUDPBurst client = new ClientIdUpperCaseUDPBurst(lines, timeout, serverAddress, outFilename);
         client.launch();
-
-    }
-
-    private void senderThreadRun() {
-        while (true) {
-            answersLog.forEach(line -> {
-                try {
-                    dc.send(UTF8.encode(line), serverAddress);
-                } catch (IOException e) {
-                    LOGGER.severe("Error while sending messages");
-                }
-            });
-            try {
-                Thread.sleep(timeout);
-            } catch (InterruptedException e) {
-                return;
-            }
-        }
-    }
-
-    public void launch() throws IOException {
-        var bitset = new BitSet(nbLines);
-        Thread senderThread = new Thread(this::senderThreadRun);
-        var executor = Executors
-            .newSingleThreadScheduledExecutor()
-            .scheduleAtFixedRate(this::senderThreadRun, 0, timeout, TimeUnit.MILLISECONDS);
-        senderThread.start();
-
-
-        senderThread.interrupt();
-        Files.write(Paths.get(outFilename), Arrays.asList(upperCaseLines), UTF8,
-            StandardOpenOption.CREATE,
-            StandardOpenOption.WRITE,
-            StandardOpenOption.TRUNCATE_EXISTING);
-
     }
 
     private static class AnswersLog {
-        private final Map<Integer, String> messages;
 
-        public AnswersLog(List<String> messages) {
-            this.messages = IntStream.range(0, messages.size())
-                .boxed()
-                .collect(Collectors.toMap(i -> i, messages::get));
+        private final BitSet bitSet;
+
+        public AnswersLog(int size) {
+            this.bitSet = new BitSet(size);
+            this.bitSet.flip(0, size);
         }
 
-        public void remove(int id) {
-            synchronized (messages) {
-                messages.remove(id);
+        public void validate(int id) {
+            synchronized (bitSet) {
+                bitSet.set(id, false);
             }
         }
 
-        public void forEach(Consumer<? super String> consumer) {
-            synchronized (messages) {
-                messages.values().forEach(consumer);
+        public int[] remaining() {
+            synchronized (bitSet) {
+                return bitSet.stream().toArray();
+            }
+        }
+
+        public boolean isComplete() {
+            synchronized (bitSet) {
+                return bitSet.cardinality() == 0;
             }
         }
     }
