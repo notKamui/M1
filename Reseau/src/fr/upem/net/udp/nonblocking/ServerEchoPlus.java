@@ -20,7 +20,6 @@ public class ServerEchoPlus {
     private final int port;
 
     private SocketAddress sender;
-    private byte[] data = null;
 
     public ServerEchoPlus(int port) throws IOException {
         this.port = port;
@@ -63,25 +62,22 @@ public class ServerEchoPlus {
         if (sender == null) return;
         logger.info("Received from " + sender);
         buffer.flip();
+        var data = new byte[buffer.remaining()];
+        buffer.get(data);
+        for (int i = 0; i < data.length; i++) {
+            data[i]++;
+        }
+        buffer.clear();
+        buffer.put(data);
+        buffer.flip();
         key.interestOps(SelectionKey.OP_WRITE);
     }
 
     private void doWrite(SelectionKey key) throws IOException {
-        if (data == null) {
-            data = new byte[buffer.remaining()];
-            buffer.get(data);
-            for (int i = 0; i < data.length; i++) {
-                data[i]++;
-            }
-            buffer.clear();
-            buffer.put(data);
-            buffer.flip();
-        }
         dc.send(buffer, sender);
         if (buffer.hasRemaining()) return;
         logger.info("Sent back to " + sender);
         sender = null;
-        data = null;
         key.interestOps(SelectionKey.OP_READ);
     }
 
