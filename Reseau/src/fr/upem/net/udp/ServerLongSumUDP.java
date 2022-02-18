@@ -105,9 +105,17 @@ public class ServerLongSumUDP {
                 buffer.clear();
                 var address = (InetSocketAddress) dc.receive(buffer);
                 buffer.flip();
+                if (buffer.remaining() < Byte.BYTES) {
+                    logger.warning("Invalid message received from " + address);
+                    continue;
+                }
                 var opCode = buffer.get();
                 if (opCode != 1) {
                     logger.warning("Unsupported opCode " + opCode);
+                    continue;
+                }
+                if (buffer.remaining() < Long.BYTES * 4) {
+                    logger.warning("Invalid message received from " + address);
                     continue;
                 }
                 var sessionId = buffer.getLong();

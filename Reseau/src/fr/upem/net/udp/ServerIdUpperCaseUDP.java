@@ -32,6 +32,10 @@ public class ServerIdUpperCaseUDP {
                 var clientAddress = (InetSocketAddress) dc.receive(buffer);
                 buffer.flip();
                 // 2) read id
+                if (buffer.remaining() < Long.BYTES) {
+                    logger.warning("Received invalid packet from " + clientAddress);
+                    continue;
+                }
                 var id = buffer.getLong();
                 // 3) decode msg in request String upperCaseMsg = msg.toUpperCase();
                 var msg = UTF8.decode(buffer).toString();
