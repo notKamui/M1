@@ -36,10 +36,10 @@ public class ClientIdUpperCaseUDPOneByOne {
     private final Selector selector;
     private final SelectionKey uniqueKey;
 
-    private final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+    private final ByteBuffer sendBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
+    private final ByteBuffer receiveBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
     private long currentID = 0;
     private long currentRequestStartTime;
-    private long lastUpdateTime;
 
     private State state;
 
@@ -62,6 +62,7 @@ public class ClientIdUpperCaseUDPOneByOne {
         this.selector = selector;
         this.uniqueKey = uniqueKey;
         this.state = State.SENDING;
+        fillSendBuffer();
     }
 
     public static ClientIdUpperCaseUDPOneByOne create(
@@ -135,17 +136,21 @@ public class ClientIdUpperCaseUDPOneByOne {
      */
 
     private long updateInterestOps() {
-        return switch (state) {
-            case SENDING -> {
+        logger.info("Updating interestOps");
+        switch (state) {
+            case RECEIVING:
+                var timeout = this.timeout - System.currentTimeMillis() + currentRequestStartTime;
+                if (timeout > 0) {
+                    uniqueKey.interestOps(SelectionKey.OP_READ);
+                    return timeout;
+                }
+                state = State.SENDING;
+            case SENDING:
                 uniqueKey.interestOps(SelectionKey.OP_WRITE);
-                yield 0;
-            }
-            case RECEIVING -> {
-                uniqueKey.interestOps(SelectionKey.OP_READ);
-                yield timeout;
-            }
-            default -> -1;
-        };
+                return 0;
+            default:
+                throw new AssertionError("Unexpected state: " + state);
+        }
     }
 
     private boolean isFinished() {
@@ -158,20 +163,24 @@ public class ClientIdUpperCaseUDPOneByOne {
      * @throws IOException if an I/O error occurs
      */
     private void doRead() throws IOException {
-        if(dc.receive(buffer) == null){
+        logger.info("Receiving");
+        if(dc.receive(receiveBuffer) == null){
             logger.warning("Selector lied to us, we received a null packet");
             return;
         }
-        buffer.flip();
-        if (buffer.remaining() < Long.BYTES) {
+        receiveBuffer.flip();
+        if (receiveBuffer.remaining() < Long.BYTES) {
             logger.warning("Received invalid packet");
             return;
         }
-        var id = buffer.getLong();
+        var id = receiveBuffer.getLong();
         if (id != currentID) return;
-        var line = UTF8.decode(buffer).toString();
+        logger.info("Received packet with id " + id);
+        var line = UTF8.decode(receiveBuffer).toString();
         upperCaseLines.add(line);
-        buffer.clear();
+        currentID++;
+        receiveBuffer.clear();
+        fillSendBuffer();
         if (upperCaseLines.size() == lines.size()) {
             state = State.FINISHED;
         } else {
@@ -185,17 +194,21 @@ public class ClientIdUpperCaseUDPOneByOne {
      * @throws IOException if an I/O error occurs
      */
     private void doWrite() throws IOException {
-        if (!buffer.hasRemaining()) {
-            buffer.clear();
-            buffer.putLong(currentID);
-            buffer.put(UTF8.encode(lines.get((int) currentID)));
-        }
-        dc.send(buffer, serverAddress);
-        if (buffer.hasRemaining()) {
+        logger.info("Sending");
+        dc.send(sendBuffer, serverAddress);
+        if (sendBuffer.hasRemaining()) {
             logger.warning("Selector lied to us: buffer.hasRemaining()");
             return;
         }
-        buffer.clear();
+        sendBuffer.flip();
+        currentRequestStartTime = System.currentTimeMillis();
         state = State.RECEIVING;
+    }
+
+    private void fillSendBuffer() {
+        sendBuffer.clear();
+        sendBuffer.putLong(currentID);
+        sendBuffer.put(UTF8.encode(lines.get((int) currentID)));
+        sendBuffer.flip();
     }
 }
