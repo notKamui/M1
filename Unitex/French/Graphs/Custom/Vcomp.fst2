@@ -1,0 +1,31 @@
+0000000001
+-1 Vcomp
+: 5 1 
+: 2 2 1 2 
+: 6 3 
+: 12 5 7 4 
+: 3 6 
+: 11 7 10 7 9 7 
+: 8 8 
+: 13 9 
+: 4 10 
+: 7 4 
+t 14 11 
+t 
+f 
+%<E>
+%<avoir.V>
+%<être.V>
+%<V:K>
+%<E>/<temps-comp>$aux$ $prtcpl$</temps-comp>
+%$aux(
+%$aux)
+%$prtcpl(
+%$prtcpl)
+%<ADV>
+%<tout>
+%<rien>
+%$advs(
+%$advs)
+%<E>/$advs.SET$<insert-depl>$advs$</insert-depl>
+f

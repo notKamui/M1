@@ -1,58 +1,49 @@
-#M
-3366.0.0 3371.3.0 M.<names> Phileas Fogg</names>
-7601.0.0 7606.3.0 Mr.<names> Phileas Fogg</names>
-17579.0.0 17583.3.0 sieur<names> Phileas Fogg</names>
-34612.0.0 34616.7.0 Sir<names> Francis Cromarty</names>
-34667.0.0 34671.7.0 Sir<names> Francis Cromarty</names>
-34993.0.0 34997.7.0 Sir<names> Francis Cromarty</names>
-35198.0.0 35202.7.0 Sir<names> Francis Cromarty</names>
-35537.0.0 35541.7.0 Sir<names> Francis Cromarty</names>
-35921.0.0 35925.7.0 Sir<names> Francis Cromarty</names>
-37620.0.0 37624.7.0 Sir<names> Francis Cromarty</names>
-38117.0.0 38121.7.0 Sir<names> Francis Cromarty</names>
-38228.0.0 38232.7.0 Sir<names> Francis Cromarty</names>
-38319.0.0 38323.7.0 Sir<names> Francis Cromarty</names>
-38526.0.0 38530.7.0 Sir<names> Francis Cromarty</names>
-38594.0.0 38598.7.0 Sir<names> Francis Cromarty</names>
-39142.0.0 39146.7.0 Sir<names> Francis Cromarty</names>
-39380.0.0 39384.7.0 Sir<names> Francis Cromarty</names>
-40297.0.0 40301.7.0 Sir<names> Francis Cromarty</names>
-40908.0.0 40912.7.0 Sir<names> Francis Cromarty</names>
-40982.0.0 40986.7.0 Sir<names> Francis Cromarty</names>
-41342.0.0 41346.7.0 Sir<names> Francis Cromarty</names>
-41772.0.0 41776.7.0 Sir<names> Francis Cromarty</names>
-42850.0.0 42854.7.0 Sir<names> Francis Cromarty</names>
-43432.0.0 43436.7.0 Sir<names> Francis Cromarty</names>
-44262.0.0 44266.7.0 Sir<names> Francis Cromarty</names>
-44855.0.0 44859.7.0 Sir<names> Francis Cromarty</names>
-45058.0.0 45062.7.0 Sir<names> Francis Cromarty</names>
-45353.0.0 45357.7.0 Sir<names> Francis Cromarty</names>
-45957.0.0 45961.7.0 Sir<names> Francis Cromarty</names>
-46195.0.0 46199.7.0 Sir<names> Francis Cromarty</names>
-46307.0.0 46311.7.0 Sir<names> Francis Cromarty</names>
-46466.0.0 46470.7.0 Sir<names> Francis Cromarty</names>
-46637.0.0 46641.7.0 Sir<names> Francis Cromarty</names>
-47650.0.0 47654.7.0 Sir<names> Francis Cromarty</names>
-48274.0.0 48278.7.0 Sir<names> Francis Cromarty</names>
-49280.0.0 49284.7.0 sir<names> Francis Cromarty</names>
-49476.0.0 49480.7.0 Sir<names> Francis Cromarty</names>
-49643.0.0 49647.7.0 Sir<names> Francis Cromarty</names>
-49826.0.0 49830.7.0 Sir<names> Francis Cromarty</names>
-50364.0.0 50368.7.0 Sir<names> Francis Cromarty</names>
-50458.0.0 50462.7.0 Sir<names> Francis Cromarty</names>
-50759.0.0 50763.7.0 Sir<names> Francis Cromarty</names>
-51065.0.0 51069.7.0 Sir<names> Francis Cromarty</names>
-51147.0.0 51151.7.0 Sir<names> Francis Cromarty</names>
-51622.0.0 51626.7.0 Sir<names> Francis Cromarty</names>
-52054.0.0 52058.7.0 Sir<names> Francis Cromarty</names>
-52286.0.0 52290.7.0 Sir<names> Francis Cromarty</names>
-54345.0.0 54349.7.0 Sir<names> Francis Cromarty</names>
-55242.0.0 55246.7.0 Sir<names> Francis Cromarty</names>
-55410.0.0 55414.7.0 Sir<names> Francis Cromarty</names>
-56854.0.0 56858.3.0 Monsieur<names> Phileas Fogg</names>
-58658.0.0 58662.3.0 sieur<names> Phileas Fogg</names>
-62218.0.0 62222.8.0 Sir<names> James Jejeebhoy</names>
-65229.0.0 65234.3.0 Mr.<names> Phileas Fogg</names>
-91689.0.0 91694.3.0 Mr.<names> Phileas Fogg</names>
-153115.0.0 153119.3.0 sieur<names> Phileas Fogg</names>
-161113.0.0 161118.3.0 Mr.<names> Phileas Fogg</names>
+#R
+17709.0.0 17713.3.0 <toponyme type=eau>canal de Suez</toponyme>
+18015.0.0 18019.4.0 <toponyme type=terre:nat>cap de Bonne</toponyme>
+19555.0.0 19559.3.0 <toponyme type=eau>rade de Suez</toponyme>
+25999.0.0 26001.4.0 <toponyme type=eau>MER ROUGE</toponyme>
+26228.0.0 26230.7.0 <toponyme type=terre:nat>péninsule indienne</toponyme>
+26249.0.0 26253.5.0 <toponyme type=terre:nat>pointe de Ceylan</toponyme>
+29918.0.0 29920.7.0 <toponyme type=eau>mer indienne</toponyme>
+30811.0.0 30815.5.0 <toponyme type=terre:hum>ville de Madras</toponyme>
+31372.0.0 31376.5.0 <toponyme type=terre:nat>île de Bombay</toponyme>
+31511.0.0 31513.8.0 <toponyme type=terre:hum>ville française</toponyme>
+56601.0.0 56603.7.0 <toponyme type=terre:nat>péninsule indienne</toponyme>
+57246.0.0 57248.9.0 <toponyme type=terre:hum>ville européenne</toponyme>
+58942.0.0 58946.5.0 <toponyme type=terre:hum>ville de Bombay</toponyme>
+62948.0.0 62952.6.0 <toponyme type=eau>détroit de Malacca</toponyme>
+65216.0.0 65218.5.0 <toponyme type=eau>océan Indien</toponyme>
+66800.0.0 66804.6.0 <toponyme type=eau>détroit de Malacca</toponyme>
+67911.0.0 67917.3.0 <toponyme type=terre:nat>île de Hong-Kong</toponyme>
+68413.0.0 68417.4.0 <toponyme type=eau>mers de Chine</toponyme>
+74585.0.0 74589.5.0 <toponyme type=eau>rivière de Canton</toponyme>
+74676.0.0 74678.7.0 <toponyme type=terre:hum>ville anglaise</toponyme>
+74745.0.0 74749.3.0 <toponyme type=terre:hum>comtés de Kent</toponyme>
+74955.0.0 74957.8.0 <toponyme type=terre:hum>villes anglaises</toponyme>
+74994.0.0 74998.5.0 <toponyme type=eau>rivière de Canton</toponyme>
+80217.0.0 80219.7.0 <toponyme type=terre:hum>ville anglaise</toponyme>
+86055.0.0 86057.8.0 <toponyme type=terre:nat>continent américain</toponyme>
+88040.0.0 88042.6.0 <toponyme type=terre:nat>île Formose</toponyme>
+94125.0.0 94127.7.0 <toponyme type=terre:hum>empire japonais</toponyme>
+98284.0.0 98286.8.0 <toponyme type=terre:hum>ville japonaise</toponyme>
+101647.0.0 101649.8.0 <toponyme type=eau>OCÉAN PACIFIQUE</toponyme>
+103157.0.0 103159.8.0 <toponyme type=eau>océan Pacifique</toponyme>
+106454.0.0 106456.8.0 <toponyme type=terre:nat>continent américain</toponyme>
+106662.0.0 106664.8.0 <toponyme type=eau>océan Pacifique</toponyme>
+107022.0.0 107024.9.0 <toponyme type=terre:hum>ville américaine</toponyme>
+107438.0.0 107440.7.0 <toponyme type=terre:hum>ville chinoise</toponyme>
+108401.0.0 108407.8.0 <toponyme type=terre:hum>ville de San Francisco</toponyme>
+112051.0.0 112055.7.0 <toponyme type=terre:hum>État de Nebraska</toponyme>
+112281.0.0 112285.3.0 <toponyme type=terre:hum>États de Iowa</toponyme>
+113680.0.0 113684.9.0 <toponyme type=terre:hum>État de Californie</toponyme>
+113861.0.0 113867.4.0 <toponyme type=eau>baie de San Pablo</toponyme>
+113969.0.0 113973.9.0 <toponyme type=terre:hum>État de Californie</toponyme>
+114479.0.0 114483.5.0 <toponyme type=terre:nat>vallée de Carson</toponyme>
+114496.0.0 114500.5.0 <toponyme type=terre:hum>État de Nevada</toponyme>
+117287.0.0 117291.6.0 <toponyme type=terre:hum>État de Vermont</toponyme>
+121696.0.0 121700.6.0 <toponyme type=terre:hum>État de Wyoming</toponyme>
+124247.0.0 124251.6.0 <toponyme type=terre:nat>pic de Laramie</toponyme>
+127655.0.0 127659.7.0 <toponyme type=terre:nat>passe de Cheyenne</toponyme>
+143221.0.0 143223.7.0 <toponyme type=eau>lac Michigan</toponyme>
+159772.0.0 159776.3.0 <toponyme type=terre:hum>paroisse de Mary</toponyme>

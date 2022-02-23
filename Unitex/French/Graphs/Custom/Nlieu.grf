@@ -1,0 +1,23 @@
+#Unigraph
+SIZE 1297 840
+FONT Arial:  16
+OFONT Arial:B 18
+BCOLOR 16777215
+FCOLOR 0
+ACOLOR 13487565
+SCOLOR 16711680
+CCOLOR 255
+DBOXES y
+DFRAME n
+DDATE n
+DFILE n
+DDIR n
+DRIG n
+DRST n
+FITS 100
+PORIENT L
+#
+3
+"<E>" 73 278 1 2 
+"" 695 302 0 
+"<baie>+<bassin>+<boulevard>+<canal>+<cap>+<comté>+<continent>+<détroit>+<empire>+<état>+<golfe>+<île>+<lac>+<mer>+<océan>+<paroisse>+<passe>+<péninsule>+<pic>+<pointe>+<rade>+<rivière>+<vallée>+<ville>" 234 349 1 1 

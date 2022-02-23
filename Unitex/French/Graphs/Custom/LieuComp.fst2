@@ -1,0 +1,45 @@
+0000000001
+-1 LieuComp
+: 29 1 
+: 27 2 
+: 26 3 25 3 24 3 23 3 22 3 21 3 20 3 19 3 18 3 17 3 16 3 15 3 14 3 13 3 12 3 11 3 10 3 9 3 8 3 7 3 6 3 5 3 4 3 3 3 
+: 28 4 
+: 2 6 1 5 
+: 2 6 
+: 30 7 
+: 31 8 
+t 
+f 
+%<E>
+%<de>
+%<+Toponyme>
+%<baie>/eau
+%<bassin>/eau
+%<canal>/eau
+%<détroit>/eau
+%<golfe>/eau
+%<lac>/eau
+%<mer>/eau
+%<océan>/eau
+%<rade>/eau
+%<rivière>/eau
+%<boulevard>/terre:hum
+%<comté>/terre:hum
+%<empire>/terre:hum
+%<état>/terre:hum
+%<paroisse>/terre:hum
+%<ville>/terre:hum
+%<cap>/terre:nat
+%<continent>/terre:nat
+%<île>/terre:nat
+%<passe>/terre:nat
+%<péninsule>/terre:nat
+%<pic>/terre:nat
+%<pointe>/terre:nat
+%<vallée>/terre:nat
+%$|type(
+%$|type)
+%$lieu(
+%$lieu)
+%<E>/<toponyme type=$type$>$lieu$</toponyme>
+f
