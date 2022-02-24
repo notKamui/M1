@@ -12,15 +12,22 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-import static java.nio.file.StandardOpenOption.*;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
 
-public class ClientIdUpperCaseUDPOneByOne {
+public class ClientIdUpperCaseUDPBurst {
 
-    private static final Logger logger = Logger.getLogger(ClientIdUpperCaseUDPOneByOne.class.getName());
+    private static final Logger logger = Logger.getLogger(ClientIdUpperCaseUDPBurst.class.getName());
     private static final Charset UTF8 = StandardCharsets.UTF_8;
     private static final int BUFFER_SIZE = 1024;
 
@@ -29,7 +36,8 @@ public class ClientIdUpperCaseUDPOneByOne {
     };
 
     private final List<String> lines;
-    private final List<String> upperCaseLines = new ArrayList<>();
+    private final String[] upperCaseLines;
+    private final BitSet answerLog;
     private final long timeout;
     private final InetSocketAddress serverAddress;
     private final DatagramChannel dc;
@@ -38,7 +46,7 @@ public class ClientIdUpperCaseUDPOneByOne {
 
     private final ByteBuffer sendBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
     private final ByteBuffer receiveBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
-    private long currentID = 0;
+
     private long currentRequestStartTime;
 
     private State state;
@@ -46,8 +54,8 @@ public class ClientIdUpperCaseUDPOneByOne {
     private static void usage() {
         System.out.println("Usage : ClientIdUpperCaseUDPOneByOne in-filename out-filename timeout host port ");
     }
-    
-    private ClientIdUpperCaseUDPOneByOne(
+
+    private ClientIdUpperCaseUDPBurst(
         List<String> lines,
         long timeout,
         InetSocketAddress serverAddress,
@@ -62,10 +70,13 @@ public class ClientIdUpperCaseUDPOneByOne {
         this.selector = selector;
         this.uniqueKey = uniqueKey;
         this.state = State.SENDING;
-        fillSendBuffer();
+
+        this.upperCaseLines = new String[lines.size()];
+        this.answerLog = new BitSet(lines.size());
+        this.answerLog.flip(0, lines.size());
     }
 
-    public static ClientIdUpperCaseUDPOneByOne create(
+    public static ClientIdUpperCaseUDPBurst create(
         String inFilename,
         long timeout,
         InetSocketAddress serverAddress
@@ -81,7 +92,7 @@ public class ClientIdUpperCaseUDPOneByOne {
         dc.bind(null);
         var selector = Selector.open();
         var uniqueKey = dc.register(selector, SelectionKey.OP_WRITE);
-        return new ClientIdUpperCaseUDPOneByOne(lines, timeout, serverAddress, dc, selector, uniqueKey);
+        return new ClientIdUpperCaseUDPBurst(lines, timeout, serverAddress, dc, selector, uniqueKey);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -110,7 +121,7 @@ public class ClientIdUpperCaseUDPOneByOne {
                     throw tunneled.getCause();
                 }
             }
-            return upperCaseLines;
+            return List.of(upperCaseLines);
         } finally {
             dc.close();
         }
@@ -159,10 +170,10 @@ public class ClientIdUpperCaseUDPOneByOne {
     /**
      * Performs the receptions of packets
      *
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      */
     private void doRead() throws IOException {
-        if(dc.receive(receiveBuffer) == null){
+        if (dc.receive(receiveBuffer) == null){
             logger.warning("Selector lied to us, we received a null packet");
             return;
         }
@@ -173,42 +184,44 @@ public class ClientIdUpperCaseUDPOneByOne {
         }
 
         var id = receiveBuffer.getLong();
-        if (id != currentID) return;
+        if (!answerLog.get((int)id)) return;
         var line = UTF8.decode(receiveBuffer).toString();
         logger.info("Received packet with id " + id + " : " + line);
-        upperCaseLines.add(line);
+        upperCaseLines[(int)id] = line;
+        answerLog.flip((int)id);
+        receiveBuffer.clear();
 
-        currentID++;
-        if (upperCaseLines.size() == lines.size()) {
+        if (answerLog.cardinality() == 0) {
             state = State.FINISHED;
-        } else {
-            fillSendBuffer();
-            state = State.SENDING;
         }
     }
 
     /**
      * Tries to send the packets
      *
-     * @throws IOException if an I/O error occurs
+     * @throws java.io.IOException if an I/O error occurs
      */
     private void doWrite() throws IOException {
-        dc.send(sendBuffer, serverAddress);
-        if (sendBuffer.hasRemaining()) {
-            logger.warning("Selector lied to us: buffer.hasRemaining()");
-            return;
+        for (long id = 0; id < lines.size(); id++) {
+            if (!answerLog.get((int)id)) continue;
+            fillSendBuffer(id);
+            dc.send(sendBuffer, serverAddress);
+            if (sendBuffer.hasRemaining()) {
+                logger.warning("Selector lied to us: buffer.hasRemaining()");
+                continue;
+            }
+            logger.info("Sent packet with id " + id);
+            sendBuffer.flip();
         }
-        logger.info("Sent packet with id " + currentID);
-        sendBuffer.flip();
         receiveBuffer.clear();
         state = State.RECEIVING;
         currentRequestStartTime = System.currentTimeMillis();
     }
 
-    private void fillSendBuffer() {
+    private void fillSendBuffer(long id) {
         sendBuffer.clear();
-        sendBuffer.putLong(currentID);
-        sendBuffer.put(UTF8.encode(lines.get((int) currentID)));
+        sendBuffer.putLong(id);
+        sendBuffer.put(UTF8.encode(lines.get((int)id)));
         sendBuffer.flip();
     }
 }
