@@ -33,7 +33,7 @@ public class ClientIdUpperCaseUDPBurst {
 
     private enum State {
         SENDING, RECEIVING, FINISHED
-    };
+    }
 
     private final List<String> lines;
     private final String[] upperCaseLines;
@@ -48,6 +48,7 @@ public class ClientIdUpperCaseUDPBurst {
     private final ByteBuffer receiveBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
 
     private long currentRequestStartTime;
+    private long currentId = 0;
 
     private State state;
 
@@ -62,7 +63,7 @@ public class ClientIdUpperCaseUDPBurst {
         DatagramChannel dc,
         Selector selector,
         SelectionKey uniqueKey
-    ){
+    ) {
         this.lines = lines;
         this.timeout = timeout;
         this.serverAddress = serverAddress;
@@ -84,7 +85,7 @@ public class ClientIdUpperCaseUDPBurst {
         Objects.requireNonNull(inFilename);
         Objects.requireNonNull(serverAddress);
         Objects.checkIndex(timeout, Long.MAX_VALUE);
-        
+
         // Read all lines of inFilename opened in UTF-8
         var lines = Files.readAllLines(Path.of(inFilename), UTF8);
         var dc = DatagramChannel.open();
@@ -108,7 +109,7 @@ public class ClientIdUpperCaseUDPBurst {
 
         // Create client with the parameters and launch it
         var upperCaseLines = create(inFilename, timeout, server).launch();
-        
+
         Files.write(Path.of(outFilename), upperCaseLines, UTF8, CREATE, WRITE, TRUNCATE_EXISTING);
     }
 
@@ -155,6 +156,7 @@ public class ClientIdUpperCaseUDPBurst {
                     return timeout;
                 }
                 state = State.SENDING;
+                currentId = 0;
             case SENDING:
                 uniqueKey.interestOps(SelectionKey.OP_WRITE);
                 return 0;
@@ -173,7 +175,7 @@ public class ClientIdUpperCaseUDPBurst {
      * @throws java.io.IOException if an I/O error occurs
      */
     private void doRead() throws IOException {
-        if (dc.receive(receiveBuffer) == null){
+        if (dc.receive(receiveBuffer) == null) {
             logger.warning("Selector lied to us, we received a null packet");
             return;
         }
@@ -184,11 +186,11 @@ public class ClientIdUpperCaseUDPBurst {
         }
 
         var id = receiveBuffer.getLong();
-        if (!answerLog.get((int)id)) return;
+        if (!answerLog.get((int) id)) return;
         var line = UTF8.decode(receiveBuffer).toString();
         logger.info("Received packet with id " + id + " : " + line);
-        upperCaseLines[(int)id] = line;
-        answerLog.flip((int)id);
+        upperCaseLines[(int) id] = line;
+        answerLog.flip((int) id);
         receiveBuffer.clear();
 
         if (answerLog.cardinality() == 0) {
@@ -202,26 +204,28 @@ public class ClientIdUpperCaseUDPBurst {
      * @throws java.io.IOException if an I/O error occurs
      */
     private void doWrite() throws IOException {
-        for (long id = 0; id < lines.size(); id++) {
-            if (!answerLog.get((int)id)) continue;
-            fillSendBuffer(id);
+        if (answerLog.get((int) currentId))  {
+            fillSendBuffer(currentId);
             dc.send(sendBuffer, serverAddress);
             if (sendBuffer.hasRemaining()) {
                 logger.warning("Selector lied to us: buffer.hasRemaining()");
-                continue;
+                return;
             }
-            logger.info("Sent packet with id " + id);
+            logger.info("Sent packet with id " + currentId);
             sendBuffer.flip();
         }
-        receiveBuffer.clear();
-        state = State.RECEIVING;
-        currentRequestStartTime = System.currentTimeMillis();
+        currentId++;
+        if (currentId >= lines.size()) {
+            receiveBuffer.clear();
+            state = State.RECEIVING;
+            currentRequestStartTime = System.currentTimeMillis();
+        }
     }
 
     private void fillSendBuffer(long id) {
         sendBuffer.clear();
         sendBuffer.putLong(id);
-        sendBuffer.put(UTF8.encode(lines.get((int)id)));
+        sendBuffer.put(UTF8.encode(lines.get((int) id)));
         sendBuffer.flip();
     }
 }
