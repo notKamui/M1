@@ -162,6 +162,7 @@ public class ClientIdUpperCaseUDPOneByOne {
      * @throws IOException if an I/O error occurs
      */
     private void doRead() throws IOException {
+        receiveBuffer.clear();
         if(dc.receive(receiveBuffer) == null){
             logger.warning("Selector lied to us, we received a null packet");
             return;
@@ -200,7 +201,6 @@ public class ClientIdUpperCaseUDPOneByOne {
         }
         logger.info("Sent packet with id " + currentID);
         sendBuffer.flip();
-        receiveBuffer.clear();
         state = State.RECEIVING;
         currentRequestStartTime = System.currentTimeMillis();
     }
