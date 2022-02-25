@@ -15,12 +15,12 @@ public class ClientEOS {
     public static final int BUFFER_SIZE = 1024;
     public static final Logger logger = Logger.getLogger(ClientEOS.class.getName());
 
-    private static void sendRequest(String request, SocketChannel sc, ByteBuffer buffer) throws IOException {
+    private static void sendRequest(String request, SocketChannel sc) throws IOException {
+        var buffer = ByteBuffer.allocate(BUFFER_SIZE);
         buffer.put(UTF8_CHARSET.encode(request));
         buffer.flip();
         sc.write(buffer);
         logger.info("Request sent");
-        buffer.clear();
     }
 
     /**
@@ -40,12 +40,14 @@ public class ClientEOS {
      */
 
     public static String getFixedSizeResponse(String request, SocketAddress server, int bufferSize) throws IOException {
-        var buffer = ByteBuffer.allocate(bufferSize);
         var sc = SocketChannel.open(server);
-        sendRequest(request, sc, buffer);
-        while (buffer.hasRemaining() && sc.read(buffer) != -1);
-        sc.close();
+        sendRequest(request, sc);
+
+        var buffer = ByteBuffer.allocate(bufferSize);
+        readFully(sc, buffer);
         buffer.flip();
+
+        sc.close();
         logger.info("Response received");
         return UTF8_CHARSET.decode(buffer).toString();
     }
@@ -65,17 +67,20 @@ public class ClientEOS {
      */
 
     public static String getUnboundedResponse(String request, SocketAddress server) throws IOException {
-        var buffer = ByteBuffer.allocate(BUFFER_SIZE);
         var sc = SocketChannel.open(server);
-        sendRequest(request, sc, buffer);
+        sendRequest(request, sc);
+
+        var buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
         while (readFully(sc, buffer)) {
-            if (buffer.hasRemaining()) continue;
-            var newBuffer = ByteBuffer.allocate(buffer.capacity() * 2);
+            logger.info("Allocating more space...");
+            var newBuffer = ByteBuffer.allocateDirect(buffer.capacity() * 2);
             newBuffer.put(buffer);
             buffer = newBuffer;
         }
-        sc.close();
         buffer.flip();
+
+        sc.close();
+        logger.info("Response received");
         return UTF8_CHARSET.decode(buffer).toString();
     }
 
@@ -88,11 +93,12 @@ public class ClientEOS {
      * @throws IOException if an I/O error occurs
      */
     static boolean readFully(SocketChannel sc, ByteBuffer buffer) throws IOException {
-        var size = 0;
-        do {
-            size = sc.read(buffer);
-        } while (size != -1 && buffer.hasRemaining());
-        return size != -1;
+        while (true) {
+            logger.info("Reading...");
+            var read = sc.read(buffer);
+            if (!buffer.hasRemaining()) return true;
+            else if (read == -1) return false;
+        }
     }
 
     public static void main(String[] args) throws IOException {
