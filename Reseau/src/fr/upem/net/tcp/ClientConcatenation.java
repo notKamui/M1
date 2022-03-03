@@ -19,14 +19,6 @@ public class ClientConcatenation {
     public static final Logger logger = Logger.getLogger(ClientConcatenation.class.getName());
     public static final Charset CS = StandardCharsets.UTF_8;
 
-    private static List<Long> randomLongList(int size) {
-        return new Random().longs(size).boxed().toList();
-    }
-
-    private static boolean checkSum(List<Long> list, long response) {
-        return list.stream().reduce(Long::sum).orElse(0L) == response;
-    }
-
     private static void sendRequest(SocketChannel sc, List<String> list) throws IOException {
         var encodedStrings = list.stream().map(CS::encode).toArray(ByteBuffer[]::new);
         var sSize = Arrays.stream(encodedStrings).mapToInt(ByteBuffer::remaining).sum();
