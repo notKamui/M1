@@ -2,6 +2,7 @@ package fr.upem.net.tcp;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.*;
 import java.util.logging.Logger;
@@ -18,6 +19,14 @@ public class ClientLongSum {
         return list.stream().reduce(Long::sum).orElse(0L) == response;
     }
 
+    private static void sendRequest(SocketChannel sc, List<Long> list) throws IOException {
+        var buffer = ByteBuffer.allocate(Integer.BYTES + Long.BYTES * list.size());
+        buffer.putInt(list.size());
+        list.forEach(buffer::putLong);
+        buffer.flip();
+        sc.write(buffer);
+    }
+
     /**
      * Write all the longs in list in BigEndian on the server and read the long sent
      * by the server and returns it
@@ -31,10 +40,12 @@ public class ClientLongSum {
      * @throws IOException if an IO error occurs
      */
     private static Optional<Long> requestSumForList(SocketChannel sc, List<Long> list) throws IOException {
+        sendRequest(sc, list);
 
-        // TODO
-
-        return null;
+        var buffer = ByteBuffer.allocate(Long.BYTES);
+        if (!ClientEOS.readFully(sc, buffer)) return Optional.empty();
+        buffer.flip();
+        return Optional.of(buffer.getLong());
     }
 
     public static void main(String[] args) throws IOException {
@@ -49,7 +60,7 @@ public class ClientLongSum {
                     return;
                 }
                 if (!checkSum(list, sum.get())) {
-                    logger.warning("Oups! Something wrong happened!");
+                    logger.warning("Oops! Something wrong happened!");
                 }
             }
             logger.info("Everything seems ok");

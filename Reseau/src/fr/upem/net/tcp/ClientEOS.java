@@ -38,10 +38,11 @@ public class ClientEOS {
      *         response
      * @throws IOException if an I/O error occurs
      */
-
     public static String getFixedSizeResponse(String request, SocketAddress server, int bufferSize) throws IOException {
         var sc = SocketChannel.open(server);
         sendRequest(request, sc);
+
+        sc.shutdownOutput();
 
         var buffer = ByteBuffer.allocate(bufferSize);
         readFully(sc, buffer);
@@ -65,10 +66,11 @@ public class ClientEOS {
      * @return the UTF8 string corresponding the full response of the server
      * @throws IOException if an I/O error occurs
      */
-
     public static String getUnboundedResponse(String request, SocketAddress server) throws IOException {
         var sc = SocketChannel.open(server);
         sendRequest(request, sc);
+
+        sc.shutdownOutput();
 
         var buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
         while (readFully(sc, buffer)) {
@@ -94,10 +96,9 @@ public class ClientEOS {
      */
     static boolean readFully(SocketChannel sc, ByteBuffer buffer) throws IOException {
         while (true) {
-            logger.info("Reading...");
-            var read = sc.read(buffer);
-            if (!buffer.hasRemaining()) return true;
-            else if (read == -1) return false;
+            var size = sc.read(buffer);
+            if (size == 0) return true;
+            else if (size == -1) return false;
         }
     }
 
