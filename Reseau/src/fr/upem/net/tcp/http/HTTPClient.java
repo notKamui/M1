@@ -30,20 +30,25 @@ public final class HTTPClient {
     public Optional<String> getResource(String resource) throws IOException {
         requireNonNull(resource);
         server.write(ByteBuffer.wrap(("GET " + resource + " HTTP/1.1\r\nHost: " + hostname + "\r\n\r\n").getBytes()));
+
         var header = reader.readHeader();
+
         var code = header.getCode();
         LOGGER.info("HTTP code: " + code);
         if (code == 301 || code == 302) return redirect(header.getFields().getOrDefault("location", ""));
         if (code >= 500) throw new HTTPException("Server error: " + code);
+
         var contentType = header.getContentType();
-        if (
-            contentType.isEmpty() ||
-            !contentType.get().equals("text/html")
-        ) return Optional.empty();
+        if (contentType.isEmpty() || !contentType.get().equals("text/html"))
+            return Optional.empty();
         var cs = header.getCharset().orElse(StandardCharsets.UTF_8);
+
         ByteBuffer content;
-        if (header.isChunkedTransfer()) content = reader.readChunks().flip();
-        else content = reader.readBytes(header.getContentLength()).flip();
+        if (header.isChunkedTransfer())
+            content = reader.readChunks().flip();
+        else
+            content = reader.readBytes(header.getContentLength()).flip();
+
         return Optional.of(cs.decode(content).toString());
     }
 
