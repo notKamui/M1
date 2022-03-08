@@ -79,7 +79,7 @@ public class HTTPReader {
         while (true) {
             headerLine = readLineCRLF();
             if (headerLine.isEmpty()) break;
-            var header = headerLine.split(":");
+            var header = headerLine.split(":", 2);
             headerToValues.merge(header[0].toLowerCase(), header[1], (a, b) -> a + "; " + b);
         }
         return HTTPHeader.create(statusLine, headerToValues);
@@ -97,13 +97,20 @@ public class HTTPReader {
      */
     public ByteBuffer readBytes(int size) throws IOException {
         var bytes = ByteBuffer.allocate(size);
+
         buffer.flip();
-        bytes.put(buffer);
-        while (true) {
-            var read = sc.read(buffer);
-            if (read == 0) break;
-            else if (read == -1) throw new HTTPException("Connection closed");
+        while (bytes.hasRemaining()) {
+            if (!buffer.hasRemaining()) {
+                buffer.clear();
+                if (sc.read(buffer) == -1) {
+                    return bytes;
+                }
+                buffer.flip();
+            }
+            bytes.put(buffer.get());
         }
+
+        buffer.compact();
         return bytes;
     }
 
@@ -114,8 +121,25 @@ public class HTTPReader {
      */
 
     public ByteBuffer readChunks() throws IOException {
-        // TODO
-        return null;
+        var bytes = ByteBuffer.allocate(0);
+
+        var size = -1;
+        try {
+            do {
+                var e = readLineCRLF();
+                size = Integer.parseInt(e, 16);
+                var line = readBytes(size);
+                readBytes(2);
+                var newBuffer = ByteBuffer.allocate(bytes.flip().remaining() + line.flip().remaining());
+                newBuffer.put(bytes);
+                newBuffer.put(line);
+                bytes = newBuffer;
+            } while (size != 0);
+        } catch (NumberFormatException e) {
+            throw new HTTPException("Malformed chunked body");
+        }
+
+        return bytes;
     }
 
     public static void main(String[] args) throws IOException {
