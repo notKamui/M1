@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import static java.util.Objects.requireNonNull;
 
 public class FixedPrestartedLongSumServerWithTimeout {
@@ -49,10 +50,10 @@ public class FixedPrestartedLongSumServerWithTimeout {
      */
     public void launch() {
         logger.info("Server started");
-        var threadDataList = new ArrayList<ThreadData>();
-        for (int i = 0; i < MAX_CLIENTS; i++) {
-            threadDataList.add(new ThreadData());
-        }
+        var threadDataList = Stream
+            .generate(ThreadData::new)
+            .limit(MAX_CLIENTS)
+            .toList();
         new Thread(() -> managerThread(threadDataList)).start();
         ThreadPool.create(threadDataList, this::serverThread).start();
     }
@@ -179,13 +180,19 @@ public class FixedPrestartedLongSumServerWithTimeout {
 
         void close() {
             synchronized (lock) {
-                if (client != null) {
-                    try {
-                        client.close();
-                    } catch (IOException e) {
-                        // Do nothing
-                    }
+                if (client == null) return;
+                try {
+                    client.close();
+                    client = null;
+                } catch (IOException e) {
+                    // Do nothing
                 }
+            }
+        }
+
+        boolean connected() {
+            synchronized (lock) {
+                return client != null;
             }
         }
 
