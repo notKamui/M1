@@ -1,0 +1,298 @@
+University Gustave Eiffel                                    J. Teillard
+Request For Comments: ????                                  M.A.H Najjar
+                                                              March 2022
+
+
+                          CHAT FUSION PROTOCOL
+
+Summary
+
+    The ChatFusion Protocol is aimed at standardizing message and file
+    sharing over a set of servers.
+    This document serves to explain and describe said protocol, its
+    types of packets, and their transmitions over the servers.
+
+1. Purpose
+
+    This RFC specifies the standards of the CFP (ChatFusion Protocol).
+    The goal of CFP is to be able to have users communicate through
+    permanent channels represented as servers, such that every users on
+    may receive messages from one individual user.
+    One such user must be able to contact another one individually,
+    providing a username and a server name. One should be able to send
+    and receive files.
+    Furthermore, multiple servers must be able to "fusion", meaning that
+    if they do so, they must share their userbase and be able to
+    communicate.
+
+2. Overview
+
+    Message sharing must always be done with UTF-8 encoding. File
+    sharing must always be done bytewise, with a given header code to
+    specify the file type.
+
+    While the details of the CFP header will be described later in the 
+    document, it is to be noted that any text based value must always be
+    encoded in ASCII (US Standard ASCII).
+
+    The CFP protocol is based on the TCP protocol, and thus, a CFP
+    connection is a TCP connection, a CFP packet is preceded by a TCP
+    header.
+
+    The CFP header always starts with a byte representing the type of
+    packet, thus being an OpCode. The different OpCodes will be
+    described in further details throuhout the document, with a table
+    at the end to summrize them.
+
+3. Connection and authentication
+
+    For a client to be able to connect to a server, it must first be
+    sure that the server is willing to accept the client, that is to say
+    that the server must be able to authenticate the client, and
+    therefore be in posession of the credentials of the user using said
+    client, and all other.
+
+    A user may be able to connect to a server thanks to a unique
+    username and a password, OR only a unique username, in "temporary
+    mode".
+
+    a. Authentication mode
+
+        To ask for a connection in "auth mode", the client must send
+        to the server a packet containing the OpCode "AUTH" (0x00)
+        followed by a 4 bytes integer representing the length of the
+        username encoded in ASCII, followed by the username, followed 
+        by a 4 bytes integer representing the length of the password 
+        encoded in ASCII, followed by the password.
+
+         1 byte  4 bytes    n bytes    4 bytes     m bytes
+         --------------------------------------------------
+        | 0x00 |  size n  | username |  size m  | password |
+         --------------------------------------------------
+
+        The server will then send back a packet containing the OpCode
+        "AUTH_OK" (0x01) if the connection is accepted, or "AUTH_KO"
+        (0x02) if the connection is refused (If the either the
+        credentials are invalid or the received packet is malformed).
+        If the connection is accepted, the TCP connection will persist, 
+        but if it is refused, the TCP connection will then be closed.
+
+    b. Temporary mode
+
+        To ask for a connection in "temporary mode", the client must
+        send to the server a packet containing the OpCode "TEMP" (0x03)
+        followed by a 4 bytes integer representing the length of the
+        username encoded in ASCII, followed by the username.
+
+         1 byte  4 bytes    n bytes
+         ----------------------------
+        | 0x03 |  size n  | username |
+         ----------------------------
+
+        The server will then send back a packet containing the OpCode
+        "TEMP_OK" (0x04) if the connection is accepted, or "TEMP_KO"
+        (0x05) if the connection is refused (If the either the
+        credentials are invalid or the received packet is malformed).
+        If the connection is accepted, the TCP connection will persist, 
+        but if it is refused, the TCP connection will then be closed.
+
+4. Public messages
+
+    A sent message is a packet containing the OpCode "MSG" (0x10) 
+    followed by a 4 bytes integer representing the length of the message
+    encoded in UTF-8, followed by the message itself.
+
+     1 byte  4 bytes    n bytes
+     ---------------------------
+    | 0x10 |  size n  | message |
+     ---------------------------
+
+    *The message is always encoded in UTF-8.*
+
+    Once the server has received a message, it will send back a packet
+    to all connected clients containing the OpCode "MSGRESP" (0x11),
+    except the client that sent said message.
+    This packet consists of a 4 bytes integer representing the length
+    of the username of the user that sent the message encoded in ASCII, 
+    followed by the username, followed by a 4 bytes integer representing
+    the size of the name of the server of the sender encoded in ASCII, 
+    followed by said server name, followed by a 4 bytes integer 
+    representing the length of the message encoded in UTF-8, 
+    followed by the message.
+
+     1 byte  4 bytes    n bytes    4 bytes    m bytes     ...
+     -------------------------------------------------
+    | 0x11 |  size n  | username |  size m  |  server  |  ...
+     -------------------------------------------------
+
+    ...   4 bytes     q bytes
+         ----------------------
+        |  size q  |  message  |
+         ----------------------
+
+    The server must also transmit this packet to all of its sibiling
+    server (fusionned servers). For that, it will send them the exact
+    same packet, prepended by the OpCode "MSGFWD" (0x12).
+
+     1 byte     x bytes
+     ------------------------
+    | 0x12 |  MSGRESP packet |
+     ------------------------
+
+    Once a server receives a MSGFWD packet, it must send the content of
+    it to all of its connected clients.
+
+5. Private message : simple message
+
+    When a client wants to send a message to another client privately,
+    on the same network (that is to say, on the same "fusion"), it must
+    provide the name of the receiver along with the name of the server
+    on which said user is.
+    A sent private message is a packet containing the OpCode "PRIVMSG"
+    (0x20) followed by a 4 bytes integer representing the length of the
+    username of the receiver encoded in ASCII, followed by said username
+    , followed by a 4 bytes integer representing the length of the 
+    server the receiver is on, followed by said server name, followed by
+    a 4 bytes integer representing the length of the message encoded in 
+    UTF-8, followed by the message itself.
+
+     1 byte  4 bytes    n bytes      4 bytes    m bytes    ...
+     ----------------------------------------------------
+    | 0x20 |  size n  | r_username |  size m  | r_server | ...
+     ----------------------------------------------------
+
+    ...   4 bytes     q bytes
+         ----------------------
+    ... |  size q  |  message  |
+         ----------------------
+
+    Once the server has received a private message, it will send back a
+    packet to the concerned client. If the server name corresponds to
+    itself, the packet will be sent directly to the corresponding
+    client (thanks to the username).
+    A packet from a server to a client for a private message contains
+    the OpCode "PRIVMSGRESP" (0x21), followed by a 4 bytes integer
+    representing the length of the username of the sender encoded in
+    ASCII, followed by said username, followed by a 4 bytes integer
+    representing the length of the server name of the sender, followed
+    by the server name, followed by a 4 bytes integer representing the 
+    length of the message encoded in UTF-8, followed by the message.
+
+     1 byte  4 bytes     n bytes     4 bytes     m bytes   ...
+     ----------------------------------------------------
+    | 0x21 |  size n  | s_username |  size m  | s_server | ...
+     ----------------------------------------------------
+
+    ...   4 bytes     q bytes
+         ----------------------
+    ... |  size q  |  message  |
+         ----------------------
+
+    However, if the server name corresponds to a server that is not
+    itself, but one of its sibilings, the packet will be sent to said
+    sibiling, prepended by the OpCode "PRIVMSGFWD" (0x22).
+
+      1 byte       x bytes
+     ----------------------------
+    | 0x22 |  PRIVMSGRESP packet |
+     ----------------------------
+
+    Once a server receives a PRIVMSGFWD packet, it must send the content
+    of it to the corresponding client.
+
+6. Private message : file
+
+    When a client wants to send a file to another client privately,
+    on the same network (that is to say, on the same "fusion"), it must
+    provide the name of the receiver along with the name of the server
+    on which said user is. Sending a file must be done in chunks.
+    A sent private file is a packet containing the OpCode "PRIVFILE"
+    (0x30) followed by a 4 bytes integer representing the length of the
+    username of the receiver encoded in ASCII, followed by said username
+    , followed by a 4 bytes integer representing the length of the 
+    server the receiver is on, followed by said server name, followed by
+    a 4 bytes integer representing the length of the file type encoded
+    in ASCII, followed by said file type, followed by a 4 bytes integer
+    representing the size of the whole file, followed by a 4 bytes
+    integer representing the file id, followed by a 4 bytes integer
+    representing the size of the chunk, followed by the chunk.
+
+     1 byte  4 bytes    n bytes      4 bytes    m bytes    ...
+     ----------------------------------------------------
+    | 0x30 |  size n  | r_username |  size m  | r_server | ...
+     ----------------------------------------------------
+
+    ...   4 bytes     q bytes    4 bytes    4 bytes   4 bytes  r bytes
+         -------------------------------------------------------------
+    ... |  size q  | file type | file size | file id | size r | chunk |
+         -------------------------------------------------------------
+
+    Once the server has received a PRIVFILE packet, it will send back a
+    packet to the concerned client. If the server name corresponds to 
+    itself, the packet will be sent directly to the corresponding
+    client (thanks to the username).
+    A packet from a server to a client for a private file contains
+    the OpCode "PRIVFILERESP" (0x31), followed by a 4 bytes integer
+    representing the length of the username of the sender encoded in
+    ASCII, followed by said username, followed by a 4 bytes integer
+    representing the length of the server name of the sender, followed
+    by the server name, followed by a 4 bytes integer representing the
+    length of the file type encoded in ASCII, followed by said file type
+    , followed by a 4 bytes integer representing the size of the whole
+    file, followed by a 4 bytes integer representing the file id,
+    followed by a 4 bytes integer representing the size of the chunk,
+    followed by the chunk.
+
+     1 byte  4 bytes     n bytes     4 bytes     m bytes   ...
+     ----------------------------------------------------
+    | 0x31 |  size n  | s_username |  size m  | s_server | ...
+     ----------------------------------------------------
+
+    ...   4 bytes     q bytes    4 bytes    4 bytes   4 bytes  r bytes
+         -------------------------------------------------------------
+    ... |  size q  | file type | file size | file id | size r | chunk |
+         -------------------------------------------------------------
+
+    However, if the server name corresponds to a server that is not
+    itself, but one of its sibilings, the packet will be sent to said
+    sibiling, prepended by the OpCode "PRIVFILEFWD" (0x32).
+
+      1 byte       x bytes
+     -----------------------------
+    | 0x32 |  PRIVFILERESP packet |
+     -----------------------------
+
+    Once a client received the total file size, it can then reconstruct 
+    it, along with its type.
+
+
+APPENDIX
+
+OpCodes
+
+    The OpCodes are used to identify the type of packet.
+
+    Connection in Authentication mode
+        AUTH : 0x00
+        AUTH_OK : 0x01
+        AUTH_KO : 0x02
+
+    Connection in Temporary mode
+        TEMP : 0x03
+        TEMP_OK : 0x04
+        TEMP_KO : 0x05
+
+    Public messages
+        MSG : 0x10
+        MSGRESP : 0x11
+        MSGFWD : 0x12
+
+    Private messages : simple message
+        PRIVMSG : 0x20
+        PRIVMSGRESP : 0x21
+        PRIVMSGFWD : 0x22
+
+    Private messages : file
+        PRIVFILE : 0x30
+        PRIVFILERESP : 0x31
+        PRIVFILEFWD : 0x32
