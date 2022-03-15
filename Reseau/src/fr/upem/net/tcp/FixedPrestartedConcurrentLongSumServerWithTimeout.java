@@ -5,30 +5,34 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousCloseException;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+
 import static java.util.Objects.requireNonNull;
 
-public class FixedPrestartedLongSumServerWithTimeout {
+public class FixedPrestartedConcurrentLongSumServerWithTimeout {
 
-    private static final Logger logger = Logger.getLogger(FixedPrestartedLongSumServerWithTimeout.class.getName());
+    private static final Logger logger = Logger.getLogger(FixedPrestartedConcurrentLongSumServerWithTimeout.class.getName());
     private static final int MAX_CLIENTS = 20;
-    private static final int TICK_INTERVAL = 500;
+    private final int tickInterval;
 
     private final ServerSocketChannel serverSocketChannel;
     private final int timeout;
 
-    public FixedPrestartedLongSumServerWithTimeout(int port, int timeout) throws IOException {
+    public FixedPrestartedConcurrentLongSumServerWithTimeout(int port, int timeout) throws IOException {
         serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.bind(new InetSocketAddress(port));
         if (timeout < 0) throw new IllegalArgumentException("timeout must be positive");
         this.timeout = timeout;
+        this.tickInterval = timeout / 4;
         logger.info(this.getClass().getName() + " starts on port " + port);
     }
 
@@ -41,7 +45,7 @@ public class FixedPrestartedLongSumServerWithTimeout {
     }
 
     public static void main(String[] args) throws NumberFormatException, IOException, InterruptedException {
-        var server = new FixedPrestartedLongSumServerWithTimeout(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+        var server = new FixedPrestartedConcurrentLongSumServerWithTimeout(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
         server.launch();
     }
 
@@ -49,20 +53,57 @@ public class FixedPrestartedLongSumServerWithTimeout {
      * Iterative server main loop
      */
     public void launch() {
-        logger.info("Server started");
         var threadDataList = Stream
             .generate(ThreadData::new)
             .limit(MAX_CLIENTS)
             .toList();
-        new Thread(() -> managerThread(threadDataList)).start();
-        ThreadPool.create(threadDataList, this::serverThread).start();
+
+        var manager = new Thread(() -> managerThread(threadDataList));
+        manager.setDaemon(true);
+        manager.start();
+
+        var pool = ThreadPool.create(threadDataList, this::serverThread);
+        pool.start();
+
+        new Thread(() -> {
+            var scanner = new Scanner(System.in);
+            while (!Thread.interrupted()) {
+                var command = scanner.nextLine();
+                switch (command.toUpperCase()) {
+                    case "INFO" -> {
+                        var connected = threadDataList.stream().filter(ThreadData::connected).count();
+                        logger.info("Active clients: " + connected);
+                    }
+
+                    case "SHUTDOWN" -> {
+                        logger.info("Shutting down softly...");
+                        try {
+                            serverSocketChannel.close();
+                        } catch (IOException e) {
+                            // Do nothing
+                        }
+                        return;
+                    }
+
+                    case "SHUTDOWNNOW" -> {
+                        logger.info("Shutting down now...");
+                        pool.interrupt();
+                        return;
+                    }
+
+                    default -> logger.warning("Unknown command: " + command);
+                }
+            }
+        }).start();
+
+        logger.info("Server started");
     }
 
     private void managerThread(List<ThreadData> threadDataList) {
         while (!Thread.interrupted()) {
             try {
                 threadDataList.forEach(data -> data.closeIfInactive(timeout));
-                Thread.sleep(TICK_INTERVAL);
+                Thread.sleep(tickInterval);
             } catch (InterruptedException e) {
                 return;
             }
@@ -85,6 +126,8 @@ public class FixedPrestartedLongSumServerWithTimeout {
                 }
                 try {
                     serve(data);
+                } catch (ClosedByInterruptException e) {
+                    logger.info("Server interrupted by shutdown-now");
                 } catch (AsynchronousCloseException ace) {
                     logger.info("Closed connection with " + clientAddress + " due to timeout");
                 } catch (IOException ioe) {
@@ -158,9 +201,13 @@ public class FixedPrestartedLongSumServerWithTimeout {
         public void start() {
             threads.forEach(Thread::start);
         }
+
+        public void interrupt() {
+            threads.forEach(Thread::interrupt);
+        }
     }
 
-    private static class ThreadData {
+    private class ThreadData {
         private final Object lock = new Object();
         private SocketChannel client;
         private int ticker = 0;
@@ -198,7 +245,7 @@ public class FixedPrestartedLongSumServerWithTimeout {
 
         void closeIfInactive(int timeout) {
             synchronized (lock) {
-                if (ticker >= timeout / TICK_INTERVAL) {
+                if (ticker >= timeout / tickInterval) {
                     close();
                 } else {
                     ticker++;
