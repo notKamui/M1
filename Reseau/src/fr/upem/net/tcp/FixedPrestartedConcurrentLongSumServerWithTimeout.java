@@ -65,38 +65,41 @@ public class FixedPrestartedConcurrentLongSumServerWithTimeout {
         var pool = ThreadPool.create(threadDataList, this::serverThread);
         pool.start();
 
-        new Thread(() -> {
-            var scanner = new Scanner(System.in);
-            while (!Thread.interrupted()) {
-                var command = scanner.nextLine();
-                switch (command.toUpperCase()) {
-                    case "INFO" -> {
-                        var connected = threadDataList.stream().filter(ThreadData::connected).count();
-                        logger.info("Active clients: " + connected);
-                    }
-
-                    case "SHUTDOWN" -> {
-                        logger.info("Shutting down softly...");
-                        try {
-                            serverSocketChannel.close();
-                        } catch (IOException e) {
-                            // Do nothing
-                        }
-                        return;
-                    }
-
-                    case "SHUTDOWNNOW" -> {
-                        logger.info("Shutting down now...");
-                        pool.interrupt();
-                        return;
-                    }
-
-                    default -> logger.warning("Unknown command: " + command);
-                }
-            }
-        }).start();
+        new Thread(() -> inputThread(pool, threadDataList)).start();
 
         logger.info("Server started");
+    }
+
+    private void inputThread(ThreadPool pool, List<ThreadData> threadDataList) {
+        var scanner = new Scanner(System.in);
+        while (!Thread.interrupted()) {
+            var command = scanner.nextLine();
+            switch (command.toUpperCase()) {
+                case "INFO" -> {
+                    var connected = threadDataList.stream().filter(ThreadData::connected).count();
+                    logger.info("Active clients: " + connected);
+                }
+
+                case "SHUTDOWN" -> {
+                    logger.info("Shutting down softly...");
+                    try {
+                        serverSocketChannel.close();
+                    } catch (IOException e) {
+                        // Do nothing
+                    }
+                    return;
+                }
+
+                case "SHUTDOWNNOW" -> {
+                    logger.info("Shutting down now...");
+                    pool.interrupt();
+                    threadDataList.forEach(ThreadData::close);
+                    return;
+                }
+
+                default -> logger.warning("Unknown command: " + command);
+            }
+        }
     }
 
     private void managerThread(List<ThreadData> threadDataList) {
@@ -128,6 +131,8 @@ public class FixedPrestartedConcurrentLongSumServerWithTimeout {
                     serve(data);
                 } catch (ClosedByInterruptException e) {
                     logger.info("Server interrupted by shutdown-now");
+                    data.close();
+                    return;
                 } catch (AsynchronousCloseException ace) {
                     logger.info("Closed connection with " + clientAddress + " due to timeout");
                 } catch (IOException ioe) {
