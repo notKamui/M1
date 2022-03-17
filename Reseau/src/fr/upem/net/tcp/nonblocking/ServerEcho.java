@@ -27,7 +27,13 @@ public class ServerEcho {
 		 * The convention is that buff is in write-mode.
 		 */
 		private void updateInterestOps() {
-			// TODO
+			if (closed || !buffer.hasRemaining()) {
+				key.interestOps(SelectionKey.OP_WRITE);
+			} else if (buffer.position() == 0) {
+				key.interestOps(SelectionKey.OP_READ);
+			} else {
+				key.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
+			}
 		}
 
 		/**
@@ -39,7 +45,12 @@ public class ServerEcho {
 		 * @throws IOException if the read operation fails
 		 */
 		private void doRead() throws IOException {
-			// TODO
+			var n = sc.read(buffer);
+			if (n == -1) {
+				logger.info("Connection closed by " + sc.getRemoteAddress());
+				closed = true;
+			}
+			updateInterestOps();
 		}
 
 		/**
@@ -51,7 +62,14 @@ public class ServerEcho {
 		 * @throws IOException if the write operation fails
 		 */
 		private void doWrite() throws IOException {
-			// TODO
+			buffer.flip();
+			if (closed && !buffer.hasRemaining()) {
+				silentlyClose();
+				return;
+			}
+			sc.write(buffer);
+			buffer.compact();
+			updateInterestOps();
 		}
 
 		private void silentlyClose() {
@@ -108,7 +126,7 @@ public class ServerEcho {
 				((Context) key.attachment()).doRead();
 			}
 		} catch (IOException e) {
-			logger.log(Level.INFO, "Connection closed with client due to IOException", e);
+			logger.info("Connection closed with client due to IOException");
 			silentlyClose(key);
 		}
 	}
@@ -121,7 +139,8 @@ public class ServerEcho {
 			return;
 		}
 		client.configureBlocking(false);
-		client.register(selector, SelectionKey.OP_READ, new Context(key));
+		var skey = client.register(selector, SelectionKey.OP_READ);
+		skey.attach(new Context(skey));
 	}
 
 	private void silentlyClose(SelectionKey key) {
